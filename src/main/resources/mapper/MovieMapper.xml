@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lc.project.mapper.MovieMapper">
+
+    <resultMap id="BaseResultMap" type="com.lc.project.model.entity.Movie">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="movieName" column="movieName" jdbcType="VARCHAR"/>
+            <result property="type" column="type" jdbcType="INTEGER"/>
+            <result property="nation" column="nation" jdbcType="VARCHAR"/>
+            <result property="year" column="year" jdbcType="INTEGER"/>
+            <result property="directorId" column="directorId" jdbcType="INTEGER"/>
+<!--            <result property="actorId" column="actorId" jdbcType="INTEGER"/>-->
+            <result property="movieProfile" column="movieProfile" jdbcType="VARCHAR"/>
+            <result property="videoId" column="videoId" jdbcType="INTEGER"/>
+            <result property="creatTime" column="creatTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="state" column="state" jdbcType="INTEGER"/>
+            <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+            <result property="userId" column="userId" jdbcType="VARCHAR"/>
+            <result property="img" column="img" jdbcType="VARCHAR"/>
+            <result property="score" column="score" jdbcType="DOUBLE"/>
+            <result property="hot" column="hot" jdbcType="DOUBLE"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,movieName,type,
+        nation,year,
+        actorId,movieProfile,videoId,
+        creatTime,updateTime,state,
+        isDelete,usesrId,score,img,
+        hot
+    </sql>
+</mapper>
