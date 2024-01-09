@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 電影
@@ -120,11 +122,11 @@ public class MovieController {
      * @return
      */
     @GetMapping("/get")
-    public BaseResponse<MovieVo> getMovieById(long id) {
+    public BaseResponse<Movie> getMovieById(long id) {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        MovieVo movie = movieService.getMovieById(id);
+        Movie movie = movieService.getMovieById(id);
         return ResultUtils.success(movie);
     }
 
@@ -172,6 +174,14 @@ public class MovieController {
         }
         movieService.increaseHot(id.intValue());
     }
+
+
+    @GetMapping("/list/index/page")
+    public BaseResponse<ConcurrentHashMap<Integer,List<Movie>>> listIndexMovieByPage() {
+        ConcurrentHashMap<Integer,List<Movie>> moviePage = movieService.listIndexPage();
+        return ResultUtils.success(moviePage);
+    }
+
 
 
 }

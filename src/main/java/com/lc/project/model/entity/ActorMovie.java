@@ -47,6 +47,11 @@ public class ActorMovie implements Serializable {
      */
     private Integer isDelete;
 
+    /**
+     * 演员名
+     */
+    private String actorName;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

@@ -6,7 +6,9 @@ import com.lc.project.model.dto.movie.MovieQueryRequest;
 import com.lc.project.model.entity.Movie;
 import com.lc.project.model.vo.MovieVo;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
 * @author asus
@@ -26,7 +28,7 @@ public interface MovieService extends IService<Movie> {
 
     List<Movie> getListMovie(Movie movieQuery);
 
-    MovieVo getMovieById(long id);
+    Movie getMovieById(long id);
 
     boolean toUpdate(Movie movie);
 
@@ -39,4 +41,7 @@ public interface MovieService extends IService<Movie> {
      * @param id
      */
     void increaseHot(Integer id);
+
+    ConcurrentHashMap<Integer,List<Movie>> listIndexPage();
+
 }

@@ -74,9 +74,9 @@ public class Movie implements Serializable {
     private String img;
 
     /**
-     * 电影导演Id
+     * 导演名
      */
-    private Integer directorId;
+    private String directorName;
 
 
     /**
@@ -123,6 +123,13 @@ public class Movie implements Serializable {
      * 热度
      */
     private Double hot;
+
+    /**
+     * 演员名
+     */
+    private String actorsName;
+
+
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

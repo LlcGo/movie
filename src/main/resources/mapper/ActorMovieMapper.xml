@@ -8,6 +8,7 @@
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="movieId" column="movieId" jdbcType="INTEGER"/>
             <result property="actorId" column="actorId" jdbcType="INTEGER"/>
+            <result property="actorName" column="actorName" jdbcType="VARCHAR"/>
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
             <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
@@ -15,6 +16,6 @@
 
     <sql id="Base_Column_List">
         id,movieId,actorId,
-        createTime,updateTime,isDelete
+        createTime,updateTime,actorName,isDelete
     </sql>
 </mapper>

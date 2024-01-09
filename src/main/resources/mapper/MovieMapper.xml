@@ -10,8 +10,8 @@
             <result property="type" column="type" jdbcType="INTEGER"/>
             <result property="nation" column="nation" jdbcType="VARCHAR"/>
             <result property="year" column="year" jdbcType="INTEGER"/>
-            <result property="directorId" column="directorId" jdbcType="INTEGER"/>
-<!--            <result property="actorId" column="actorId" jdbcType="INTEGER"/>-->
+            <result property="directorName" column="directorName" jdbcType="VARCHAR"/>
+            <result property="actorsName" column="actorsName" jdbcType="VARCHAR"/>
             <result property="movieProfile" column="movieProfile" jdbcType="VARCHAR"/>
             <result property="videoId" column="videoId" jdbcType="INTEGER"/>
             <result property="creatTime" column="creatTime" jdbcType="TIMESTAMP"/>
@@ -27,7 +27,7 @@
     <sql id="Base_Column_List">
         id,movieName,type,
         nation,year,
-        actorId,movieProfile,videoId,
+        actorId,movieProfile,videoId,directorName
         creatTime,updateTime,state,
         isDelete,usesrId,score,img,
         hot

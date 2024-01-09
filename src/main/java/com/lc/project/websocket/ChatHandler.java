@@ -23,9 +23,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -47,7 +45,14 @@ public class ChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
     //用于记录通道
     public static final ChannelGroup users =new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-    public static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(6,8,60, TimeUnit.MINUTES,new PriorityBlockingQueue<>());
+    public static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(15,
+            100,
+            1,
+            TimeUnit.MINUTES,
+            new LinkedBlockingDeque<>(1000),
+            Executors.defaultThreadFactory(),
+            new ThreadPoolExecutor.AbortPolicy());
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
         Channel channel = ctx.channel();

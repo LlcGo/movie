@@ -52,7 +52,7 @@ public class MySqlTest {
 
     @Test
     public void testById(){
-        MovieVo movie= movieService.getMovieById(2);
+        Movie movie= movieService.getMovieById(2);
         System.out.println(movie);
         Date creatTime = movie.getCreatTime();
         System.out.println("时间------------>" + creatTime);

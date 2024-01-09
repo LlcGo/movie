@@ -10,19 +10,26 @@ import com.lc.project.mapper.MovieMapper;
 import com.lc.project.model.dto.movie.MovieQueryRequest;
 import com.lc.project.model.entity.ActorMovie;
 import com.lc.project.model.entity.Actors;
-import com.lc.project.model.entity.Director;
 import com.lc.project.model.entity.Movie;
 import com.lc.project.model.vo.MovieVo;
 import com.lc.project.service.*;
+import io.swagger.models.auth.In;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+
+import static com.lc.project.websocket.ChatHandler.threadPoolExecutor;
 
 /**
 * @author asus
@@ -43,13 +50,12 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
     private ActorMovieService actorMovieService;
 
     @Resource
-    private DirectorMovieService directorMovieService;
+    private MovieMapper movieMapper;
 
     @Resource
     private ActorsService actorsService;
 
-    @Resource
-    private DirectorService directorService;
+
 
     @Override
     public void validMovie(Movie movie, boolean add) {
@@ -135,23 +141,8 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
     }
 
     @Override
-    public MovieVo getMovieById(long id) {
-        Movie movie = this.getById(id);
-        MovieVo movieVo = new MovieVo();
-        BeanUtils.copyProperties(movie,movieVo);
-        //根据电影Id查询演员与影视表
-        QueryWrapper<ActorMovie> actorMovieQueryWrapper = new QueryWrapper<>();
-        actorMovieQueryWrapper.eq("movieId",movie.getId());
-        List<ActorMovie> list = actorMovieService.list(actorMovieQueryWrapper);
-        //所有的演员id  演员与电影表
-        List<Integer> actorIdList = list.stream().map(ActorMovie::getActorId).collect(Collectors.toList());
-        //根据查询出来的演员Id表查询所有演员
-        List<Actors> actors = actorsService.listByIds(actorIdList);
-        //根据导演id导演
-        Director director = directorService.getById(movie.getDirectorId());
-        movieVo.setDirector(director);
-        movieVo.setActorList(actors);
-        return movieVo;
+    public Movie getMovieById(long id) {
+        return this.getById(id);
     }
 
     @Override
@@ -167,7 +158,7 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
 
     @Override
     public boolean removeMovieById(long id) {
-        return this.removeMovieById(id);
+        return this.removeById(id);
     }
 
     @Override
@@ -185,6 +176,52 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
         Double hot = oldMovie.getHot();
         oldMovie.setHot(++hot);
         this.updateById(oldMovie);
+    }
+
+    @Override
+    public ConcurrentHashMap<Integer,List<Movie>> listIndexPage() {
+
+        ConcurrentHashMap<Integer, List<Movie>> movieList = new ConcurrentHashMap<>();
+
+        CompletableFuture<Boolean> future01 = CompletableFuture.supplyAsync(() -> selectMovieByType(0,movieList),threadPoolExecutor);
+
+        CompletableFuture<Boolean> future02 = CompletableFuture.supplyAsync(() -> selectMovieByType(1,movieList),threadPoolExecutor);
+
+        CompletableFuture<Boolean> future03 = CompletableFuture.supplyAsync(() -> selectMovieByType(2,movieList),threadPoolExecutor);
+
+        CompletableFuture<Boolean> future04 = CompletableFuture.supplyAsync(() -> selectMovieByType(3,movieList),threadPoolExecutor);
+
+        CompletableFuture<Boolean> future05 = CompletableFuture.supplyAsync(() -> selectMovieByType(4,movieList),threadPoolExecutor);
+
+        CompletableFuture<Boolean> future06 = CompletableFuture.supplyAsync(() -> selectMovieByType(5,movieList),threadPoolExecutor);
+
+        CompletableFuture<Boolean> future07 = CompletableFuture.supplyAsync(() -> selectMovieByType(6,movieList),threadPoolExecutor);
+
+        CompletableFuture<Boolean> future08 = CompletableFuture.supplyAsync(() -> selectMovieByType(7,movieList),threadPoolExecutor);
+
+        CompletableFuture<Boolean> future09 = CompletableFuture.supplyAsync(() -> selectMovieByType(8,movieList),threadPoolExecutor);
+
+        CompletableFuture<Boolean> future010 = CompletableFuture.supplyAsync(() -> selectMovieByType(9,movieList),threadPoolExecutor);
+
+        CompletableFuture<Boolean> future011 = CompletableFuture.supplyAsync(() -> selectMovieByType(10,movieList),threadPoolExecutor);
+
+        CompletableFuture<Void> future = CompletableFuture.allOf(future01, future02,future03,future04,future05,future06,future07,future08,future09,future010,future011);
+        try {
+            future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        return movieList;
+    }
+
+    public Boolean selectMovieByType(int type,ConcurrentHashMap<Integer, List<Movie>> movieList){
+        QueryWrapper<Movie> movieQueryWrapper = new QueryWrapper<>();
+        movieQueryWrapper.eq("type",type);
+        movieQueryWrapper.orderByDesc("creatTime");
+        movieQueryWrapper.last("limit 6");
+        List<Movie> list = this.list(movieQueryWrapper);
+        movieList.put(type,list);
+        return true;
     }
 
 

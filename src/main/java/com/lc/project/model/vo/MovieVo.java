@@ -3,7 +3,6 @@ package com.lc.project.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.lc.project.model.entity.Actors;
-import com.lc.project.model.entity.Director;
 import lombok.Data;
 
 import java.util.Date;
@@ -113,11 +112,11 @@ public class MovieVo {
     /**
      * 演员
      */
-    private List<Actors> actorList;
+    private String actorName;
 
     /**
      * 导演
      */
-    private Director director;
+    private String directorName;
 
 }
