@@ -2,24 +2,21 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lc.project.mapper.RemarkMapper">
+<mapper namespace="com.lc.project.mapper.RemarkUserMapper">
 
-    <resultMap id="BaseResultMap" type="com.lc.project.model.entity.Remark">
+    <resultMap id="BaseResultMap" type="com.lc.project.model.entity.RemarkUser">
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="userId" column="userId" jdbcType="VARCHAR"/>
-            <result property="movieId" column="movieId" jdbcType="INTEGER"/>
-            <result property="content" column="content" jdbcType="VARCHAR"/>
-            <result property="score" column="score" jdbcType="INTEGER"/>
+            <result property="remarkId" column="remarkId" jdbcType="INTEGER"/>
+            <result property="support" column="support" jdbcType="INTEGER"/>
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
             <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
-            <result property="liked" column="liked" jdbcType="INTEGER"/>
-            <result property="disLiked" column="disLiked" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,userId,movieId,
-        content,score,createTime,liked,disLiked,
-        updateTime,isDelete
+        id,userId,remarkId,
+        support,createTime,updateTime,
+        isDelete
     </sql>
 </mapper>

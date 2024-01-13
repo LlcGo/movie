@@ -44,4 +44,16 @@ public class RemarkVo {
      *
      */
     private Date updateTime;
+
+    /**
+     * 这个评论喜欢的人的数量
+     */
+    private Integer liked;
+
+    /**
+     * 这个评论不喜欢的人的数量
+     */
+    private Integer disLiked;
+
+
 }

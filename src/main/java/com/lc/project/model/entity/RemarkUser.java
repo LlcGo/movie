@@ -4,18 +4,17 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.Date;
+import lombok.Data;
 
 /**
- * 评论表
- * @TableName remark
+ * 用户对评论是否支持
+ * @TableName remark_user
  */
-@TableName(value ="remark")
+@TableName(value ="remark_user")
 @Data
-public class Remark implements Serializable {
+public class RemarkUser implements Serializable {
     /**
      * 
      */
@@ -30,17 +29,12 @@ public class Remark implements Serializable {
     /**
      * 
      */
-    private Integer movieId;
+    private Integer remarkId;
 
     /**
-     * 评论内容
+     * 0 什么都没有 1 不支持 2 支持
      */
-    private String content;
-
-    /**
-     * 评分
-     */
-    private Integer score;
+    private Integer support;
 
     /**
      * 
@@ -53,17 +47,7 @@ public class Remark implements Serializable {
     private Date updateTime;
 
     /**
-     * 喜欢
-     */
-    private Integer liked;
-
-    /**
-     * 不喜欢
-     */
-    private Integer disLiked;
-
-    /**
-     * 0 未删除 1 已删除
+     * 
      */
     private Integer isDelete;
 
