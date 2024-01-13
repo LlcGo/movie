@@ -1,5 +1,6 @@
 package com.lc.project.service;
 
+import com.lc.project.model.dto.remark.RemarkUserAddQuery;
 import com.lc.project.model.entity.RemarkUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -10,4 +11,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface RemarkUserService extends IService<RemarkUser> {
 
+    boolean like(RemarkUserAddQuery remarkUserAddQuery);
 }

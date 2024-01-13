@@ -1,6 +1,7 @@
 package com.lc.project.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lc.project.common.ErrorCode;
@@ -146,6 +147,61 @@ public class RemarkServiceImpl extends ServiceImpl<RemarkMapper, Remark>
         return this.count(remarkQueryWrapper);
     }
 
+
+    /**
+     * 根据之前的supprot 加减 现在的 支持 与 不支持数量
+     *
+     * @param oldSupport
+     */
+    @Override
+    public boolean updateBySupport(Integer oldSupport, Integer nowSupport, Integer remarkId) {
+        UpdateWrapper<Remark> remarkUpdateWrapper = new UpdateWrapper<>();
+        remarkUpdateWrapper.eq("id",remarkId);
+        switch (oldSupport) {
+            case 0 :
+                if(nowSupport == 1){
+                    //如果之前是 0 现在 是 1 不支持 在不支持 + 1 ok
+                    remarkUpdateWrapper.setSql("disLiked = disLiked + 1");
+                    this.update(remarkUpdateWrapper);
+                    return false;
+                }
+                if(nowSupport == 2){
+                    //如果之前是 0 现在 是 2 支持  +  1 ok
+                    remarkUpdateWrapper.setSql("liked = liked + 1");
+                    this.update(remarkUpdateWrapper);
+                    return false;
+                }
+            case 1 :
+                if(nowSupport == 1){
+                    //如果之前是 1 现在是 1 设置为 0 并且 不支持 - 1 ok
+                    remarkUpdateWrapper.setSql("disLiked = disLiked - 1");
+                    this.update(remarkUpdateWrapper);
+                    return true;
+                }
+                if(nowSupport == 2){
+                    //如果之前是 1 现在是 2 不支持 -1 支持 + 1 ok
+                    remarkUpdateWrapper.setSql("liked = liked + 1");
+                    remarkUpdateWrapper.setSql("disLiked = disLiked - 1");
+                    this.update(remarkUpdateWrapper);
+                    return false;
+                }
+            case 2 :
+                if(nowSupport == 2){
+                    //如果之前是 2 现在是 2 设置为 0 并且 支持 - 1 ok
+                    remarkUpdateWrapper.setSql("liked = liked - 1");
+                    this.update(remarkUpdateWrapper);
+                    return true;
+                }
+                if(nowSupport == 1){
+                    //如过之前是 2 现在是 1 支持 - 1 不支持 + 1 ok
+                    remarkUpdateWrapper.setSql("disLiked = disLiked + 1");
+                    remarkUpdateWrapper.setSql("liked = liked - 1");
+                    this.update(remarkUpdateWrapper);
+                    return false;
+                }
+        }
+        throw new BusinessException(ErrorCode.SYSTEM_ERROR);
+    }
 
 }
 

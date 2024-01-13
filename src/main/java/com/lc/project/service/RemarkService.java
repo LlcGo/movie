@@ -39,4 +39,7 @@ public interface RemarkService extends IService<Remark> {
     Page<RemarkVo> listPage(RemarkQueryRequest remarkQueryRequest);
 
     Long listCount(RemarkQueryRequest remarkQueryRequest);
+
+
+    boolean updateBySupport(Integer oldSupport, Integer nowSupport, Integer remarkId);
 }
