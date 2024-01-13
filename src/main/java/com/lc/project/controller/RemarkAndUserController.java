@@ -18,6 +18,7 @@ public class RemarkAndUserController {
     @Resource
     private RemarkUserService remarkUserService;
 
+    //todo 做限流
     @PostMapping("/like")
     public BaseResponse<Boolean> like(@RequestBody RemarkUserAddQuery remarkUserAddQuery){
        if(remarkUserAddQuery == null){

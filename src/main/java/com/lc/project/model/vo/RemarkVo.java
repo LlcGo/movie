@@ -58,7 +58,7 @@ public class RemarkVo {
     /**
      * 对这个评论喜欢箭头 （是否否喜欢）
      */
-    private boolean isLiked;
+    private boolean isLike;
 
     /**
      * 对这个评论不喜欢箭头 （是否喜欢）

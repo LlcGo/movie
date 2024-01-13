@@ -8,12 +8,15 @@ import com.lc.project.common.ErrorCode;
 import com.lc.project.constant.CommonConstant;
 import com.lc.project.exception.BusinessException;
 import com.lc.project.mapper.RemarkMapper;
+import com.lc.project.mapper.RemarkUserMapper;
 import com.lc.project.model.dto.remark.RemarkDeleteRequest;
 import com.lc.project.model.dto.remark.RemarkQueryRequest;
 import com.lc.project.model.entity.Remark;
+import com.lc.project.model.entity.RemarkUser;
 import com.lc.project.model.entity.Users;
 import com.lc.project.model.vo.RemarkVo;
 import com.lc.project.service.RemarkService;
+import com.lc.project.service.RemarkUserService;
 import com.lc.project.service.UsersService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -33,11 +36,14 @@ import java.util.stream.Collectors;
 public class RemarkServiceImpl extends ServiceImpl<RemarkMapper, Remark>
         implements RemarkService {
 
-    @Resource
-    private RemarkMapper remarkMapper;
+
 
     @Resource
     private UsersService usersService;
+
+
+    @Resource
+    private RemarkUserMapper remarkUserMapper;
 
     @Override
     public Integer toAddRemark(Remark remark) {
@@ -131,6 +137,30 @@ public class RemarkServiceImpl extends ServiceImpl<RemarkMapper, Remark>
             remarkVos.add(remarkVo);
         });
         BeanUtils.copyProperties(page,remarkVoPage);
+
+        Users loginUser = usersService.getLoginUser();
+
+
+        remarkVos.forEach(item->{
+            QueryWrapper<RemarkUser> remarkUserQueryWrapper = new QueryWrapper<>();
+            remarkUserQueryWrapper.eq("userId",loginUser.getId());
+            //当前评论id
+            Integer currentRemarkId = item.getId();
+            //当前用户id
+            remarkUserQueryWrapper.eq("remarkId",currentRemarkId);
+            RemarkUser remarkUser = remarkUserMapper.selectOne(remarkUserQueryWrapper);
+            //如果没有记录就是什么都没有 全部 false
+            if(remarkUser == null || remarkUser.getSupport() == 0){
+                item.setLike(false);
+                item.setHate(false);
+            }else if(remarkUser.getSupport() == 1){
+                item.setLike(false);
+                item.setHate(true);
+            }else {
+                item.setLike(true);
+                item.setHate(false);
+            }
+        });
         remarkVoPage.setRecords(remarkVos);
         return remarkVoPage;
     }
