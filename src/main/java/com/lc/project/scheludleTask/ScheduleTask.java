@@ -6,6 +6,7 @@ import com.lc.project.service.MovieService;
 import com.lc.project.service.RemarkService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import javax.annotation.Resource;
 import java.text.DecimalFormat;
@@ -44,30 +45,32 @@ public class ScheduleTask {
         //每个电影评分出现的次数 Integer为出现的次数
         HashMap<Integer, Integer> movieTotalNum = new HashMap<>();
         remarkList.forEach(item->{
-            boolean flag = true;
-            boolean scoreFlag = true;
-            Integer movieId = item.getMovieId();
-            Integer score = item.getScore();
-            //计算每个电影出现的次数
-            if(movieTotalNum.containsKey(movieId)){
-                flag = false;
-                Integer num = movieTotalNum.get(movieId);
-                num++;
-                movieTotalNum.put(movieId,num);
-            }
-            if(flag){
-                //第一次 + 1
-                movieTotalNum.put(movieId,1);
-            }
-            //每个电影的评分相加
-            if(movieIdAndScore.containsKey(movieId)){
-                Integer oldScore = movieIdAndScore.get(movieId);
-                score = score + oldScore;
-                movieIdAndScore.put(movieId,score);
-                scoreFlag = false;
-            }
-            if(scoreFlag){
-                movieIdAndScore.put(movieId,score);
+            if(item.getScore() != null){
+                boolean flag = true;
+                boolean scoreFlag = true;
+                Integer movieId = item.getMovieId();
+                Integer score = item.getScore();
+                //计算每个电影出现的次数
+                if(movieTotalNum.containsKey(movieId)){
+                    flag = false;
+                    Integer num = movieTotalNum.get(movieId);
+                    num++;
+                    movieTotalNum.put(movieId,num);
+                }
+                if(flag){
+                    //第一次 + 1
+                    movieTotalNum.put(movieId,1);
+                }
+                //每个电影的评分相加
+                if(movieIdAndScore.containsKey(movieId)){
+                    Integer oldScore = movieIdAndScore.get(movieId);
+                    score = score + oldScore;
+                    movieIdAndScore.put(movieId,score);
+                    scoreFlag = false;
+                }
+                if(scoreFlag){
+                    movieIdAndScore.put(movieId,score);
+                }
             }
         });
         //俩个map得出最后的平均分
