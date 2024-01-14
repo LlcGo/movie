@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.models.auth.In;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -36,6 +37,21 @@ public class Barrage implements Serializable {
      * 内容
      */
     private String content;
+
+    /**
+     * 弹幕出现时间
+     */
+    private String appTime;
+
+    /**
+     * 弹幕颜色
+     */
+    private String color;
+
+    /**
+     * 类型
+     */
+    private String barType;
 
     /**
      * 

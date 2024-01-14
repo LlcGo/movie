@@ -9,6 +9,9 @@
             <result property="movieId" column="movieId" jdbcType="INTEGER"/>
             <result property="userId" column="userId" jdbcType="VARCHAR"/>
             <result property="content" column="content" jdbcType="VARCHAR"/>
+            <result property="appTime" column="appTime" jdbcType="VARCHAR"/>
+            <result property="barType" column="barType" jdbcType="VARCHAR"/>
+            <result property="color" column="color" jdbcType="VARCHAR"/>
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
             <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
@@ -16,7 +19,7 @@
 
     <sql id="Base_Column_List">
         id,movieId,userId,
-        content,createTime,updateTime,
+        content,createTime,updateTime,barType,appTime,color
         isDelete
     </sql>
 </mapper>
