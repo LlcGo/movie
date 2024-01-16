@@ -2,7 +2,9 @@ package com.lc.project.model.vo;
 
 import lombok.Data;
 
-@Data
+import java.util.Date;
+
+
 public class BarrageVO {
 
     /**
@@ -13,7 +15,7 @@ public class BarrageVO {
     /**
      * 弹幕出现时间
      */
-    private String time;
+    private Double time;
 
     /**
      * 弹幕颜色
@@ -26,7 +28,51 @@ public class BarrageVO {
      */
     private boolean isMe;
 
+    private Date createTime;
 
-    private boolean force;
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public Double getTime() {
+        return time;
+    }
+
+    public void setTime(Double time) {
+        this.time = time;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public boolean getIsMe() {
+        return isMe;
+    }
+
+    public void setIsMe(boolean isMe) {
+        this.isMe = isMe;
+    }
+
+
+
+
+//    private boolean force;
 
 }

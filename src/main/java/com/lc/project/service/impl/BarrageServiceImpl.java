@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
 * @author asus
@@ -47,9 +49,10 @@ public class BarrageServiceImpl extends ServiceImpl<BarrageMapper, Barrage>
     public BarrageVO barrageToVo(Barrage barrage){
         BarrageVO barrageVO = new BarrageVO();
         barrageVO.setText(barrage.getContent());
-        barrageVO.setTime(barrage.getAppTime());
+        barrageVO.setTime(Double.valueOf(barrage.getAppTime()));
         barrageVO.setColor(barrage.getColor());
-        barrageVO.setForce(true);
+        barrageVO.setCreateTime(barrage.getCreateTime());
+//        barrageVO.setForce(true);
         return barrageVO;
     }
 
@@ -58,6 +61,7 @@ public class BarrageServiceImpl extends ServiceImpl<BarrageMapper, Barrage>
         //根据电影Id获取所有的弹幕
         QueryWrapper<Barrage> barrageQueryWrapper = new QueryWrapper<>();
         barrageQueryWrapper.eq("movieId",movieId);
+        barrageQueryWrapper.orderByDesc("appTime");
         List<Barrage> barrageList = this.list(barrageQueryWrapper);
         Users loginUser = usersService.getLoginUser();
         String currentUserId = loginUser.getId();
@@ -65,11 +69,14 @@ public class BarrageServiceImpl extends ServiceImpl<BarrageMapper, Barrage>
         barrageList.forEach(item -> {
             BarrageVO barrageVO = barrageToVo(item);
             if( item.getUserId().equals(currentUserId)){
-                barrageVO.setMe(true);
+                barrageVO.setIsMe(true);
             }
             barrageVOArrayList.add(barrageVO);
         });
-        return barrageVOArrayList;
+        return barrageVOArrayList
+                .stream()
+                .sorted(Comparator.comparing(BarrageVO::getTime))
+                .collect(Collectors.toList());
     }
 }
 
