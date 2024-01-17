@@ -48,9 +48,9 @@ public enum MovieYearEnum {
     TWO_ZERO_ONE_TWO("2012", 11),
     TWO_ZERO_ONE_ONE("2011", 12),
     TWO_ZERO_ONE_ZERO("2010", 13),
-    ZERO_ZERO("00年代(2000-2009)", 14),
-    NINE("90年代(1990-1999)", 15),
-    EARLIER("更早(1979之前)", 16),
+    ZERO_ZERO("00年代", 14),
+    NINE("90年代", 15),
+    EARLIER("更早", 16),
     ALL("全部",17);
 
 

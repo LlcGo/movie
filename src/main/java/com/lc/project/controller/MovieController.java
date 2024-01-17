@@ -154,10 +154,22 @@ public class MovieController {
      * @param request
      * @return
      */
-    @GetMapping("/list/page")
-    public BaseResponse<Page<Movie>> listMovieByPage(MovieQueryRequest movieQueryRequest, HttpServletRequest request) {
+    @PostMapping("/list/page")
+    public BaseResponse<Page<Movie>> listMovieByPage(@RequestBody MovieQueryRequest movieQueryRequest, HttpServletRequest request) {
         if (movieQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Integer year = movieQueryRequest.getYear();
+        Integer type = movieQueryRequest.getType();
+        String nation = movieQueryRequest.getNation();
+        if(year != null && year == 17){
+            movieQueryRequest.setYear(null);
+        }
+        if(type!= null && type == 11){
+            movieQueryRequest.setType(null);
+        }
+        if(nation!= null && nation.equals("10")){
+            movieQueryRequest.setNation(null);
         }
         Page<Movie> moviePage = movieService.listPage(movieQueryRequest);
         return ResultUtils.success(moviePage);

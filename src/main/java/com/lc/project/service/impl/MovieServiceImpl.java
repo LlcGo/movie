@@ -131,7 +131,7 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
         queryWrapper.orderByDesc(isScore != null && isScore,"score");
         queryWrapper.orderByDesc(isHot != null && isHot,"hot");
-        return this.page(new Page<>(current, size), queryWrapper);
+        return this.page(new Page<>(current, 36), queryWrapper);
     }
 
     @Override
