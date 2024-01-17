@@ -32,7 +32,7 @@ public enum MovieYearEnum {
      13 2010
      14 00年代（2000-2009）
      15 90年代（1990-1999）
-     16 更早（1979之前）
+     16
      */
     TWO_ZERO_TOW_TREE("2023", 0),
     TWO_ZERO_TOW_TWO("2022", 1),
