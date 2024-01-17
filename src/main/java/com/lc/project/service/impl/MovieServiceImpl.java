@@ -122,7 +122,7 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         //可以根据type name nation year 查询
-        QueryWrapper<Movie> queryWrapper = new QueryWrapper<>(movieQuery);
+        QueryWrapper<Movie> queryWrapper = new QueryWrapper<>();
         queryWrapper.like(StringUtils.isNotBlank(movieName), "movieName", movieName);
         queryWrapper.eq(type!=null,"type",type);
         queryWrapper.eq(StringUtils.isNotBlank(nation),"nation",nation);
@@ -131,7 +131,7 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
         queryWrapper.orderByDesc(isScore != null && isScore,"score");
         queryWrapper.orderByDesc(isHot != null && isHot,"hot");
-        return this.page(new Page<>(current, 36), queryWrapper);
+        return this.page(new Page<>(current, size), queryWrapper);
     }
 
     @Override
