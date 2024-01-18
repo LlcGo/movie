@@ -15,6 +15,7 @@ import com.lc.project.model.entity.Users;
 import com.lc.project.model.vo.MovieVo;
 import com.lc.project.service.MovieService;
 import com.lc.project.service.UsersService;
+import com.lc.project.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static com.lc.project.constant.CommonConstant.REDIS_FA_MOVIE;
 
 /**
  * 電影
@@ -41,6 +44,8 @@ public class MovieController {
     @Resource
     private UsersService userService;
 
+    @Resource
+    private RedisUtils redisUtils;
 
     /**
      * 创建
@@ -122,12 +127,18 @@ public class MovieController {
      * @return
      */
     @GetMapping("/get")
-    public BaseResponse<Movie> getMovieById(long id) {
+    public BaseResponse<MovieVo> getMovieById(long id) {
+        Users loginUser = userService.getLoginUser();
+        String currentUserId = loginUser.getId();
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Movie movie = movieService.getMovieById(id);
-        return ResultUtils.success(movie);
+        MovieVo movieVo = new MovieVo();
+        BeanUtils.copyProperties(movie,movieVo);
+        //查看是否已经收藏
+        movieVo.setFavorite(redisUtils.sHasKey(REDIS_FA_MOVIE + id,currentUserId));
+        return ResultUtils.success(movieVo);
     }
 
     /**

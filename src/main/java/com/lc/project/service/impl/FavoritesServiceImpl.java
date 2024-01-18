@@ -9,8 +9,10 @@ import com.lc.project.exception.BusinessException;
 import com.lc.project.mapper.FavoritesMapper;
 import com.lc.project.model.dto.favorites.FavoritesQueryRequest;
 import com.lc.project.model.entity.Favorites;
+import com.lc.project.model.entity.Users;
 import com.lc.project.service.FavoritesService;
 import com.lc.project.service.UsersService;
+import com.lc.project.utils.RedisUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+
+import static com.lc.project.constant.CommonConstant.REDIS_FA_MOVIE;
 
 /**
 * @author asus
@@ -31,6 +35,9 @@ public class FavoritesServiceImpl extends ServiceImpl<FavoritesMapper, Favorites
 
     @Resource
     private UsersService userService;
+
+    @Resource
+    private RedisUtils redisUtils;
 
     @Override
     public void validFavorites(Favorites favorites, boolean add) {
@@ -66,7 +73,9 @@ public class FavoritesServiceImpl extends ServiceImpl<FavoritesMapper, Favorites
         if (size > 50) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        QueryWrapper<Favorites> queryWrapper = new QueryWrapper<>(favoritesQuery);
+        QueryWrapper<Favorites> queryWrapper = new QueryWrapper<>();
+        Users loginUser = userService.getLoginUser();
+        queryWrapper.eq("userId",loginUser.getId());
 //        queryWrapper.like(StringUtils.isNotBlank(content), "favoritesName", content);
         queryWrapper.orderBy(StringUtils.isNotBlank(sortField),
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
@@ -97,12 +106,26 @@ public class FavoritesServiceImpl extends ServiceImpl<FavoritesMapper, Favorites
 
     @Override
     public boolean removeFavoritesById(long id) {
-        return this.removeFavoritesById(id);
+        return this.removeById(id);
     }
 
     @Override
     public Integer toAddFavorites(Favorites favorites) {
+        Integer movieId = favorites.getMovieId();
+        String userId = favorites.getUserId();
+        //如果已经收藏就
+        if(redisUtils.sHasKey(REDIS_FA_MOVIE + movieId,userId)){
+            redisUtils.setRemove(REDIS_FA_MOVIE + movieId ,userId);
+            QueryWrapper<Favorites> favoritesQueryWrapper = new QueryWrapper<>();
+            favoritesQueryWrapper.eq("userId",userId);
+            favoritesQueryWrapper.eq("movieId",movieId);
+            this.remove(favoritesQueryWrapper);
+            //-1 代表已经取消收藏
+            return -1;
+        }
+        //没有收藏就添加收藏
         boolean result = this.save(favorites);
+        redisUtils.sSet(REDIS_FA_MOVIE + movieId ,userId);
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }

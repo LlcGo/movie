@@ -112,11 +112,15 @@ public class MovieVo {
     /**
      * 演员
      */
-    private String actorName;
+    private String actorsName;
 
     /**
      * 导演
      */
     private String directorName;
 
+    /**
+     * favorite
+     */
+    private Boolean favorite;
 }

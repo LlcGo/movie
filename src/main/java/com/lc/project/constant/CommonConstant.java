@@ -23,6 +23,11 @@ public interface CommonConstant {
     String  UPLOADS_ABSOLUTE_PATH = "/src/main/resources/static/uploads/";
     String UPLOADS_PATH = System.getProperty("user.dir") + UPLOADS_ABSOLUTE_PATH;
 
+    /**
+     * redis 收藏影视
+     */
+
+    String REDIS_FA_MOVIE = "movie:favorites:";
 
 
 }

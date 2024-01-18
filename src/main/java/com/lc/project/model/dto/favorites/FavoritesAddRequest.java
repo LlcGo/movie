@@ -1,8 +1,11 @@
 package com.lc.project.model.dto.favorites;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 收藏请求
@@ -12,35 +15,13 @@ import java.io.Serializable;
 @Data
 public class FavoritesAddRequest implements Serializable {
 
-    /**
-     * 用户昵称
-     */
-    private String userName;
 
     /**
-     * 账号
+     *
      */
-    private String userAccount;
+    private Integer movieId;
 
-    /**
-     * 用户头像
-     */
-    private String userAvatar;
 
-    /**
-     * 性别
-     */
-    private Integer gender;
-
-    /**
-     * 用户角色: user, admin
-     */
-    private String userRole;
-
-    /**
-     * 密码
-     */
-    private String userPassword;
 
     private static final long serialVersionUID = 1L;
 }

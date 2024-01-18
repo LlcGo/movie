@@ -1,5 +1,6 @@
 package com.lc.project.service;
 
+import com.lc.project.utils.RedisUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -8,11 +9,14 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 
 
+
 @SpringBootTest
 public class RedisTest {
     @Resource
     private RedisTemplate redisTemplate;
 
+    @Resource
+    private RedisUtils redisUtils;
     @Test
     public void test(){
 
@@ -36,5 +40,19 @@ public class RedisTest {
 //        if(split[0].equals(split2[1]) && split2[0].equals(split[1])){
 //            System.out.println(true);
 //        }
+    }
+
+    @Test
+    public void testSet(){
+        redisUtils.sSet("movie:favorites:" + 1 ,"121315646516");
+        redisUtils.sSet("movie:favorites:" + 1 ,"121315646515");
+        boolean b = redisUtils.sHasKey("movie:favorites:" + 1, "121315646516");
+        System.out.println(b);
+        boolean b1 = redisUtils.sHasKey("movie:favorites:" + 1, "6");
+        System.out.println(b1);
+
+        redisUtils.setRemove("movie:favorites:" + 1,"121315646516");
+        boolean b3 = redisUtils.sHasKey("movie:favorites:" + 1, "121315646516");
+        System.out.println(b3);
     }
 }
