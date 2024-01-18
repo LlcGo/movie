@@ -1,10 +1,12 @@
 package com.lc.project.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lc.project.common.ErrorCode;
 import com.lc.project.exception.BusinessException;
 import com.lc.project.mapper.UsersMapper;
+import com.lc.project.model.dto.user.UpdatePassWord;
 import com.lc.project.model.entity.Users;
 import com.lc.project.service.UsersService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,14 +23,14 @@ import javax.servlet.http.HttpServletRequest;
 import static com.lc.project.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
-* @author asus
-* @description 针对表【users】的数据库操作Service实现
-* @createDate 2023-12-31 15:17:14
-*/
+ * @author asus
+ * @description 针对表【users】的数据库操作Service实现
+ * @createDate 2023-12-31 15:17:14
+ */
 @Service
 @Slf4j
 public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
-    implements UsersService{
+        implements UsersService {
     @Resource
     private UsersMapper userMapper;
 
@@ -166,6 +168,23 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
         // 移除登录态
         request.getSession().removeAttribute(USER_LOGIN_STATE);
         return true;
+    }
+
+    @Override
+    public boolean updatePassWord(UpdatePassWord updatePassWord) {
+        String newPassWord = updatePassWord.getNewPassword();
+        String oldPassword = updatePassWord.getOldPassword();
+        Users loginUser = getLoginUser();
+        String password = loginUser.getPassword();
+        String encryptPassword = DigestUtils.md5DigestAsHex((SALT + oldPassword).getBytes());
+        if (!encryptPassword.equals(password)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"原密码不正确");
+        }
+        UpdateWrapper<Users> usersUpdateWrapper = new UpdateWrapper<>();
+        String newEncryptPassword = DigestUtils.md5DigestAsHex((SALT + newPassWord).getBytes());
+        usersUpdateWrapper.eq("id",loginUser.getId());
+        usersUpdateWrapper.set("password",newEncryptPassword);
+        return this.update(usersUpdateWrapper);
     }
 
 }

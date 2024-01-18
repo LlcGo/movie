@@ -1,9 +1,11 @@
 package com.lc.project.model.dto.user;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 用户更新请求
@@ -12,40 +14,49 @@ import java.io.Serializable;
  */
 @Data
 public class UserUpdateRequest implements Serializable {
-    /**
-     * id
-     */
-    private Long id;
+
 
     /**
-     * 用户昵称
+     * 用户id
      */
-    private String userName;
+    private String id;
 
     /**
-     * 账号
+     * 用户名，账号
      */
-    private String userAccount;
+    private String username;
+
+
 
     /**
-     * 用户头像
+     * 我的头像，如果没有默认给一张
      */
-    private String userAvatar;
+    private String faceImage;
+
+
+    /**
+     * 昵称
+     */
+    private String nickname;
 
     /**
      * 性别
      */
-    private Integer gender;
+    private String sex;
 
     /**
-     * 用户角色: user, admin
+     * 喜欢的电影类型
      */
-    private String userRole;
+    private String likeType;
+
 
     /**
-     * 密码
+     * 个性签名
      */
-    private String userPassword;
+    private String signature;
+
+
+
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

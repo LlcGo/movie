@@ -37,11 +37,6 @@ public class Users implements Serializable {
     @TableField("face_image")
     private String faceImage;
 
-    /**
-     *
-     */
-    @TableField("face_image_big")
-    private String faceImageBig;
 
     /**
      * 昵称
@@ -49,14 +44,20 @@ public class Users implements Serializable {
     private String nickname;
 
     /**
-     * 新用户注册后默认后台生成二维码，并且上传到fastdfs
+     * 性别
      */
-    private String qrcode;
+    private String sex;
 
     /**
-     *
+     * 喜欢的电影类型
      */
-    private String cid;
+    private String likeType;
+
+
+    /**
+     * 个性签名
+     */
+    private String signature;
 
     /**
      *
@@ -73,6 +74,10 @@ public class Users implements Serializable {
      */
     private Integer isDelete;
 
+    /**
+     * 用户角色: user, admin
+     */
+    private String userRole;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

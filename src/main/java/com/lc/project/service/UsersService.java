@@ -1,6 +1,7 @@
 package com.lc.project.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.lc.project.model.dto.user.UpdatePassWord;
 import com.lc.project.model.entity.Users;
 
 import javax.servlet.http.HttpServletRequest;
@@ -63,4 +64,6 @@ public interface UsersService extends IService<Users> {
      * @return
      */
     boolean userLogout(HttpServletRequest request);
+
+    boolean updatePassWord(UpdatePassWord updatePassWord);
 }

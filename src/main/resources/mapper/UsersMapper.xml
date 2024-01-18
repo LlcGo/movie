@@ -9,19 +9,19 @@
             <result property="username" column="username" jdbcType="VARCHAR"/>
             <result property="password" column="password" jdbcType="VARCHAR"/>
             <result property="faceImage" column="face_image" jdbcType="VARCHAR"/>
-            <result property="faceImageBig" column="face_image_big" jdbcType="VARCHAR"/>
+            <result property="signature" column="signature" jdbcType="VARCHAR"/>
+            <result property="sex" column="sex" jdbcType="VARCHAR"/>
+            <result property="likeType" column="likeType" jdbcType="VARCHAR"/>
             <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
-            <result property="qrcode" column="qrcode" jdbcType="VARCHAR"/>
-            <result property="cid" column="cid" jdbcType="VARCHAR"/>
+            <result property="userRole" column="userRole" jdbcType="VARCHAR"/>
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
             <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,username,password,
-        face_image,face_image_big,nickname,
-        qrcode,cid,createTime,
+        id,username,password,sex,likeType,signature,
+        face_image,nickname,createTime,userRole,
         updateTime,isDelete
     </sql>
 </mapper>

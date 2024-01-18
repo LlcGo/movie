@@ -10,11 +10,14 @@ public class UserVo {
 
     private String faceImage;
 
-    private String faceImageBig;
+    private String sex;
+
+    private String likeType;
+
+    private String signature;
 
     private String nickname;
 
-    private String qrcode;
 
     public String getId() {
         return id;

@@ -166,12 +166,21 @@ public class UserController {
      */
     @PostMapping("/update")
     public BaseResponse<Boolean> updateUser(@RequestBody UserUpdateRequest userUpdateRequest, HttpServletRequest request) {
-        if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
+        if (userUpdateRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Users user = new Users();
         BeanUtils.copyProperties(userUpdateRequest, user);
         boolean result = userService.updateById(user);
+        return ResultUtils.success(result);
+    }
+
+    @PostMapping("/updatePassWord")
+    public BaseResponse<Boolean> updateUser(@RequestBody UpdatePassWord updatePassWord, HttpServletRequest request) {
+        if (updatePassWord == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        boolean result = userService.updatePassWord(updatePassWord);
         return ResultUtils.success(result);
     }
 
