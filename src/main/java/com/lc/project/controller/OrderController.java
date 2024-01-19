@@ -13,6 +13,7 @@ import com.lc.project.model.dto.order.OrderQueryRequest;
 import com.lc.project.model.dto.order.OrderUpdateRequest;
 import com.lc.project.model.entity.Order;
 import com.lc.project.model.entity.Users;
+import com.lc.project.model.enums.OrderDayEnum;
 import com.lc.project.model.vo.OrderVO;
 import com.lc.project.service.OrderService;
 import com.lc.project.service.UsersService;
@@ -54,6 +55,8 @@ public class OrderController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Order order = new Order();
+        String vipType = orderAddRequest.getVipType();
+        order.setVipType(OrderDayEnum.getValueByText(vipType));
         BeanUtils.copyProperties(orderAddRequest, order);
         // 校验
         Integer state = order.getState();
@@ -172,7 +175,7 @@ public class OrderController {
 
 
     /**
-     * 下单
+     * 订单中的下单
      *
      * @param
      * @param request
@@ -186,6 +189,17 @@ public class OrderController {
         Users loginUser = userService.getLoginUser(request);
         orderByRequest.setUserId(loginUser.getId());
         Boolean flag = orderService.orderBuy(orderByRequest);
+        return ResultUtils.success(flag);
+    }
+
+    @PostMapping("/tobuy")
+    public BaseResponse<Boolean> toBuy(@RequestBody OrderByRequest orderByRequest, HttpServletRequest request) {
+        if (orderByRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Users loginUser = userService.getLoginUser(request);
+        orderByRequest.setUserId(loginUser.getId());
+        Boolean flag = orderService.toBuy(orderByRequest);
         return ResultUtils.success(flag);
     }
 }

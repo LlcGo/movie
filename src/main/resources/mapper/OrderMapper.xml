@@ -9,6 +9,7 @@
             <result property="state" column="state" jdbcType="INTEGER"/>
             <result property="userId" column="userId" jdbcType="VARCHAR"/>
             <result property="movieId" column="movieId" jdbcType="INTEGER"/>
+            <result property="vipType" column="vipType" jdbcType="INTEGER"/>
             <result property="orderState" column="orderState" jdbcType="INTEGER"/>
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
@@ -17,7 +18,7 @@
 
     <sql id="Base_Column_List">
         id,state,userId,
-        movieId,createTime,updateTime,orderState,
+        movieId,createTime,updateTime,orderState,vipType,
         isDelete
     </sql>
 </mapper>

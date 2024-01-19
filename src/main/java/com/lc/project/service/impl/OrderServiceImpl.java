@@ -263,6 +263,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         String id = loginUser.getId();
         QueryWrapper<Order> orderQueryWrapper = new QueryWrapper<>();
         orderQueryWrapper.eq("userId",id);
+        orderQueryWrapper.orderByDesc("createTime");
         List<Order> list = this.list(orderQueryWrapper);
         ArrayList<OrderVO> orderVOS = new ArrayList<>();
         list.forEach(item->{
@@ -274,6 +275,103 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
             orderVOS.add(orderVO);
         });
         return orderVOS;
+    }
+
+    /**
+     *  可以直接购买vip ，直接续费 ，直接购买电影
+     * @param orderByRequest
+     * @return
+     */
+    @Override
+    public Boolean toBuy(OrderByRequest orderByRequest) {
+        Integer state = orderByRequest.getState();
+        String userId = orderByRequest.getUserId();
+        Integer movieId = orderByRequest.getMovieId();
+        String date = orderByRequest.getDate();
+        //如果是电影直接购买
+        if(state == 1){
+            //电影已购买不可以再下单购买
+            QueryWrapper<Purchased> orderQueryWrapper = new QueryWrapper<>();
+            orderQueryWrapper.eq("userId", userId);
+            orderQueryWrapper.eq("movieId", movieId);
+            long count = purchasedService.count(orderQueryWrapper);
+            if (count > 0) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "您已购买");
+            }
+
+            Order order = new Order();
+            order.setMovieId(movieId);
+            order.setUserId(userId);
+            order.setOrderState(1);
+            order.setState(state);
+            this.save(order);
+            Purchased purchased = new Purchased();
+            purchased.setUserId(userId);
+            purchased.setMovieId(movieId);
+            return purchasedService.save(purchased);
+        }
+        //如果是vip直接购买
+        //state 0 //开会员：//是否第一次开通 （查询vip数据库是否有数据）
+        QueryWrapper<Vip> vipQueryWrapper = new QueryWrapper<>();
+        vipQueryWrapper.eq("userId",userId);
+        Vip oldVip = vipMapper.selectOne(vipQueryWrapper);
+        if(oldVip == null){
+            //第一次开通 往vip表里插入数据
+            Vip vip = new Vip();
+            vip.setUserId(userId);
+            //开通多少天
+            if(date.equals(OrderDayEnum.YEAR.getText())){
+                //年多少天
+                int currentYear = dayUtils.getCurrentYear();
+                SetVipOverTime(currentYear,vip);
+            }
+            if(date.equals(OrderDayEnum.MONTHS.getText())){
+                //月多少天
+                int currentMonth = dayUtils.getCurrentMonth();
+                SetVipOverTime(currentMonth,vip);
+            }
+            if(date.equals(OrderDayEnum.QUARTER.getText())){
+                //季度多少天
+                int currentQuarter = dayUtils.getCurrentQuarter();
+                SetVipOverTime(currentQuarter,vip);
+            }
+            Order order = new Order();
+            order.setUserId(userId);
+            order.setState(state);
+            order.setVipType(OrderDayEnum.getValueByText(date));
+            order.setOrderState(1);
+            this.save(order);
+            return vipService.save(vip);
+        }
+        //下单vip续费 修改vip数据表内的到期时间
+        Date overTime = oldVip.getOverTime();
+        //转换时间
+        Instant instant = overTime.toInstant();
+        ZoneId zoneId = ZoneId.systemDefault();
+        LocalDateTime localOverTime = instant.atZone(zoneId).toLocalDateTime();
+        //续费多少天 //获取数据库时间，将其加上开会员的时间,最后修改Vip数据库增加时长
+        if(date.equals(OrderDayEnum.YEAR.getText())){
+            //年多少天
+            int currentYear = dayUtils.getCurrentYear();
+            setVipLayTime(localOverTime,currentYear,zoneId,oldVip);
+        }
+        if(date.equals(OrderDayEnum.MONTHS.getText())){
+            //月多少天
+            int currentMonth = dayUtils.getCurrentMonth();
+            setVipLayTime(localOverTime,currentMonth,zoneId,oldVip);
+        }
+        if(date.equals(OrderDayEnum.QUARTER.getText())){
+            //季度多少天
+            int currentQuarter = dayUtils.getCurrentQuarter();
+            setVipLayTime(localOverTime,currentQuarter,zoneId,oldVip);
+        }
+        Order order = new Order();
+        order.setState(state);
+        order.setUserId(userId);
+        order.setVipType(OrderDayEnum.getValueByText(date));
+        order.setOrderState(1);
+        this.save(order);
+        return vipService.updateById(oldVip);
     }
 
 

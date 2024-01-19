@@ -39,4 +39,11 @@ public interface OrderService extends IService<Order> {
 
     List<OrderVO> getOrderByUserId();
 
+    /**
+     * 直接购买
+     * @param orderByRequest
+     * @return
+     */
+    Boolean toBuy(OrderByRequest orderByRequest);
+
 }

@@ -1,7 +1,11 @@
 package com.lc.project.model.enums;
 
+import com.lc.project.common.ErrorCode;
+import com.lc.project.exception.BusinessException;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -31,6 +35,15 @@ public enum OrderDayEnum {
      */
     public static List<Integer> getValues() {
         return Arrays.stream(values()).map(item -> item.value).collect(Collectors.toList());
+    }
+
+    public static Integer getValueByText(String text) {
+        for (OrderDayEnum yearEnum : OrderDayEnum.values()) {
+            if (Objects.equals(yearEnum.getText(),text)) {
+                return yearEnum.value;
+            }
+        }
+        throw new BusinessException(ErrorCode.PARAMS_ERROR,"枚举参数不正常");
     }
 
     public int getValue() {

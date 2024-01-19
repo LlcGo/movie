@@ -45,4 +45,9 @@ public class OrderVO {
      */
     private Date updateTime;
 
+    /**
+     * vip 开多久
+     */
+    private Integer vipType;
+
 }

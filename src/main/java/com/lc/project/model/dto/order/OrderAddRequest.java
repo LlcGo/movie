@@ -25,5 +25,9 @@ public class OrderAddRequest implements Serializable {
      */
     private Integer movieId;
 
+    /**
+     * vip类型
+     */
+    private String vipType;
 
 }
