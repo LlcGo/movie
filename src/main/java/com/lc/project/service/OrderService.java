@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.lc.project.model.dto.order.OrderByRequest;
 import com.lc.project.model.dto.order.OrderQueryRequest;
 import com.lc.project.model.entity.Order;
+import com.lc.project.model.vo.OrderVO;
 
 import java.util.List;
 
@@ -35,4 +36,7 @@ public interface OrderService extends IService<Order> {
     Integer toAddOrder(Order order);
 
     Boolean orderBuy(OrderByRequest orderByRequest);
+
+    List<OrderVO> getOrderByUserId();
+
 }

@@ -11,16 +11,11 @@ import com.lc.project.mapper.OrderMapper;
 import com.lc.project.mapper.VipMapper;
 import com.lc.project.model.dto.order.OrderByRequest;
 import com.lc.project.model.dto.order.OrderQueryRequest;
-import com.lc.project.model.entity.Movie;
-import com.lc.project.model.entity.Order;
-import com.lc.project.model.entity.Purchased;
-import com.lc.project.model.entity.Vip;
+import com.lc.project.model.entity.*;
 import com.lc.project.model.enums.OrderDayEnum;
+import com.lc.project.model.vo.OrderVO;
 import com.lc.project.rabbitmq.RabbitMQUtils;
-import com.lc.project.service.MovieService;
-import com.lc.project.service.OrderService;
-import com.lc.project.service.PurchasedService;
-import com.lc.project.service.VipService;
+import com.lc.project.service.*;
 import com.lc.project.utils.DayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -32,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -62,6 +58,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
     @Resource
     private VipMapper vipMapper;
 
+    @Resource
+    private UsersService usersService;
     @Override
     public Page<Order> listPage(OrderQueryRequest orderQueryRequest) {
         Order orderQuery = new Order();
@@ -257,6 +255,25 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
             setVipLayTime(localOverTime,currentQuarter,zoneId,oldVip);
         }
        return vipService.updateById(oldVip);
+    }
+
+    @Override
+    public List<OrderVO> getOrderByUserId() {
+        Users loginUser = usersService.getLoginUser();
+        String id = loginUser.getId();
+        QueryWrapper<Order> orderQueryWrapper = new QueryWrapper<>();
+        orderQueryWrapper.eq("userId",id);
+        List<Order> list = this.list(orderQueryWrapper);
+        ArrayList<OrderVO> orderVOS = new ArrayList<>();
+        list.forEach(item->{
+            OrderVO orderVO = new OrderVO();
+            BeanUtils.copyProperties(item,orderVO);
+            Integer movieId = item.getMovieId();
+            Movie movie = movieService.getById(movieId);
+            orderVO.setMovie(movie);
+            orderVOS.add(orderVO);
+        });
+        return orderVOS;
     }
 
 

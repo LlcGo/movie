@@ -13,6 +13,7 @@ import com.lc.project.model.dto.order.OrderQueryRequest;
 import com.lc.project.model.dto.order.OrderUpdateRequest;
 import com.lc.project.model.entity.Order;
 import com.lc.project.model.entity.Users;
+import com.lc.project.model.vo.OrderVO;
 import com.lc.project.service.OrderService;
 import com.lc.project.service.UsersService;
 import lombok.extern.slf4j.Slf4j;
@@ -128,6 +129,13 @@ public class OrderController {
         Order order = orderService.getOrderById(id);
         return ResultUtils.success(order);
     }
+
+    @GetMapping("/get/myOrder")
+    public BaseResponse<List<OrderVO>> getOrderByUserId() {
+        List<OrderVO> order = orderService.getOrderByUserId();
+        return ResultUtils.success(order);
+    }
+
 
     /**
      * 获取列表（仅管理员可使用）

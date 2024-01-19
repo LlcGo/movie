@@ -2,6 +2,9 @@ package com.lc.project.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lc.project.model.entity.Purchased;
+import com.lc.project.model.vo.PurchasedVO;
+
+import java.util.List;
 
 /**
 * @author asus
@@ -9,5 +12,7 @@ import com.lc.project.model.entity.Purchased;
 * @createDate 2024-01-06 11:09:45
 */
 public interface PurchasedService extends IService<Purchased> {
+
+    List<PurchasedVO> getMyPurchased();
 
 }
