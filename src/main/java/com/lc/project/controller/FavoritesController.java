@@ -12,6 +12,7 @@ import com.lc.project.model.dto.favorites.FavoritesQueryRequest;
 import com.lc.project.model.dto.favorites.FavoritesUpdateRequest;
 import com.lc.project.model.entity.Favorites;
 import com.lc.project.model.entity.Users;
+import com.lc.project.model.vo.FavoritesVo;
 import com.lc.project.service.FavoritesService;
 import com.lc.project.service.UsersService;
 import lombok.extern.slf4j.Slf4j;
@@ -152,12 +153,11 @@ public class FavoritesController {
      * @return
      */
     @GetMapping("/list/page")
-    public BaseResponse<Page<Favorites>> listFavoritesByPage(FavoritesQueryRequest favoritesQueryRequest, HttpServletRequest request) {
+    public BaseResponse<Page<FavoritesVo>> listFavoritesByPage(FavoritesQueryRequest favoritesQueryRequest, HttpServletRequest request) {
         if (favoritesQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Page<Favorites> favoritesPage = favoritesService.listPage(favoritesQueryRequest);
+        Page<FavoritesVo> favoritesPage = favoritesService.listPage(favoritesQueryRequest);
         return ResultUtils.success(favoritesPage);
     }
-
 }

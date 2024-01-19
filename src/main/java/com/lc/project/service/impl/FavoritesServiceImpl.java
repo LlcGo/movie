@@ -1,4 +1,5 @@
 package com.lc.project.service.impl;
+import java.util.Date;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,8 +10,11 @@ import com.lc.project.exception.BusinessException;
 import com.lc.project.mapper.FavoritesMapper;
 import com.lc.project.model.dto.favorites.FavoritesQueryRequest;
 import com.lc.project.model.entity.Favorites;
+import com.lc.project.model.entity.Movie;
 import com.lc.project.model.entity.Users;
+import com.lc.project.model.vo.FavoritesVo;
 import com.lc.project.service.FavoritesService;
+import com.lc.project.service.MovieService;
 import com.lc.project.service.UsersService;
 import com.lc.project.utils.RedisUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -19,6 +23,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.lc.project.constant.CommonConstant.REDIS_FA_MOVIE;
@@ -38,6 +43,9 @@ public class FavoritesServiceImpl extends ServiceImpl<FavoritesMapper, Favorites
 
     @Resource
     private RedisUtils redisUtils;
+
+    @Resource
+    private MovieService movieService;
 
     @Override
     public void validFavorites(Favorites favorites, boolean add) {
@@ -59,7 +67,7 @@ public class FavoritesServiceImpl extends ServiceImpl<FavoritesMapper, Favorites
     }
 
     @Override
-    public Page<Favorites> listPage(FavoritesQueryRequest favoritesQueryRequest) {
+    public Page<FavoritesVo> listPage(FavoritesQueryRequest favoritesQueryRequest) {
         Favorites favoritesQuery = new Favorites();
         BeanUtils.copyProperties(favoritesQueryRequest, favoritesQuery);
         long current = favoritesQueryRequest.getCurrent();
@@ -79,7 +87,21 @@ public class FavoritesServiceImpl extends ServiceImpl<FavoritesMapper, Favorites
 //        queryWrapper.like(StringUtils.isNotBlank(content), "favoritesName", content);
         queryWrapper.orderBy(StringUtils.isNotBlank(sortField),
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
-        return this.page(new Page<>(current, size), queryWrapper);
+        Page<Favorites> page = this.page(new Page<>(current, 50), queryWrapper);
+        //获得每一个查询出来的favor给相关的影视复制
+        List<Favorites> oldFavoritesList = page.getRecords();
+        ArrayList<FavoritesVo> favoritesVos = new ArrayList<>();
+        oldFavoritesList.forEach(favorites -> {
+            FavoritesVo favoritesVo = new FavoritesVo();
+            Movie movie = movieService.getById(favorites.getMovieId());
+            BeanUtils.copyProperties(favorites,favoritesVo);
+            favoritesVo.setMovie(movie);
+            favoritesVos.add(favoritesVo);
+        });
+        Page<FavoritesVo> favoritesVoPage = new Page<>();
+        BeanUtils.copyProperties(page,favoritesVoPage);
+        favoritesVoPage.setRecords(favoritesVos);
+        return favoritesVoPage;
     }
 
     @Override

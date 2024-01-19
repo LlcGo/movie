@@ -61,7 +61,7 @@ public class MovieController {
         }
         Movie movie = new Movie();
         BeanUtils.copyProperties(movieAddRequest, movie);
-        // 校验
+        // 校验directorName
         movieService.validMovie(movie, true);
         Users loginUser = userService.getLoginUser(request);
         movie.setUserId(loginUser.getId());

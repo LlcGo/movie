@@ -13,7 +13,6 @@ public class MovieVo {
     /**
      * 电影标识Id
      */
-    @TableId(type = IdType.AUTO)
     private Integer id;
 
     /**
@@ -95,7 +94,7 @@ public class MovieVo {
     private Date updateTime;
 
     /**
-     * 电影状态 0未上架 1上架
+     * 电影状态 0未上架 1上架 2 3
      */
     private Integer state;
 
@@ -123,4 +122,9 @@ public class MovieVo {
      * favorite
      */
     private Boolean favorite;
+
+    /**
+     * 价格
+     */
+    private Integer price;
 }

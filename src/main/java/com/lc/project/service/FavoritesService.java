@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lc.project.model.dto.favorites.FavoritesQueryRequest;
 import com.lc.project.model.entity.Favorites;
+import com.lc.project.model.vo.FavoritesVo;
 
 import java.util.List;
 
@@ -26,5 +27,5 @@ public interface FavoritesService extends IService<Favorites> {
 
     List<Favorites> getListFavorites(Favorites favoritesQuery);
 
-    Page<Favorites> listPage(FavoritesQueryRequest favoritesQueryRequest);
+    Page<FavoritesVo> listPage(FavoritesQueryRequest favoritesQueryRequest);
 }

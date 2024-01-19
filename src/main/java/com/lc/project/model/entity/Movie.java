@@ -130,6 +130,10 @@ public class Movie implements Serializable {
     private String actorsName;
 
 
+    /**
+     * 电影价格
+     */
+    private Integer price;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

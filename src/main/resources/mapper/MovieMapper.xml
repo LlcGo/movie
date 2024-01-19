@@ -6,6 +6,7 @@
 
     <resultMap id="BaseResultMap" type="com.lc.project.model.entity.Movie">
             <id property="id" column="id" jdbcType="INTEGER"/>
+            <id property="price" column="price" jdbcType="INTEGER"/>
             <result property="movieName" column="movieName" jdbcType="VARCHAR"/>
             <result property="type" column="type" jdbcType="INTEGER"/>
             <result property="nation" column="nation" jdbcType="VARCHAR"/>
@@ -27,7 +28,7 @@
     <sql id="Base_Column_List">
         id,movieName,type,
         nation,year,
-        actorId,movieProfile,videoId,directorName
+        actorId,movieProfile,videoId,directorName,price,
         creatTime,updateTime,state,
         isDelete,usesrId,score,img,
         hot
