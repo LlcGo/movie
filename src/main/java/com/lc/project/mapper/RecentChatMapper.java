@@ -2,6 +2,9 @@ package com.lc.project.mapper;
 
 import com.lc.project.model.entity.RecentChat;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.lc.project.model.entity.Users;
+
+import java.util.List;
 
 /**
 * @author asus
@@ -11,6 +14,14 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface RecentChatMapper extends BaseMapper<RecentChat> {
 
+    /**
+     * 查询所有的最近的聊天信息并且获取所有的对方信息
+     * @param currentUserId
+     * @return
+     */
+    List<RecentChat> getRecentAndFriends(String currentUserId);
+
+    List<Users> getFriends(String currentUserId);
 }
 
 

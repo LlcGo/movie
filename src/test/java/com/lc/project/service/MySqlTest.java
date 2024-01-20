@@ -2,8 +2,11 @@ package com.lc.project.service;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lc.project.mapper.RecentChatMapper;
 import com.lc.project.model.dto.movie.MovieQueryRequest;
 import com.lc.project.model.entity.Movie;
+import com.lc.project.model.entity.RecentChat;
+import com.lc.project.model.entity.Users;
 import com.lc.project.model.entity.Vip;
 import com.lc.project.model.vo.MovieVo;
 import com.lc.project.service.MovieService;
@@ -28,6 +31,9 @@ public class MySqlTest {
 
     @Resource
     private VipService vipService;
+
+    @Resource
+    private RecentChatMapper recentChatMapper;
 
     @Test
     public void test(){
@@ -82,6 +88,12 @@ public class MySqlTest {
 
         vip.setOverTime(OverTime);
         vipService.save(vip);
+    }
+
+    @Test
+    public void testMapper(){
+        List<RecentChat> recentAndFriends = recentChatMapper.getRecentAndFriends("1741446004448710657");
+        System.out.println(recentAndFriends);
     }
 
 }

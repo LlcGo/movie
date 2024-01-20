@@ -1,7 +1,11 @@
 package com.lc.project.service;
 
+import com.lc.project.common.BaseResponse;
 import com.lc.project.model.entity.RecentChat;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.lc.project.model.entity.Users;
+
+import java.util.List;
 
 /**
 * @author asus
@@ -10,4 +14,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface RecentChatService extends IService<RecentChat> {
 
+    boolean addChat(String acceptUserId);
+
+    List<RecentChat> getRecentChat();
+
+
+    Boolean toDelete(String acceptUserId);
 }

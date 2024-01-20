@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+
 import lombok.Data;
 
 /**
@@ -40,6 +42,12 @@ public class RecentChat implements Serializable {
      * 
      */
     private Date updateTime;
+
+    /**
+     * 最近的朋友消息
+     */
+    @TableField(exist = false)
+    private Users recentFriends;
 
     /**
      * 
