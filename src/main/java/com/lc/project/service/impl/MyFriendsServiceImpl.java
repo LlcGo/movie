@@ -27,7 +27,7 @@ public class MyFriendsServiceImpl extends ServiceImpl<MyFriendsMapper, MyFriends
 
     public List<Users> getMyFriends(Long myUserId){
         QueryWrapper<MyFriends> myFriendsQueryWrapper = new QueryWrapper<>();
-        myFriendsQueryWrapper.eq("my_user_id",myUserId);
+        myFriendsQueryWrapper.eq("myUserId",myUserId);
         List<MyFriends> list = this.list(myFriendsQueryWrapper);
         //获得所有朋友的id
         List<String> myFriendId = list.stream().map(MyFriends::getMyFriendUserId).collect(Collectors.toList());

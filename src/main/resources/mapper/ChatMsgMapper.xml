@@ -6,18 +6,18 @@
 
     <resultMap id="BaseResultMap" type="com.lc.project.model.entity.ChatMsg">
             <id property="id" column="id" jdbcType="VARCHAR"/>
-            <result property="sendUserId" column="send_user_id" jdbcType="VARCHAR"/>
-            <result property="acceptUserId" column="accept_user_id" jdbcType="VARCHAR"/>
+            <result property="sendUserId" column="sendUserId" jdbcType="VARCHAR"/>
+            <result property="acceptUserId" column="acceptUserId" jdbcType="VARCHAR"/>
             <result property="msg" column="msg" jdbcType="VARCHAR"/>
-            <result property="sendUserId" column="sign_flag" jdbcType="INTEGER"/>
-            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="signFlag" column="signFlag" jdbcType="INTEGER"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
             <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,send_user_id,accept_user_id,
-        msg,sign_flag,create_time,
+        id,sendUserId,acceptUserId,
+        msg,signFlag,createTime,
         updateTime,isDelete
     </sql>
 </mapper>

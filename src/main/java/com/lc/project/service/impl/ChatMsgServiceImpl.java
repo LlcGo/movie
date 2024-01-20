@@ -33,14 +33,14 @@ public class ChatMsgServiceImpl extends ServiceImpl<ChatMsgMapper, ChatMsg>
     @Override
     public List<ChatMsg> getUsersChat(Long userId, Long otherUserId) {
         QueryWrapper<ChatMsg> chatMsgQueryWrapper = new QueryWrapper<>();
-        chatMsgQueryWrapper.eq("send_user_id",userId);
-        chatMsgQueryWrapper.eq("accept_user_id",otherUserId);
-        chatMsgQueryWrapper.orderByAsc("create_time");
+        chatMsgQueryWrapper.eq("sendUserId",userId);
+        chatMsgQueryWrapper.eq("acceptUserId",otherUserId);
+        chatMsgQueryWrapper.orderByAsc("createTime");
         List<ChatMsg> myChat = this.list(chatMsgQueryWrapper);
         QueryWrapper<ChatMsg> otherMsgQueryWrapper = new QueryWrapper<>();
-        otherMsgQueryWrapper.eq("send_user_id",otherUserId);
-        otherMsgQueryWrapper.eq("accept_user_id",userId);
-        otherMsgQueryWrapper.orderByAsc("create_time");
+        otherMsgQueryWrapper.eq("sendUserId",otherUserId);
+        otherMsgQueryWrapper.eq("acceptUserId",userId);
+        otherMsgQueryWrapper.orderByAsc("createTime");
         List<ChatMsg> otherChat = this.list(otherMsgQueryWrapper);
         myChat.addAll(otherChat);
         myChat =myChat.stream().sorted(Comparator.comparing(ChatMsg::getId).reversed()).collect(Collectors.toList());
@@ -50,9 +50,9 @@ public class ChatMsgServiceImpl extends ServiceImpl<ChatMsgMapper, ChatMsg>
     @Override
     public List<ChatMsg> getUnread(long sendUserId) {
         QueryWrapper<ChatMsg> chatMsgQueryWrapper = new QueryWrapper<>();
-        chatMsgQueryWrapper.eq("accept_user_id",sendUserId);
-        chatMsgQueryWrapper.eq("sign_flag",0);
-        chatMsgQueryWrapper.orderByAsc("create_time");
+        chatMsgQueryWrapper.eq("acceptUserId",sendUserId);
+        chatMsgQueryWrapper.eq("signFlag",0);
+        chatMsgQueryWrapper.orderByAsc("createTime");
         List<ChatMsg> list = this.list(chatMsgQueryWrapper);
 
         //webSocket推送信息
@@ -75,10 +75,10 @@ public class ChatMsgServiceImpl extends ServiceImpl<ChatMsgMapper, ChatMsg>
         UpdateWrapper<ChatMsg> chatMsgUpdateWrapper = new UpdateWrapper<>();
         //因为是接受消息处理信息
         //发送的id应该是对方的id
-        chatMsgUpdateWrapper.eq("send_user_id",rOtherUserId);
+        chatMsgUpdateWrapper.eq("sendUserId",rOtherUserId);
         //接受的id应该的自己的id
-        chatMsgUpdateWrapper.eq("accept_user_id",sendUserId);
-        chatMsgUpdateWrapper.set("sign_flag",1);
+        chatMsgUpdateWrapper.eq("acceptUserId",sendUserId);
+        chatMsgUpdateWrapper.set("signFlag",1);
         return this.update(chatMsgUpdateWrapper);
     }
 }

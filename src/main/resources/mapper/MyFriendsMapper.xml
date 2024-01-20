@@ -6,15 +6,15 @@
 
     <resultMap id="BaseResultMap" type="com.lc.project.model.entity.MyFriends">
             <id property="id" column="id" jdbcType="VARCHAR"/>
-            <result property="myUserId" column="my_user_id" jdbcType="VARCHAR"/>
-            <result property="myFriendUserId" column="my_friend_user_id" jdbcType="VARCHAR"/>
+            <result property="myUserId" column="myUserId" jdbcType="VARCHAR"/>
+            <result property="myFriendUserId" column="myFriendUserId" jdbcType="VARCHAR"/>
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
             <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,my_user_id,my_friend_user_id,
+        id,myUserId,myFriendUserId,
         createTime,updateTime,isDelete
     </sql>
 </mapper>
