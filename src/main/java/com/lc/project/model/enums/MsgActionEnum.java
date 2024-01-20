@@ -7,7 +7,8 @@ package com.lc.project.model.enums;
 public enum MsgActionEnum {
 	
 	CONNECT(1, "第一次(或重连)初始化连接"),
-	CHAT(2, "聊天消息"), SIGNED(3, "设置当前关系"),
+	CHAT(2, "聊天消息"),
+	SIGNED(3, "设置当前关系"),
 	KEEPALIVE(4, "客户端保持心跳"),
 	PULL_FRIEND(5, "拉取好友");
 	

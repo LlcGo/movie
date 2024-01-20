@@ -63,7 +63,7 @@ public class ChatMsgServiceImpl extends ServiceImpl<ChatMsgMapper, ChatMsg>
             DataContent dataContentMsg = new DataContent();
             dataContentMsg.setAction(6);
             dataContentMsg.setChatMsgList(list);
-            findChanel.writeAndFlush( new TextWebSocketFrame(gson.toJson(dataContentMsg)));
+            findChanel.writeAndFlush(new TextWebSocketFrame(gson.toJson(dataContentMsg)));
         }
         log.info("用户id----->" + sendUserId + "有" + list.size() + "条未读的消息");
 
