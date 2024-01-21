@@ -254,6 +254,15 @@ public class UserController {
         return ResultUtils.success(userVOPage);
     }
 
+    @PostMapping("/search/friend")
+    public BaseResponse<List<Users>> searchFriends(@RequestBody UserQueryRequest userQueryRequest, HttpServletRequest request) {
+        if (userQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        List<Users> usersList = userService.searchFriend(userQueryRequest);
+        return ResultUtils.success(usersList);
+    }
+
 
     /**
      * 利用验证码工具类 ,生成验证码，将图形返回到页面
@@ -298,21 +307,21 @@ public class UserController {
      * 验证图形验证码
      *
      * @param codeTypeEnum 验证码类别{loginCode:登录图形验证码,registerCode:注册图形验证码,forgetPwdCode:忘记密码图形验码}
-     * @para QCCode 二维码数据
      * @param request
      * @return
+     * @para QCCode 二维码数据
      */
     @PostMapping("/{codeTypeEnum}/comparePicCode")
     public BaseResponse<?> comparePicCode(@PathVariable PicCodeEnum codeTypeEnum, @RequestBody QCCode qcCode,
-                                 HttpServletRequest request) throws DataFormatException {
+                                          HttpServletRequest request) throws DataFormatException {
 //        log.debug("验证验证码");
         String codeType = codeTypeEnum.toString();
         String picCode = qcCode.getPicCode();
         String loginVerifyCodeRandom = qcCode.getLoginVerifyCodeRandom();
-        if(picCode == null){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR );
+        if (picCode == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        if(loginVerifyCodeRandom == null){
+        if (loginVerifyCodeRandom == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         // 验证路径参数
@@ -323,7 +332,7 @@ public class UserController {
         // 客户端ip
         String clientIp = WebServletUtil.getClientIpAddress(request);
         // redis中验证码的key
-        String key = CaptchaUtil.getRedisKey(codeTypeEnum, clientIp + ":"+ loginVerifyCodeRandom);
+        String key = CaptchaUtil.getRedisKey(codeTypeEnum, clientIp + ":" + loginVerifyCodeRandom);
         // 查看key是否存在
         if (!redisUtils.hasKey(key)) {
             // key不存在，返回验证码已失效

@@ -2,9 +2,11 @@ package com.lc.project.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lc.project.model.dto.user.UpdatePassWord;
+import com.lc.project.model.dto.user.UserQueryRequest;
 import com.lc.project.model.entity.Users;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author asus
@@ -66,4 +68,6 @@ public interface UsersService extends IService<Users> {
     boolean userLogout(HttpServletRequest request);
 
     boolean updatePassWord(UpdatePassWord updatePassWord);
+
+    List<Users> searchFriend(UserQueryRequest userQueryRequest);
 }

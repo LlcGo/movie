@@ -1,5 +1,7 @@
 package com.lc.project.model.dto.user;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.lc.project.common.PageRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,44 +18,69 @@ import java.util.Date;
 @Data
 public class UserQueryRequest extends PageRequest implements Serializable {
     /**
-     * id
+     *
      */
-    private Long id;
+    @TableId
+    private String id;
 
     /**
-     * 用户昵称
+     * 用户名，账号
      */
-    private String userName;
+    private String username;
 
     /**
-     * 账号
+     * 密码
      */
-    private String userAccount;
+    private String password;
 
     /**
-     * 用户头像
+     * 我的头像，如果没有默认给一张
      */
-    private String userAvatar;
+    @TableField("face_image")
+    private String faceImage;
+
+
+    /**
+     * 昵称
+     */
+    private String nickname;
 
     /**
      * 性别
      */
-    private Integer gender;
+    private String sex;
+
+    /**
+     * 喜欢的电影类型
+     */
+    private String likeType;
+
+
+    /**
+     * 个性签名
+     */
+    private String signature;
+
+    /**
+     *
+     */
+    private Date createTime;
+
+    /**
+     *
+     */
+    private Date updateTime;
+
+    /**
+     * 0 未删除 1 已删除
+     */
+    private Integer isDelete;
 
     /**
      * 用户角色: user, admin
      */
     private String userRole;
 
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
-
+    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

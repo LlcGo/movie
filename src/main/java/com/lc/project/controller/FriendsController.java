@@ -1,5 +1,6 @@
 package com.lc.project.controller;
 
+import com.github.xiaoymin.knife4j.core.util.StrUtil;
 import com.lc.project.common.BaseResponse;
 import com.lc.project.common.ErrorCode;
 import com.lc.project.common.ResultUtils;
@@ -8,6 +9,7 @@ import com.lc.project.model.entity.Users;
 import com.lc.project.service.MyFriendsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +31,15 @@ public class FriendsController {
         long myUserId = Long.parseLong(Id);
         List<Users> myFriends = myFriendsService.getMyFriends(myUserId);
         return ResultUtils.success(myFriends);
+    }
+
+    @PostMapping("/delete/myFriends")
+    public BaseResponse<Boolean> deleteMyFriend(String acceptUserId){
+        if(StrUtil.isBlank(acceptUserId)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Boolean flag = myFriendsService.deleteFriend(acceptUserId);
+        return ResultUtils.success(flag);
     }
 
 }

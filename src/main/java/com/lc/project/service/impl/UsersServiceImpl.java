@@ -1,5 +1,8 @@
 package com.lc.project.service.impl;
 
+import java.util.Date;
+
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -7,6 +10,7 @@ import com.lc.project.common.ErrorCode;
 import com.lc.project.exception.BusinessException;
 import com.lc.project.mapper.UsersMapper;
 import com.lc.project.model.dto.user.UpdatePassWord;
+import com.lc.project.model.dto.user.UserQueryRequest;
 import com.lc.project.model.entity.Users;
 import com.lc.project.service.UsersService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +23,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.List;
 
 import static com.lc.project.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -177,14 +183,26 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
         Users loginUser = getLoginUser();
         String password = loginUser.getPassword();
         String encryptPassword = DigestUtils.md5DigestAsHex((SALT + oldPassword).getBytes());
-        if (!encryptPassword.equals(password)){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"原密码不正确");
+        if (!encryptPassword.equals(password)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "原密码不正确");
         }
         UpdateWrapper<Users> usersUpdateWrapper = new UpdateWrapper<>();
         String newEncryptPassword = DigestUtils.md5DigestAsHex((SALT + newPassWord).getBytes());
-        usersUpdateWrapper.eq("id",loginUser.getId());
-        usersUpdateWrapper.set("password",newEncryptPassword);
+        usersUpdateWrapper.eq("id", loginUser.getId());
+        usersUpdateWrapper.set("password", newEncryptPassword);
         return this.update(usersUpdateWrapper);
+    }
+
+    @Override
+    public List<Users> searchFriend(UserQueryRequest userQueryRequest) {
+        String nickname = userQueryRequest.getNickname();
+        String sex = userQueryRequest.getSex();
+        String likeType = userQueryRequest.getLikeType();
+        QueryWrapper<Users> wrapper = new QueryWrapper<>();
+        wrapper.like(StrUtil.isNotBlank(nickname),"nickname",nickname);
+        wrapper.eq(StrUtil.isNotBlank(sex),"sex",sex);
+        wrapper.like(StrUtil.isNotBlank(likeType),"likeType",likeType);
+        return this.list(wrapper);
     }
 
 }

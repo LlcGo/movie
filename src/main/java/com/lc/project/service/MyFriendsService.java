@@ -14,4 +14,6 @@ import java.util.List;
 public interface MyFriendsService extends IService<MyFriends> {
 
     public List<Users> getMyFriends(Long myId);
+
+    Boolean deleteFriend(String acceptUserId);
 }

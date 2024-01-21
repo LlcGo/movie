@@ -46,6 +46,11 @@ public class MyFriends implements Serializable {
      */
     private Integer isDelete;
 
+    /**
+     * 0 正常 1 代表对方已经将你删除
+     */
+    private Integer state;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }
