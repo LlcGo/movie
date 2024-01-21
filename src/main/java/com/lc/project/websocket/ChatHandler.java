@@ -73,10 +73,10 @@ public class ChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
             });
 
             //设置当前聊天对象
-            String extand = dataContent.getExtand();
-            if(StrUtil.isNotBlank(extand)){
-                redisUtils.setCurrent(senderId,extand);
-            }
+//            String extand = dataContent.getExtand();
+//            if(StrUtil.isNotBlank(extand)){
+//                redisUtils.setCurrent(senderId,extand);
+//            }
 
             //测试
             for (Channel c: users) {

@@ -3,6 +3,8 @@ package com.lc.project.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lc.project.model.entity.FriendsRequest;
 
+import java.util.List;
+
 /**
 * @author asus
 * @description 针对表【friends_request】的数据库操作Service
@@ -10,4 +12,11 @@ import com.lc.project.model.entity.FriendsRequest;
 */
 public interface FriendsRequestService extends IService<FriendsRequest> {
 
+    Boolean requestFriends(String acceptUserId);
+
+    Boolean agreeFriend(String sendUserId, String requestId);
+
+    Boolean deleteFriend(String requestId);
+
+    List<FriendsRequest> getMyRequest();
 }

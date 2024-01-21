@@ -46,6 +46,9 @@ public class MyFriends implements Serializable {
      */
     private Integer isDelete;
 
+    @TableField(exist = false)
+    private Users otherUsers;
+
     /**
      * 0 正常 1 代表对方已经将你删除
      */

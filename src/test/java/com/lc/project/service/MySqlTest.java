@@ -2,12 +2,12 @@ package com.lc.project.service;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lc.project.mapper.ChatMsgMapper;
+import com.lc.project.mapper.FriendsRequestMapper;
+import com.lc.project.mapper.MyFriendsMapper;
 import com.lc.project.mapper.RecentChatMapper;
 import com.lc.project.model.dto.movie.MovieQueryRequest;
-import com.lc.project.model.entity.Movie;
-import com.lc.project.model.entity.RecentChat;
-import com.lc.project.model.entity.Users;
-import com.lc.project.model.entity.Vip;
+import com.lc.project.model.entity.*;
 import com.lc.project.model.vo.MovieVo;
 import com.lc.project.service.MovieService;
 import com.lc.project.service.VipService;
@@ -34,6 +34,15 @@ public class MySqlTest {
 
     @Resource
     private RecentChatMapper recentChatMapper;
+
+    @Resource
+    private FriendsRequestMapper friendsRequestMapper;
+
+    @Resource
+    private MyFriendsMapper myFriendsMapper;
+
+    @Resource
+    private ChatMsgMapper chatMsgMapper;
 
     @Test
     public void test(){
@@ -94,6 +103,24 @@ public class MySqlTest {
     public void testMapper(){
         List<RecentChat> recentAndFriends = recentChatMapper.getRecentAndFriends("1741446004448710657");
         System.out.println(recentAndFriends);
+    }
+
+    @Test
+    public void testMapper2(){
+        List<FriendsRequest> requestByUserId = friendsRequestMapper.getRequestByUserId("1743141189096329218");
+        System.out.println(requestByUserId);
+    }
+
+    @Test
+    public void testMapper3(){
+        List<MyFriends> myFriend = myFriendsMapper.getMyFriend(1741461358159978498L);
+        System.out.println(myFriend);
+    }
+
+    @Test
+    public void testMapper5(){
+        int i = chatMsgMapper.updateByMyIdAndOtherId(1741446004448710657L, 1741461358159978498L);
+        System.out.println(i);
     }
 
 }

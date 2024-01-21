@@ -20,4 +20,8 @@
         msg,signFlag,createTime,
         updateTime,isDelete
     </sql>
+<!--    处理消息反过来-->
+    <update id="updateByMyIdAndOtherId">
+        UPDATE chat_msg SET signFlag = 1 WHERE isDelete=0 AND (sendUserId = #{rOtherUserId} AND acceptUserId = #{sendUserId} AND signFlag = 0)
+    </update>
 </mapper>

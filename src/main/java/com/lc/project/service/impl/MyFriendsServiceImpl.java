@@ -28,17 +28,11 @@ public class MyFriendsServiceImpl extends ServiceImpl<MyFriendsMapper, MyFriends
     @Resource
     private UsersService usersService;
 
-    public List<Users> getMyFriends(Long myUserId){
-        QueryWrapper<MyFriends> myFriendsQueryWrapper = new QueryWrapper<>();
-        myFriendsQueryWrapper.eq("myUserId",myUserId);
-        List<MyFriends> list = this.list(myFriendsQueryWrapper);
-        //获得所有朋友的id
-        List<String> myFriendId = list.stream().map(MyFriends::getMyFriendUserId).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(myFriendId)){
-            return new ArrayList<Users>();
-        }
-        //查询所有朋友的信息
-        return usersService.listByIds(myFriendId);
+    @Resource
+    private MyFriendsMapper friendsMapper;
+
+    public List<MyFriends> getMyFriends(Long myUserId){
+        return friendsMapper.getMyFriend(myUserId);
     }
 
     @Override

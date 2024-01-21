@@ -13,7 +13,7 @@ import java.util.List;
 */
 public interface MyFriendsService extends IService<MyFriends> {
 
-    public List<Users> getMyFriends(Long myId);
+    public List<MyFriends> getMyFriends(Long myId);
 
     Boolean deleteFriend(String acceptUserId);
 }

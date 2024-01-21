@@ -11,6 +11,7 @@ import com.lc.project.model.entity.ChatMsg;
 */
 public interface ChatMsgMapper extends BaseMapper<ChatMsg> {
 
+    int updateByMyIdAndOtherId(long sendUserId, long rOtherUserId);
 }
 
 

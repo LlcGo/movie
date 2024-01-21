@@ -6,17 +6,43 @@
 
     <resultMap id="BaseResultMap" type="com.lc.project.model.entity.FriendsRequest">
             <id property="id" column="id" jdbcType="VARCHAR"/>
-            <result property="sendUserId" column="send_user_id" jdbcType="VARCHAR"/>
-            <result property="acceptUserId" column="accept_user_id" jdbcType="VARCHAR"/>
-            <result property="requestDateTime" column="request_date_time" jdbcType="TIMESTAMP"/>
+            <result property="sendUserId" column="sendUserId" jdbcType="VARCHAR"/>
+            <result property="acceptUserId" column="acceptUserId" jdbcType="VARCHAR"/>
+            <result property="requestDateTime" column="requestDateTime" jdbcType="TIMESTAMP"/>
             <result property="creatTime" column="creatTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
             <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+            <result property="state" column="state" jdbcType="INTEGER"/>
+            <association property="otherUsers"   javaType="com.lc.project.model.entity.Users" >
+                <id property="id" column="acceptUserId" jdbcType="VARCHAR"/>
+                <result property="username" column="username" jdbcType="VARCHAR"/>
+                <result property="faceImage" column="face_image" jdbcType="VARCHAR"/>
+                <result property="signature" column="signature" jdbcType="VARCHAR"/>
+                <result property="sex" column="sex" jdbcType="VARCHAR"/>
+                <result property="likeType" column="likeType" jdbcType="VARCHAR"/>
+                <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+                <result property="userRole" column="userRole" jdbcType="VARCHAR"/>
+                <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+                <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+                <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+            </association>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,send_user_id,accept_user_id,
-        request_date_time,creatTime,updateTime,
+        request_date_time,creatTime,updateTime,state,
         isDelete
     </sql>
+
+    <select id="getRequestByUserId" resultMap="BaseResultMap">
+        select f.*,u.* from friends_request f
+            left join users u on f.acceptUserId = u.id
+                 where f.isDelete = 0 and f.sendUserId = #{currentUserId}
+    </select>
+
+    <select id="getReceiveByUserId" resultMap="BaseResultMap">
+        select f.*, u.* from friends_request f
+                                 left join users u on f.sendUserId = u.id
+        where f.isDelete = 0 and f.acceptUserId = #{currentUserId}
+    </select>
 </mapper>

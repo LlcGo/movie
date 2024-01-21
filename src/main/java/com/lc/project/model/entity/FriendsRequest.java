@@ -38,6 +38,11 @@ public class FriendsRequest implements Serializable {
 
 
     /**
+     * 0 发送请求 ， 1 拒绝请求 ，2 同意请求
+     */
+    private Integer state;
+
+    /**
      *
      */
     private Date creatTime;
@@ -46,6 +51,9 @@ public class FriendsRequest implements Serializable {
      *
      */
     private Date updateTime;
+
+    @TableField(exist = false)
+    private Users otherUsers;
 
     /**
      *

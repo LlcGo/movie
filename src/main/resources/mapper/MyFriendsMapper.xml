@@ -11,10 +11,27 @@
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
             <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+            <result property="state" column="state" jdbcType="INTEGER"/>
+        <association property="otherUsers"   javaType="com.lc.project.model.entity.Users" >
+            <id property="id" column="myFriendUserId" jdbcType="VARCHAR"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="faceImage" column="face_image" jdbcType="VARCHAR"/>
+            <result property="signature" column="signature" jdbcType="VARCHAR"/>
+            <result property="sex" column="sex" jdbcType="VARCHAR"/>
+            <result property="likeType" column="likeType" jdbcType="VARCHAR"/>
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="userRole" column="userRole" jdbcType="VARCHAR"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+        </association>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,myUserId,myFriendUserId,
+        id,myUserId,myFriendUserId,state,
         createTime,updateTime,isDelete
     </sql>
+    <select id="getMyFriend" resultMap="BaseResultMap">
+        select m.*,u.* from my_friends m left join users u on m.myFriendUserId = u.id  where myUserId = #{myUserId} and m.isDelete = 0
+    </select>
 </mapper>

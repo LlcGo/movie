@@ -14,6 +14,8 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +31,10 @@ import static com.lc.project.websocket.ChatHandler.users;
 @Service
 public class ChatMsgServiceImpl extends ServiceImpl<ChatMsgMapper, ChatMsg>
     implements ChatMsgService{
+
+
+    @Resource
+    private ChatMsgMapper chatMsgMapper;
 
     @Override
     public List<ChatMsg> getUsersChat(Long userId, Long otherUserId) {
@@ -66,20 +72,26 @@ public class ChatMsgServiceImpl extends ServiceImpl<ChatMsgMapper, ChatMsg>
             findChanel.writeAndFlush(new TextWebSocketFrame(gson.toJson(dataContentMsg)));
         }
         log.info("用户id----->" + sendUserId + "有" + list.size() + "条未读的消息");
-
         return list;
     }
 
     @Override
     public Boolean readMessage(long sendUserId, long rOtherUserId) {
-        UpdateWrapper<ChatMsg> chatMsgUpdateWrapper = new UpdateWrapper<>();
         //因为是接受消息处理信息
         //发送的id应该是对方的id
-        chatMsgUpdateWrapper.eq("sendUserId",rOtherUserId);
-        //接受的id应该的自己的id
-        chatMsgUpdateWrapper.eq("acceptUserId",sendUserId);
-        chatMsgUpdateWrapper.set("signFlag",1);
-        return this.update(chatMsgUpdateWrapper);
+        int size = chatMsgMapper.updateByMyIdAndOtherId(sendUserId,rOtherUserId);
+        //webSocket推送信息
+        Channel channel = UserChanelRel.get(String.valueOf(sendUserId));
+        Channel findChanel = users.find(channel.id());
+        Gson gson = new Gson();
+        if (findChanel != null){
+            DataContent dataContentMsg = new DataContent();
+            dataContentMsg.setAction(6);
+            dataContentMsg.setChatMsgList(new ArrayList<>());
+            dataContentMsg.setExtand("look:" + size);
+            findChanel.writeAndFlush(new TextWebSocketFrame(gson.toJson(dataContentMsg)));
+        }
+        return size >= 0;
     }
 }
 
