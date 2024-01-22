@@ -51,11 +51,11 @@ public class FriendsRequestController {
     }
 
     @PostMapping("/reject/Friends")
-    public BaseResponse<Boolean> rejectFriend(String requestId){
+    public BaseResponse<Boolean> rejectFriend(String requestId,String acceptUserId){
         if(StrUtil.isBlank(requestId)){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Boolean flag = friendsRequestService.deleteFriend(requestId);
+        Boolean flag = friendsRequestService.rejectFriend(requestId,acceptUserId);
         return ResultUtils.success(flag);
     }
 
@@ -63,6 +63,12 @@ public class FriendsRequestController {
     public BaseResponse<List<FriendsRequest>> getMyRequest(){
         List<FriendsRequest> friendsRequestList = friendsRequestService.getMyRequest();
         return ResultUtils.success(friendsRequestList);
+    }
+
+    @GetMapping("/setReadMessage")
+    public BaseResponse<Integer> setReadMessage(){
+        Integer count = friendsRequestService.setReadMessage();
+        return ResultUtils.success(count);
     }
 
 }

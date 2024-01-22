@@ -19,4 +19,14 @@ public interface FriendsRequestService extends IService<FriendsRequest> {
     Boolean deleteFriend(String requestId);
 
     List<FriendsRequest> getMyRequest();
+
+    /**
+     * 拒绝请求
+     * @param requestId
+     * @param acceptUserId
+     * @return
+     */
+    Boolean rejectFriend(String requestId, String acceptUserId);
+
+    Integer setReadMessage();
 }

@@ -22,6 +22,8 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @SpringBootTest
 public class MySqlTest {
@@ -121,6 +123,26 @@ public class MySqlTest {
     public void testMapper5(){
         int i = chatMsgMapper.updateByMyIdAndOtherId(1741446004448710657L, 1741461358159978498L);
         System.out.println(i);
+    }
+
+    @Test
+    public void testMapper6(){
+        CompletableFuture<Integer> future01 = CompletableFuture.supplyAsync(() -> {
+            return friendsRequestMapper.updateRequestMessageToOne("1741461358159978498");
+        });
+        CompletableFuture<Integer> future02 = CompletableFuture.supplyAsync(() -> {
+            return friendsRequestMapper.updateRequestMessageToTwo("1741461358159978498");
+        });
+        int count;
+        try {
+            Integer integer = future01.get();
+            Integer integer1 = future02.get();
+            count = integer + integer1;
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println(count);
+
     }
 
 }

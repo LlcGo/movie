@@ -22,10 +22,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static com.lc.project.websocket.ChatHandler.threadPoolExecutor;
@@ -52,6 +51,7 @@ public class FriendsRequestServiceImpl extends ServiceImpl<FriendsRequestMapper,
     @Resource
     private FriendsRequestMapper friendsRequestMapper;
 
+
     @Override
     public Boolean requestFriends(String acceptUserId) {
         FriendsRequest friendsRequest = new FriendsRequest();
@@ -68,15 +68,18 @@ public class FriendsRequestServiceImpl extends ServiceImpl<FriendsRequestMapper,
 
         //webSocket推送信息
         Channel channel = UserChanelRel.get(String.valueOf(acceptUserId));
-        Channel findChanel = users.find(channel.id());
-        Gson gson = new Gson();
         //如果对方在线
-        if (findChanel != null){
-            DataContent dataContentMsg = new DataContent();
-            dataContentMsg.setAction(6);
-            dataContentMsg.setExtand("对方的好友请求:1");
-            findChanel.writeAndFlush(new TextWebSocketFrame(gson.toJson(dataContentMsg)));
+        if (channel != null){
+            Channel findChanel = users.find(channel.id());
+            Gson gson = new Gson();
+            if (findChanel != null){
+                DataContent dataContentMsg = new DataContent();
+                dataContentMsg.setAction(6);
+                dataContentMsg.setExtand("对方的好友请求:1");
+                findChanel.writeAndFlush(new TextWebSocketFrame(gson.toJson(dataContentMsg)));
+            }
         }
+
 
         friendsRequest.setSendUserId(id);
         return this.save(friendsRequest);
@@ -85,7 +88,29 @@ public class FriendsRequestServiceImpl extends ServiceImpl<FriendsRequestMapper,
     @Override
     public Boolean agreeFriend(String sendUserId, String requestId) {
         FriendsRequest friendsRequest = new FriendsRequest();
-        friendsRequest.setState(2);
+        Channel channel = UserChanelRel.get(sendUserId);
+        //如果现在对方在线
+        if(channel != null){
+            Channel findChanel = users.find(channel.id());
+            Gson gson = new Gson();
+            if (findChanel != null){
+                DataContent dataContentMsg = new DataContent();
+                dataContentMsg.setAction(6);
+                dataContentMsg.setChatMsgList(new ArrayList<>());
+                dataContentMsg.setExtand("nowMessageRequest:" + 1);
+                findChanel.writeAndFlush(new TextWebSocketFrame(gson.toJson(dataContentMsg)));
+                //如果对方在线我们同意了设置为 6
+                friendsRequest.setState(6);
+            }else {
+                //如果我们不在线的时候同意设置为 4
+                friendsRequest.setState(4);
+            }
+        }else {
+            //如果我们不在线的时候同意设置为 4
+            friendsRequest.setState(4);
+        }
+
+
         Users loginUser = usersService.getLoginUser();
         String currentId = loginUser.getId();
         friendsRequest.setId(requestId);
@@ -126,15 +151,22 @@ public class FriendsRequestServiceImpl extends ServiceImpl<FriendsRequestMapper,
                 myFriendsService.save(myFriends1);
             }
         });
+
+
+
+
         return this.updateById(friendsRequest);
     }
 
+
     @Override
     public Boolean deleteFriend(String requestId) {
-        FriendsRequest friendsRequest = new FriendsRequest();
-        friendsRequest.setState(2);
-        friendsRequest.setId(requestId);
-        return this.updateById(friendsRequest);
+//        FriendsRequest friendsRequest = new FriendsRequest();
+//        friendsRequest.setState(2);
+//        friendsRequest.setId(requestId);
+//
+//        return this.updateById(friendsRequest);
+        return null;
     }
 
     @Override
@@ -150,6 +182,70 @@ public class FriendsRequestServiceImpl extends ServiceImpl<FriendsRequestMapper,
         return requests.stream()
                 .sorted(Comparator.comparing(FriendsRequest::getRequestDateTime).reversed())
                 .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public Boolean rejectFriend(String requestId, String acceptUserId) {
+        //设置为拒绝
+        FriendsRequest friendsRequest = new FriendsRequest();
+
+        Channel channel = UserChanelRel.get(acceptUserId);
+        //如果对方在
+        if(channel != null){
+            Channel findChanel = users.find(channel.id());
+            Gson gson = new Gson();
+            if (findChanel != null){
+                //在线
+                DataContent dataContentMsg = new DataContent();
+                dataContentMsg.setAction(6);
+                dataContentMsg.setChatMsgList(new ArrayList<>());
+                dataContentMsg.setExtand("nowMessageRequest:" + 1);
+                findChanel.writeAndFlush(new TextWebSocketFrame(gson.toJson(dataContentMsg)));
+                //对方在线的时候state设置 拒绝 1
+                friendsRequest.setState(5);
+            }else {
+                //不在的时候拒绝设置为 3
+                friendsRequest.setState(3);
+            }
+        }else {
+            //不在线 3
+            friendsRequest.setState(3);
+        }
+
+        friendsRequest.setId(requestId);
+
+        return this.updateById(friendsRequest);
+    }
+
+    @Override
+    public Integer setReadMessage() {
+        Users loginUser = usersService.getLoginUser();
+        String currentId = loginUser.getId();
+        CompletableFuture<Integer> future01 = CompletableFuture.supplyAsync(() -> {
+            return friendsRequestMapper.updateRequestMessageToOne(currentId);
+        });
+        CompletableFuture<Integer> future02 = CompletableFuture.supplyAsync(() -> {
+            return friendsRequestMapper.updateRequestMessageToTwo(currentId);
+        });
+
+        CompletableFuture<Integer> future03 = CompletableFuture.supplyAsync(() -> {
+            return friendsRequestMapper.updateRequestLineToOne(currentId);
+        });
+        CompletableFuture<Integer> future04 = CompletableFuture.supplyAsync(() -> {
+            return friendsRequestMapper.updateRequestLineToTwo(currentId);
+        });
+        int count;
+        try {
+            Integer integer = future01.get();
+            Integer integer1 = future02.get();
+            Integer integer2 = future03.get();
+            Integer integer3 = future04.get();
+            count = integer + integer1 + integer2 + integer3;
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        return count;
     }
 }
 

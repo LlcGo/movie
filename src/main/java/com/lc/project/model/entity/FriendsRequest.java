@@ -38,7 +38,8 @@ public class FriendsRequest implements Serializable {
 
 
     /**
-     * 0 发送请求 ， 1 拒绝请求 ，2 同意请求
+     * 0 发送请求 ， 1 拒绝请求 ，2 同意请求， 3 对方不在线的时候的拒绝
+     * 4，对方不在线的时候的同意，5,对方在线的时候拒绝请求，6，对方在线的时候同意请求
      */
     private Integer state;
 

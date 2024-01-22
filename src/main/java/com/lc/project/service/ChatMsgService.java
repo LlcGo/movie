@@ -20,4 +20,6 @@ public interface ChatMsgService extends IService<ChatMsg> {
     Boolean readMessage(long sendUserId, long rOtherUserId);
 
     boolean saveAndSetRecent(ChatMsg chatMsg);
+
+    void getUnreadMessage(String senderId);
 }

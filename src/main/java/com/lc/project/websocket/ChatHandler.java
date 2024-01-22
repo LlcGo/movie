@@ -69,7 +69,10 @@ public class ChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
             UserChanelRel.put(senderId,channel);
             //新启一个线程，在连接的时候查看这个用户有多少条未读的信息
             threadPoolExecutor.execute(()->{
+                //未读取的聊天消息
                 chatMsgService.getUnread(Long.parseLong(senderId));
+                //未读取的请求消息
+                chatMsgService.getUnreadMessage(senderId);
             });
 
             //设置当前聊天对象

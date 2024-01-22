@@ -16,6 +16,24 @@ public interface FriendsRequestMapper extends BaseMapper<FriendsRequest> {
     List<FriendsRequest> getRequestByUserId(String currentUserId);
 
     List<FriendsRequest> getReceiveByUserId(String currentUserId);
+
+    /**
+     * 设置关于用户的所有的之前离线未读到拒绝的消息 为 1
+     * @param currentId
+     * @return
+     */
+    Integer updateRequestMessageToOne(String currentId);
+
+    /**
+     * 设置关于用户的所有的之前离线未读到同意的消息 为 2
+     * @param currentId
+     * @return
+     */
+    Integer updateRequestMessageToTwo(String currentId);
+
+    Integer updateRequestLineToOne(String currentId);
+
+    Integer updateRequestLineToTwo(String currentId);
 }
 
 

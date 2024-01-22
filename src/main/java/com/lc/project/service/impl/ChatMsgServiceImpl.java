@@ -8,8 +8,10 @@ import com.lc.project.mapper.ChatMsgMapper;
 import com.lc.project.model.dto.netty.DataContent;
 import com.lc.project.model.dto.netty.UserChanelRel;
 import com.lc.project.model.entity.ChatMsg;
+import com.lc.project.model.entity.FriendsRequest;
 import com.lc.project.model.entity.RecentChat;
 import com.lc.project.service.ChatMsgService;
+import com.lc.project.service.FriendsRequestService;
 import com.lc.project.service.RecentChatService;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -40,6 +42,9 @@ public class ChatMsgServiceImpl extends ServiceImpl<ChatMsgMapper, ChatMsg>
 
     @Resource
     private RecentChatService recentChatService;
+
+    @Resource
+    private FriendsRequestService friendsRequestService;
 
     @Override
     public List<ChatMsg> getUsersChat(Long userId, Long otherUserId) {
@@ -114,6 +119,27 @@ public class ChatMsgServiceImpl extends ServiceImpl<ChatMsgMapper, ChatMsg>
             recentChatService.save(recentChat);
         }
         return this.save(chatMsg);
+    }
+
+    @Override
+    public void getUnreadMessage(String senderId) {
+        QueryWrapper<FriendsRequest> friendsRequestQueryWrapper = new QueryWrapper<>();
+        friendsRequestQueryWrapper.eq("sendUserId",senderId);
+        friendsRequestQueryWrapper.in("state",0,3,4,5,6);
+        //未读取的对方发送的请求消息
+        long count = friendsRequestService.count(friendsRequestQueryWrapper);
+
+
+        Channel channel = UserChanelRel.get(senderId);
+        Channel findChanel = users.find(channel.id());
+        Gson gson = new Gson();
+        if (findChanel != null){
+            DataContent dataContentMsg = new DataContent();
+            dataContentMsg.setAction(6);
+            dataContentMsg.setChatMsgList(new ArrayList<>());
+            dataContentMsg.setExtand("messageRequest:" + count);
+            findChanel.writeAndFlush(new TextWebSocketFrame(gson.toJson(dataContentMsg)));
+        }
     }
 }
 

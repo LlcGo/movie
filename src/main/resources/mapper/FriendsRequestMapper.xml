@@ -34,6 +34,19 @@
         isDelete
     </sql>
 
+    <update id="updateRequestMessageToOne">
+        update friends_request set state = 1 where sendUserId = #{currentId} and isDelete = 0 and state = 3
+    </update>
+    <update id="updateRequestMessageToTwo">
+        update friends_request set state = 2 where sendUserId = #{currentId} and isDelete = 0 and state = 4
+    </update>
+    <update id="updateRequestLineToOne">
+        update friends_request set state = 1 where sendUserId = #{currentId} and isDelete = 0 and state = 5
+    </update>
+    <update id="updateRequestLineToTwo">
+        update friends_request set state = 2 where sendUserId = #{currentId} and isDelete = 0 and state = 6
+    </update>
+
     <select id="getRequestByUserId" resultMap="BaseResultMap">
         select f.*,u.* from friends_request f
             left join users u on f.acceptUserId = u.id
