@@ -95,7 +95,7 @@ public class ChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
             if(redisUtils.isCurrentChat(senderId,receiverId)){
                 chatMsg.setSignFlag(1);
             }
-            boolean save = chatMsgService.save(chatMsg);
+            boolean save = chatMsgService.saveAndSetRecent(chatMsg);
             chatMsg.setId(chatMsg.getId());
             DataContent dataContentMsg = new DataContent();
             dataContentMsg.setChatMsg(chatMsg);

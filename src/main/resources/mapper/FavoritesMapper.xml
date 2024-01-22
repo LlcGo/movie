@@ -17,4 +17,5 @@
         id,userId,movieId,
         createTime,updateTime,isDelete
     </sql>
+
 </mapper>

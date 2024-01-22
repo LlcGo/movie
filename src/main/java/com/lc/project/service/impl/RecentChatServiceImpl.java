@@ -10,6 +10,7 @@ import com.lc.project.model.entity.Users;
 import com.lc.project.service.RecentChatService;
 import com.lc.project.mapper.RecentChatMapper;
 import com.lc.project.service.UsersService;
+import com.lc.project.utils.RedisUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,6 +30,9 @@ public class RecentChatServiceImpl extends ServiceImpl<RecentChatMapper, RecentC
 
     @Resource
     private RecentChatMapper recentChatMapper;
+
+    @Resource
+    private RedisUtils redisUtils;
 
     @Override
     public boolean addChat(String acceptUserId) {
@@ -66,6 +70,7 @@ public class RecentChatServiceImpl extends ServiceImpl<RecentChatMapper, RecentC
         QueryWrapper<RecentChat> recentChatQueryWrapper = new QueryWrapper<>();
         recentChatQueryWrapper.eq("userId",loginUser.getId());
         recentChatQueryWrapper.eq("acceptUserId",acceptUserId);
+        redisUtils.removeCurrent(loginUser.getId());
         return this.remove(recentChatQueryWrapper);
     }
 

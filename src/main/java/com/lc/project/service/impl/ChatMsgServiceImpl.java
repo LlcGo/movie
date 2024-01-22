@@ -8,7 +8,9 @@ import com.lc.project.mapper.ChatMsgMapper;
 import com.lc.project.model.dto.netty.DataContent;
 import com.lc.project.model.dto.netty.UserChanelRel;
 import com.lc.project.model.entity.ChatMsg;
+import com.lc.project.model.entity.RecentChat;
 import com.lc.project.service.ChatMsgService;
+import com.lc.project.service.RecentChatService;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +37,9 @@ public class ChatMsgServiceImpl extends ServiceImpl<ChatMsgMapper, ChatMsg>
 
     @Resource
     private ChatMsgMapper chatMsgMapper;
+
+    @Resource
+    private RecentChatService recentChatService;
 
     @Override
     public List<ChatMsg> getUsersChat(Long userId, Long otherUserId) {
@@ -92,6 +97,23 @@ public class ChatMsgServiceImpl extends ServiceImpl<ChatMsgMapper, ChatMsg>
             findChanel.writeAndFlush(new TextWebSocketFrame(gson.toJson(dataContentMsg)));
         }
         return size >= 0;
+    }
+
+    @Override
+    public boolean saveAndSetRecent(ChatMsg chatMsg) {
+        String sendUserId = chatMsg.getSendUserId();
+        String acceptUserId = chatMsg.getAcceptUserId();
+        QueryWrapper<RecentChat> recentChatQueryWrapper = new QueryWrapper<>();
+        recentChatQueryWrapper.eq("userId",acceptUserId);
+        recentChatQueryWrapper.eq("acceptUserId",sendUserId);
+        long count = recentChatService.count(recentChatQueryWrapper);
+        if(count == 0){
+            RecentChat recentChat = new RecentChat();
+            recentChat.setUserId(acceptUserId);
+            recentChat.setAcceptUserId(sendUserId);
+            recentChatService.save(recentChat);
+        }
+        return this.save(chatMsg);
     }
 }
 

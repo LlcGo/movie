@@ -40,7 +40,13 @@ public class RedisUtils {
     }
 
     public void removeCurrent(String currentId) {
-        redisTemplate.opsForHash().delete("userCurrent",currentId);
+        if(hasCurrent(currentId)){
+            redisTemplate.opsForHash().delete("userCurrent",currentId);
+        }
+    }
+
+    public boolean hasCurrent(String currentId){
+      return  redisTemplate.opsForHash().hasKey("userCurrent",currentId);
     }
 
     public Set<String> keys(String keys) {

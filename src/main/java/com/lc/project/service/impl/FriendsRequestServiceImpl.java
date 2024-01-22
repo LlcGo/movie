@@ -3,24 +3,33 @@ package com.lc.project.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.gson.Gson;
 import com.lc.project.common.ErrorCode;
 import com.lc.project.exception.BusinessException;
 import com.lc.project.mapper.FriendsRequestMapper;
+import com.lc.project.model.dto.netty.DataContent;
+import com.lc.project.model.dto.netty.UserChanelRel;
 import com.lc.project.model.entity.FriendsRequest;
 import com.lc.project.model.entity.MyFriends;
 import com.lc.project.model.entity.Users;
 import com.lc.project.service.FriendsRequestService;
 import com.lc.project.service.MyFriendsService;
 import com.lc.project.service.UsersService;
+import com.lc.project.utils.RedisUtils;
+import io.netty.channel.Channel;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.lc.project.websocket.ChatHandler.threadPoolExecutor;
+import static com.lc.project.websocket.ChatHandler.users;
 
 /**
 * @author asus
@@ -30,6 +39,9 @@ import static com.lc.project.websocket.ChatHandler.threadPoolExecutor;
 @Service
 public class FriendsRequestServiceImpl extends ServiceImpl<FriendsRequestMapper, FriendsRequest>
     implements FriendsRequestService{
+
+    @Resource
+    private RedisUtils redisUtils;
 
     @Resource
     private UsersService usersService;
@@ -53,6 +65,19 @@ public class FriendsRequestServiceImpl extends ServiceImpl<FriendsRequestMapper,
         if(count > 0){
             throw new BusinessException(ErrorCode.OPERATION_ERROR,"您已发送请求,请稍后");
         }
+
+        //webSocket推送信息
+        Channel channel = UserChanelRel.get(String.valueOf(acceptUserId));
+        Channel findChanel = users.find(channel.id());
+        Gson gson = new Gson();
+        //如果对方在线
+        if (findChanel != null){
+            DataContent dataContentMsg = new DataContent();
+            dataContentMsg.setAction(6);
+            dataContentMsg.setExtand("对方的好友请求:1");
+            findChanel.writeAndFlush(new TextWebSocketFrame(gson.toJson(dataContentMsg)));
+        }
+
         friendsRequest.setSendUserId(id);
         return this.save(friendsRequest);
     }
@@ -116,6 +141,7 @@ public class FriendsRequestServiceImpl extends ServiceImpl<FriendsRequestMapper,
     public List<FriendsRequest> getMyRequest() {
         Users loginUser = usersService.getLoginUser();
         String currentUserId = loginUser.getId();
+        redisUtils.removeCurrent(currentUserId);
         //获得我发送的消息
         //我接受的消息
         List<FriendsRequest> receives = friendsRequestMapper.getReceiveByUserId(currentUserId);

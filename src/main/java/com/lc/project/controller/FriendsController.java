@@ -8,6 +8,8 @@ import com.lc.project.exception.BusinessException;
 import com.lc.project.model.entity.MyFriends;
 import com.lc.project.model.entity.Users;
 import com.lc.project.service.MyFriendsService;
+import com.lc.project.service.UsersService;
+import com.lc.project.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +25,12 @@ public class FriendsController {
 
     @Resource
     private MyFriendsService myFriendsService;
+
+    @Resource
+    private UsersService usersService;
+
+    @Resource
+    private RedisUtils redisUtils;
 
     @GetMapping("/get/myFriends")
     public BaseResponse<List<MyFriends>> getMyFriends(@RequestParam("userId") String Id){
@@ -41,6 +49,12 @@ public class FriendsController {
         }
         Boolean flag = myFriendsService.deleteFriend(acceptUserId);
         return ResultUtils.success(flag);
+    }
+
+    @PostMapping("/removeCurrent")
+    public void removeCurrent(){
+        Users loginUser = usersService.getLoginUser();
+        redisUtils.removeCurrent(loginUser.getId());
     }
 
 
