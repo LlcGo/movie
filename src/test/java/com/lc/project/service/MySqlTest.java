@@ -1,7 +1,10 @@
 package com.lc.project.service;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.lc.project.mapper.ChatMsgMapper;
 import com.lc.project.mapper.FriendsRequestMapper;
 import com.lc.project.mapper.MyFriendsMapper;
@@ -45,6 +48,9 @@ public class MySqlTest {
 
     @Resource
     private ChatMsgMapper chatMsgMapper;
+
+    @Resource
+    private UsersService usersService;
 
     @Test
     public void test(){
@@ -142,7 +148,15 @@ public class MySqlTest {
             throw new RuntimeException(e);
         }
         System.out.println(count);
+    }
 
+    @Test
+    public void testMapper7(){
+        List<Users> userList = usersService.list();
+        String tags = userList.get(3).getLikeType();
+        Gson gson = new Gson();
+        List<String> tagList = gson.fromJson(tags, new TypeToken<List<String>>() {
+        }.getType());
     }
 
 }

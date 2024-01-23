@@ -211,6 +211,7 @@ public class UserController {
      */
     @GetMapping("/list")
     public BaseResponse<List<UserVo>> listUser(UserQueryRequest userQueryRequest, HttpServletRequest request) {
+
         Users userQuery = new Users();
         if (userQueryRequest != null) {
             BeanUtils.copyProperties(userQueryRequest, userQuery);
@@ -350,4 +351,12 @@ public class UserController {
             return ResultUtils.error(ErrorCode.QC_CODE_ERROR);
         }
     }
+
+    @GetMapping("/matchFriend")
+    public BaseResponse<List<Users>> matchFriend(Integer num, HttpServletRequest request) {
+        Users loginUser = userService.getLoginUser(request);
+        List<Users> usersList = userService.matchUsers(num, loginUser);
+        return ResultUtils.success(usersList);
+    }
+
 }

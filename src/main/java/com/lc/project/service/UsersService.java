@@ -70,4 +70,6 @@ public interface UsersService extends IService<Users> {
     boolean updatePassWord(UpdatePassWord updatePassWord);
 
     List<Users> searchFriend(UserQueryRequest userQueryRequest);
+
+    List<Users> matchUsers(Integer num, Users loginUser);
 }

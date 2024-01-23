@@ -1,20 +1,27 @@
 package com.lc.project.service.impl;
 
-import java.util.Date;
+import java.util.*;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.lc.project.common.ErrorCode;
 import com.lc.project.exception.BusinessException;
 import com.lc.project.mapper.UsersMapper;
 import com.lc.project.model.dto.user.UpdatePassWord;
 import com.lc.project.model.dto.user.UserQueryRequest;
+import com.lc.project.model.entity.MyFriends;
 import com.lc.project.model.entity.Users;
+import com.lc.project.service.MyFriendsService;
 import com.lc.project.service.UsersService;
+import com.lc.project.utils.Aig;
+import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.context.request.RequestAttributes;
@@ -24,7 +31,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.lc.project.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -39,6 +46,10 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
         implements UsersService {
     @Resource
     private UsersMapper userMapper;
+
+    @Resource
+    @Lazy
+    private MyFriendsService myFriendsService;
 
     /**
      * 盐值，混淆密码
@@ -121,6 +132,8 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
      */
     @Override
     public Users getLoginUser(HttpServletRequest request) {
+        String id = request.getSession().getId();
+        System.out.println(id);
         // 先判断是否已登录
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
         Users currentUser = (Users) userObj;
@@ -197,12 +210,87 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
     public List<Users> searchFriend(UserQueryRequest userQueryRequest) {
         String nickname = userQueryRequest.getNickname();
         String sex = userQueryRequest.getSex();
-        String likeType = userQueryRequest.getLikeType();
+//        String likeType = userQueryRequest.getLikeType();
         QueryWrapper<Users> wrapper = new QueryWrapper<>();
         wrapper.like(StrUtil.isNotBlank(nickname),"nickname",nickname);
         wrapper.eq(StrUtil.isNotBlank(sex),"sex",sex);
-        wrapper.like(StrUtil.isNotBlank(likeType),"likeType",likeType);
-        return this.list(wrapper);
+//        wrapper.like(StrUtil.isNotBlank(likeType),"likeType",likeType);
+        Users loginUser = getLoginUser();
+        String id = loginUser.getId();
+        //过滤掉自己 还有朋友
+        wrapper.ne("id",id);
+        List<MyFriends> list = myFriendsService.getMyFriends(Long.parseLong(id));
+
+        //我的每一个朋友的id
+        List<String> myFriendIds = list.stream().map(myFriends -> {
+            Users otherUsers = myFriends.getOtherUsers();
+            return otherUsers.getId();
+        }).collect(Collectors.toList());
+
+
+        List<Users> search = this.list(wrapper);
+
+        return search.stream().filter(searchUser -> {
+            //每一个准备过滤的用户id
+            String id1 = searchUser.getId();
+            //我的朋友的id
+            return !myFriendIds.contains(id1);
+        }).collect(Collectors.toList());
+    }
+
+
+
+    @Override
+    public List<Users> matchUsers(Integer num, Users loginUser) {
+        QueryWrapper<Users> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("id","likeType");
+        queryWrapper.isNotNull("likeType");
+        List<Users> userList = this.list(queryWrapper);
+        String tags = loginUser.getLikeType();
+        Gson gson = new Gson();
+        List<String> tagList = gson.fromJson(tags, new TypeToken<List<String>>() {
+        }.getType());
+        //long 为 分数
+        ArrayList<Pair<Users,Long>> list = new ArrayList<>();
+        for (Users user : userList) {
+            String tagUser = user.getLikeType();
+            if (StringUtils.isBlank(tagUser) || Objects.equals(loginUser.getId(), user.getId())) {
+                continue;
+            }
+            List<String> userTagLists = gson.fromJson(tagUser, new TypeToken<List<String>>() {
+            }.getType());
+            long distance = Aig.minDistance(tagList, userTagLists);
+            list.add(new Pair<>(user, distance));
+        }
+        List<Pair<Users, Long>> pairList = list.stream()
+                .sorted((a, b) -> (int) (a.getValue() - b.getValue()))
+                .limit(num)
+                .collect(Collectors.toList());
+        //取出每个用户的id 进行查询
+        List<String> userIds = pairList.stream()
+                .map(p -> p.getKey().getId())
+                .collect(Collectors.toList());
+        QueryWrapper<Users> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.in("id",userIds);
+        //查询出了没有顺序的用户
+        Map<String, List<Users>> unOrderUser = this.list(userQueryWrapper)
+                .stream().collect(Collectors.groupingBy(Users::getId));
+        ArrayList<Users> finalUsers = new ArrayList<>();
+        userIds.forEach(id -> { finalUsers.add(unOrderUser.get(id).get(0));});
+
+        List<MyFriends> myFriendsList = myFriendsService.getMyFriends(Long.parseLong(loginUser.getId()));
+
+        //我的每一个朋友的id
+        List<String> myFriendIds = myFriendsList.stream().map(myFriends -> {
+            Users otherUsers = myFriends.getOtherUsers();
+            return otherUsers.getId();
+        }).collect(Collectors.toList());
+        return  finalUsers.stream().filter(searchUser -> {
+            //每一个准备过滤的用户id
+            String id1 = searchUser.getId();
+            //我的朋友的id
+            return !myFriendIds.contains(id1);
+        }).collect(Collectors.toList());
     }
 
 }
