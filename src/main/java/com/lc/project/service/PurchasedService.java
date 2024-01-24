@@ -13,6 +13,6 @@ import java.util.List;
 */
 public interface PurchasedService extends IService<Purchased> {
 
-    List<PurchasedVO> getMyPurchased();
+    List<Purchased> getMyPurchased();
 
 }

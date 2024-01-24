@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.lc.project.mapper.ChatMsgMapper;
-import com.lc.project.mapper.FriendsRequestMapper;
-import com.lc.project.mapper.MyFriendsMapper;
-import com.lc.project.mapper.RecentChatMapper;
+import com.lc.project.mapper.*;
 import com.lc.project.model.dto.movie.MovieQueryRequest;
 import com.lc.project.model.entity.*;
 import com.lc.project.model.vo.MovieVo;
@@ -51,6 +48,15 @@ public class MySqlTest {
 
     @Resource
     private UsersService usersService;
+
+    @Resource
+    private OrderMapper orderMapper;
+
+    @Resource
+    private PurchasedMapper purchasedMapper;
+
+    @Resource
+    private FavoritesMapper favoritesMapper;
 
     @Test
     public void test(){
@@ -157,6 +163,24 @@ public class MySqlTest {
         Gson gson = new Gson();
         List<String> tagList = gson.fromJson(tags, new TypeToken<List<String>>() {
         }.getType());
+    }
+
+    @Test
+    public void testMapper8(){
+        List<Order> orderList = orderMapper.getOrderAndMovieByUserId("1741446004448710657");
+        System.out.println(orderList);
+    }
+
+    @Test
+    public void testMapper9(){
+        List<Purchased> purchAndMovieByUserId = purchasedMapper.getPurchAndMovieByUserId("1741446004448710657");
+        System.out.println(purchAndMovieByUserId);
+    }
+
+    @Test
+    public void testMapper10(){
+        List<Favorites> myFavoritesAndMovieByUserId = favoritesMapper.getMyFavoritesAndMovieByUserId("1741446004448710657");
+        System.out.println(myFavoritesAndMovieByUserId);
     }
 
 }

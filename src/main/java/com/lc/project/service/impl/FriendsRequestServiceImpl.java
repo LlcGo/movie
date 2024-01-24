@@ -178,6 +178,7 @@ public class FriendsRequestServiceImpl extends ServiceImpl<FriendsRequestMapper,
         //我接受的消息
         List<FriendsRequest> receives = friendsRequestMapper.getReceiveByUserId(currentUserId);
         List<FriendsRequest> requests = friendsRequestMapper.getRequestByUserId(currentUserId);
+
         requests.addAll(receives);
         return requests.stream()
                 .sorted(Comparator.comparing(FriendsRequest::getRequestDateTime).reversed())

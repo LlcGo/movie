@@ -12,6 +12,7 @@ import com.lc.project.model.dto.order.OrderByRequest;
 import com.lc.project.model.dto.order.OrderQueryRequest;
 import com.lc.project.model.dto.order.OrderUpdateRequest;
 import com.lc.project.model.entity.Order;
+import com.lc.project.model.entity.Purchased;
 import com.lc.project.model.entity.Users;
 import com.lc.project.model.vo.OrderVO;
 import com.lc.project.model.vo.PurchasedVO;
@@ -42,8 +43,8 @@ public class PurchasedController {
 
 
     @PostMapping("/get")
-    public BaseResponse<List<PurchasedVO>> getMyPurchased() {
-        List<PurchasedVO> list = purchasedService.getMyPurchased();
+    public BaseResponse<List<Purchased>> getMyPurchased() {
+        List<Purchased> list = purchasedService.getMyPurchased();
         return ResultUtils.success(list);
     }
 

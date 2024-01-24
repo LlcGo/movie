@@ -5,17 +5,46 @@
 <mapper namespace="com.lc.project.mapper.FavoritesMapper">
 
     <resultMap id="BaseResultMap" type="com.lc.project.model.entity.Favorites">
-            <id property="id" column="id" jdbcType="INTEGER"/>
-            <result property="userId" column="userId" jdbcType="VARCHAR"/>
-            <result property="movieId" column="movieId" jdbcType="INTEGER"/>
-            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="userId" jdbcType="VARCHAR"/>
+        <result property="movieId" column="movieId" jdbcType="INTEGER"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+        <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+        <association property="movie" javaType="com.lc.project.model.entity.Movie">
+            <id property="id" column="movieId" jdbcType="INTEGER"/>
+            <result property="price" column="price" jdbcType="INTEGER"/>
+            <result property="movieName" column="movieName" jdbcType="VARCHAR"/>
+            <result property="type" column="type" jdbcType="INTEGER"/>
+            <result property="nation" column="nation" jdbcType="VARCHAR"/>
+            <result property="year" column="year" jdbcType="INTEGER"/>
+            <result property="directorName" column="directorName" jdbcType="VARCHAR"/>
+            <result property="actorsName" column="actorsName" jdbcType="VARCHAR"/>
+            <result property="movieProfile" column="movieProfile" jdbcType="VARCHAR"/>
+            <result property="videoId" column="videoId" jdbcType="INTEGER"/>
+            <result property="creatTime" column="creatTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="state" column="state" jdbcType="INTEGER"/>
             <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+            <result property="userId" column="userId" jdbcType="VARCHAR"/>
+            <result property="img" column="img" jdbcType="VARCHAR"/>
+            <result property="score" column="score" jdbcType="DOUBLE"/>
+            <result property="hot" column="hot" jdbcType="DOUBLE"/>
+        </association>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,userId,movieId,
+        id
+        ,userId,movieId,
         createTime,updateTime,isDelete
     </sql>
+
+    <select id="getMyFavoritesAndMovieByUserId" resultMap="BaseResultMap">
+        select f.*, m.*
+        from favorites f
+                 left join movie m on f.movieId = m.id
+        where f.userId = #{id}
+          and f.isDelete = 0
+    </select>
 
 </mapper>

@@ -48,5 +48,8 @@ public class Purchased implements Serializable {
     private Integer isDelete;
 
     @TableField(exist = false)
+    private Movie movie;
+
+    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

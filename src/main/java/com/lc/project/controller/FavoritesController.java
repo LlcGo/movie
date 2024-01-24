@@ -153,11 +153,13 @@ public class FavoritesController {
      * @return
      */
     @GetMapping("/list/page")
-    public BaseResponse<Page<FavoritesVo>> listFavoritesByPage(FavoritesQueryRequest favoritesQueryRequest, HttpServletRequest request) {
+    public BaseResponse<List<Favorites>> listFavoritesByPage(FavoritesQueryRequest favoritesQueryRequest, HttpServletRequest request) {
         if (favoritesQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Page<FavoritesVo> favoritesPage = favoritesService.listPage(favoritesQueryRequest);
-        return ResultUtils.success(favoritesPage);
+//        Page<FavoritesVo> favoritesPage = favoritesService.listPage(favoritesQueryRequest);
+        Users loginUser = userService.getLoginUser();
+        List<Favorites> favoritesList = favoritesService.getMyFavoritesByUserId(loginUser.getId());
+        return ResultUtils.success(favoritesList);
     }
 }

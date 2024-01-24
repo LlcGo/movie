@@ -32,22 +32,13 @@ public class PurchasedServiceImpl extends ServiceImpl<PurchasedMapper, Purchased
     @Resource
     private MovieService movieService;
 
+    @Resource
+    private PurchasedMapper purchasedMapper;
+
     @Override
-    public List<PurchasedVO> getMyPurchased() {
+    public List<Purchased> getMyPurchased() {
         Users loginUser = usersService.getLoginUser();
-        QueryWrapper<Purchased> purchasedQueryWrapper = new QueryWrapper<>();
-        purchasedQueryWrapper.eq("userId",loginUser.getId());
-        List<Purchased> list = this.list(purchasedQueryWrapper);
-        ArrayList<PurchasedVO> purchasedVOS = new ArrayList<>();
-        list.forEach(item->{
-            PurchasedVO purchasedVO = new PurchasedVO();
-            Integer movieId = item.getMovieId();
-            Movie movie = movieService.getById(movieId);
-            BeanUtils.copyProperties(item,purchasedVO);
-            purchasedVO.setMovie(movie);
-            purchasedVOS.add(purchasedVO);
-        });
-        return purchasedVOS;
+        return purchasedMapper.getPurchAndMovieByUserId(loginUser.getId());
     }
 }
 

@@ -6,7 +6,7 @@
 
     <resultMap id="BaseResultMap" type="com.lc.project.model.entity.Movie">
             <id property="id" column="id" jdbcType="INTEGER"/>
-            <id property="price" column="price" jdbcType="INTEGER"/>
+            <result property="price" column="price" jdbcType="INTEGER"/>
             <result property="movieName" column="movieName" jdbcType="VARCHAR"/>
             <result property="type" column="type" jdbcType="INTEGER"/>
             <result property="nation" column="nation" jdbcType="VARCHAR"/>

@@ -134,8 +134,8 @@ public class OrderController {
     }
 
     @GetMapping("/get/myOrder")
-    public BaseResponse<List<OrderVO>> getOrderByUserId() {
-        List<OrderVO> order = orderService.getOrderByUserId();
+    public BaseResponse<List<Order>> getOrderByUserId() {
+        List<Order> order = orderService.getOrderByUserId();
         return ResultUtils.success(order);
     }
 

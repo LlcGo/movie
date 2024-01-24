@@ -59,6 +59,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
     private VipMapper vipMapper;
 
     @Resource
+    private OrderMapper orderMapper;
+
+    @Resource
     private UsersService usersService;
     @Override
     public Page<Order> listPage(OrderQueryRequest orderQueryRequest) {
@@ -258,23 +261,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
     }
 
     @Override
-    public List<OrderVO> getOrderByUserId() {
+    public List<Order> getOrderByUserId() {
         Users loginUser = usersService.getLoginUser();
         String id = loginUser.getId();
-        QueryWrapper<Order> orderQueryWrapper = new QueryWrapper<>();
-        orderQueryWrapper.eq("userId",id);
-        orderQueryWrapper.orderByDesc("createTime");
-        List<Order> list = this.list(orderQueryWrapper);
-        ArrayList<OrderVO> orderVOS = new ArrayList<>();
-        list.forEach(item->{
-            OrderVO orderVO = new OrderVO();
-            BeanUtils.copyProperties(item,orderVO);
-            Integer movieId = item.getMovieId();
-            Movie movie = movieService.getById(movieId);
-            orderVO.setMovie(movie);
-            orderVOS.add(orderVO);
-        });
-        return orderVOS;
+        return orderMapper.getOrderAndMovieByUserId(id);
     }
 
     /**

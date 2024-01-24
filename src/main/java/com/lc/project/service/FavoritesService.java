@@ -28,4 +28,6 @@ public interface FavoritesService extends IService<Favorites> {
     List<Favorites> getListFavorites(Favorites favoritesQuery);
 
     Page<FavoritesVo> listPage(FavoritesQueryRequest favoritesQueryRequest);
+
+    List<Favorites> getMyFavoritesByUserId(String id);
 }

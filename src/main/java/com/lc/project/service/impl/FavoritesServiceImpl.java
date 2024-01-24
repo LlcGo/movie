@@ -47,6 +47,9 @@ public class FavoritesServiceImpl extends ServiceImpl<FavoritesMapper, Favorites
     @Resource
     private MovieService movieService;
 
+    @Resource
+    private FavoritesMapper favoritesMapper;
+
     @Override
     public void validFavorites(Favorites favorites, boolean add) {
         if (favorites == null) {
@@ -103,6 +106,12 @@ public class FavoritesServiceImpl extends ServiceImpl<FavoritesMapper, Favorites
         favoritesVoPage.setRecords(favoritesVos);
         return favoritesVoPage;
     }
+
+    @Override
+    public List<Favorites> getMyFavoritesByUserId(String id) {
+        return favoritesMapper.getMyFavoritesAndMovieByUserId(id);
+    }
+
 
     @Override
     public List<Favorites> getListFavorites(Favorites favoritesQuery) {

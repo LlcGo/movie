@@ -3,6 +3,8 @@ package com.lc.project.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lc.project.model.entity.Favorites;
 
+import java.util.List;
+
 /**
 * @author asus
 * @description 针对表【favorites(收藏表)】的数据库操作Mapper
@@ -11,6 +13,7 @@ import com.lc.project.model.entity.Favorites;
 */
 public interface FavoritesMapper extends BaseMapper<Favorites> {
 
+    List<Favorites> getMyFavoritesAndMovieByUserId(String id);
 }
 
 

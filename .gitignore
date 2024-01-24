@@ -175,3 +175,4 @@ mm.log
 apex-scripts/*
 !apex-scripts/*.cls
 
+!/src/test/java/com/lc/project/service/MySqlTest.java

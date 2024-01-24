@@ -22,8 +22,11 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import static com.lc.project.websocket.ChatHandler.threadPoolExecutor;
 import static com.lc.project.websocket.ChatHandler.users;
 
 /**
@@ -49,15 +52,35 @@ public class ChatMsgServiceImpl extends ServiceImpl<ChatMsgMapper, ChatMsg>
     @Override
     public List<ChatMsg> getUsersChat(Long userId, Long otherUserId) {
         QueryWrapper<ChatMsg> chatMsgQueryWrapper = new QueryWrapper<>();
-        chatMsgQueryWrapper.eq("sendUserId",userId);
-        chatMsgQueryWrapper.eq("acceptUserId",otherUserId);
-        chatMsgQueryWrapper.orderByAsc("createTime");
-        List<ChatMsg> myChat = this.list(chatMsgQueryWrapper);
-        QueryWrapper<ChatMsg> otherMsgQueryWrapper = new QueryWrapper<>();
-        otherMsgQueryWrapper.eq("sendUserId",otherUserId);
-        otherMsgQueryWrapper.eq("acceptUserId",userId);
-        otherMsgQueryWrapper.orderByAsc("createTime");
-        List<ChatMsg> otherChat = this.list(otherMsgQueryWrapper);
+        CompletableFuture<List<ChatMsg>> future01 = CompletableFuture.supplyAsync(()->{
+            chatMsgQueryWrapper.eq("sendUserId",userId);
+            chatMsgQueryWrapper.eq("acceptUserId",otherUserId);
+            chatMsgQueryWrapper.orderByAsc("createTime");
+            return this.list(chatMsgQueryWrapper);
+        },threadPoolExecutor);
+
+
+        CompletableFuture<List<ChatMsg>> future02 = CompletableFuture.supplyAsync(()->{
+            QueryWrapper<ChatMsg> otherMsgQueryWrapper = new QueryWrapper<>();
+            otherMsgQueryWrapper.eq("sendUserId",otherUserId);
+            otherMsgQueryWrapper.eq("acceptUserId",userId);
+            otherMsgQueryWrapper.orderByAsc("createTime");
+            return this.list(otherMsgQueryWrapper);
+        },threadPoolExecutor);
+
+        List<ChatMsg> myChat = null;
+        List<ChatMsg> otherChat = null;
+        try {
+            myChat = future02.get();
+            otherChat = future01.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+        if(myChat.size() == 0 && otherChat.size() == 0){
+            return new ArrayList<ChatMsg>();
+        }
+
         myChat.addAll(otherChat);
         myChat =myChat.stream().sorted(Comparator.comparing(ChatMsg::getId).reversed()).collect(Collectors.toList());
         return myChat;

@@ -37,7 +37,7 @@ public interface OrderService extends IService<Order> {
 
     Boolean orderBuy(OrderByRequest orderByRequest);
 
-    List<OrderVO> getOrderByUserId();
+    List<Order> getOrderByUserId();
 
     /**
      * 直接购买

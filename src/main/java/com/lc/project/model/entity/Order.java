@@ -57,10 +57,14 @@ public class Order implements Serializable {
      */
     private Integer isDelete;
 
+
     /**
      * 开的是哪种类型vip
      */
     private Integer vipType;
+
+    @TableField(exist = false)
+    private Movie movie;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

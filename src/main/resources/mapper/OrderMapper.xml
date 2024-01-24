@@ -14,6 +14,26 @@
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
             <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+            <association property="movie" javaType="com.lc.project.model.entity.Movie">
+                <id property="id" column="movieId" jdbcType="INTEGER"/>
+                <result property="price" column="price" jdbcType="INTEGER"/>
+                <result property="movieName" column="movieName" jdbcType="VARCHAR"/>
+                <result property="type" column="type" jdbcType="INTEGER"/>
+                <result property="nation" column="nation" jdbcType="VARCHAR"/>
+                <result property="year" column="year" jdbcType="INTEGER"/>
+                <result property="directorName" column="directorName" jdbcType="VARCHAR"/>
+                <result property="actorsName" column="actorsName" jdbcType="VARCHAR"/>
+                <result property="movieProfile" column="movieProfile" jdbcType="VARCHAR"/>
+                <result property="videoId" column="videoId" jdbcType="INTEGER"/>
+                <result property="creatTime" column="creatTime" jdbcType="TIMESTAMP"/>
+                <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+                <result property="state" column="state" jdbcType="INTEGER"/>
+                <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+                <result property="userId" column="userId" jdbcType="VARCHAR"/>
+                <result property="img" column="img" jdbcType="VARCHAR"/>
+                <result property="score" column="score" jdbcType="DOUBLE"/>
+                <result property="hot" column="hot" jdbcType="DOUBLE"/>
+            </association>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -21,4 +41,10 @@
         movieId,createTime,updateTime,orderState,vipType,
         isDelete
     </sql>
+
+    <select id="getOrderAndMovieByUserId" resultMap="BaseResultMap" >
+        select o.*,m.price,m.movieName,m.img from movie_order o
+            left join movie m on o.movieId = m.id
+                 where o.userId = #{id} and o.isDelete = 0 order by o.createTime desc
+    </select>
 </mapper>
