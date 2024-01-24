@@ -3,6 +3,8 @@ package com.lc.project.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lc.project.model.entity.Movie;
 
+import java.util.List;
+
 /**
 * @author asus
 * @description 针对表【movie(电影表)】的数据库操作Mapper
@@ -11,6 +13,9 @@ import com.lc.project.model.entity.Movie;
 */
 public interface MovieMapper extends BaseMapper<Movie> {
 
+    List<Movie> getMovieHotListByType(Integer type);
+
+    Movie getMovieAndTypeNameById(long id);
 }
 
 

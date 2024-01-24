@@ -47,6 +47,9 @@ public class MySqlTest {
     private ChatMsgMapper chatMsgMapper;
 
     @Resource
+    private MovieMapper movieMapper;
+
+    @Resource
     private UsersService usersService;
 
     @Resource
@@ -181,6 +184,12 @@ public class MySqlTest {
     public void testMapper10(){
         List<Favorites> myFavoritesAndMovieByUserId = favoritesMapper.getMyFavoritesAndMovieByUserId("1741446004448710657");
         System.out.println(myFavoritesAndMovieByUserId);
+    }
+
+    @Test
+    public void testMapper11(){
+        List<Movie> movieHotListByType = movieMapper.getMovieHotListByType(1);
+        System.out.println(movieHotListByType);
     }
 
 }

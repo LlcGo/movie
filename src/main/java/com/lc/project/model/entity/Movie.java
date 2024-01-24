@@ -32,6 +32,9 @@ public class Movie implements Serializable {
      */
     private Integer type;
 
+    @TableField(exist = false)
+    private MovieType movieType;
+
     /**
      * 0 中国
 1 美国

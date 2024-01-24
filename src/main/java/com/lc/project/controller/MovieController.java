@@ -7,6 +7,7 @@ import com.lc.project.common.DeleteRequest;
 import com.lc.project.common.ErrorCode;
 import com.lc.project.common.ResultUtils;
 import com.lc.project.exception.BusinessException;
+import com.lc.project.mapper.MovieMapper;
 import com.lc.project.model.dto.movie.MovieAddRequest;
 import com.lc.project.model.dto.movie.MovieQueryRequest;
 import com.lc.project.model.dto.movie.MovieUpdateRequest;
@@ -46,6 +47,8 @@ public class MovieController {
 
     @Resource
     private RedisUtils redisUtils;
+
+
 
     /**
      * 创建
@@ -133,7 +136,7 @@ public class MovieController {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Movie movie = movieService.getMovieById(id);
+        Movie movie = movieService.getMovieAndTypeNameById(id);
         MovieVo movieVo = new MovieVo();
         BeanUtils.copyProperties(movie,movieVo);
         //查看是否已经收藏
@@ -203,6 +206,15 @@ public class MovieController {
     public BaseResponse<ConcurrentHashMap<Integer,List<Movie>>> listIndexMovieByPage() {
         ConcurrentHashMap<Integer,List<Movie>> moviePage = movieService.listIndexPage();
         return ResultUtils.success(moviePage);
+    }
+
+    @GetMapping("/getHot")
+    public BaseResponse<List<Movie>> getHotByType(Integer type){
+        if (type == null || type < 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        List<Movie> movieList = movieService.getHotByType(type);
+        return ResultUtils.success(movieList);
     }
 
 

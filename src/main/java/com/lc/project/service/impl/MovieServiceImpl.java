@@ -57,6 +57,7 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
 
 
 
+
     @Override
     public void validMovie(Movie movie, boolean add) {
         if (movie == null) {
@@ -212,6 +213,16 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
             throw new RuntimeException(e);
         }
         return movieList;
+    }
+
+    @Override
+    public List<Movie> getHotByType(Integer type) {
+       return movieMapper.getMovieHotListByType(type);
+    }
+
+    @Override
+    public Movie getMovieAndTypeNameById(long id) {
+       return movieMapper.getMovieAndTypeNameById(id);
     }
 
     public Boolean selectMovieByType(int type,ConcurrentHashMap<Integer, List<Movie>> movieList){

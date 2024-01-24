@@ -3,6 +3,7 @@ package com.lc.project.model.vo;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.lc.project.model.entity.Actors;
+import com.lc.project.model.entity.MovieType;
 import lombok.Data;
 
 import java.util.Date;
@@ -25,6 +26,8 @@ public class MovieVo {
      */
     private Integer type;
 
+
+    private MovieType movieType;
     /**
      * 0 中国
      1 美国

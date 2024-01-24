@@ -44,4 +44,7 @@ public interface MovieService extends IService<Movie> {
 
     ConcurrentHashMap<Integer,List<Movie>> listIndexPage();
 
+    List<Movie> getHotByType(Integer type);
+
+    Movie getMovieAndTypeNameById(long id);
 }

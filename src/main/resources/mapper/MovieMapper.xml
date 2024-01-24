@@ -23,14 +23,35 @@
             <result property="img" column="img" jdbcType="VARCHAR"/>
             <result property="score" column="score" jdbcType="DOUBLE"/>
             <result property="hot" column="hot" jdbcType="DOUBLE"/>
+            <association property="movieType" javaType="com.lc.project.model.entity.MovieType">
+                <id property="id" column="type" jdbcType="INTEGER"/>
+                <result property="typeName" column="typeName" jdbcType="VARCHAR"/>
+                <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+                <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+                <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+            </association>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,movieName,type,
         nation,year,
-        actorId,movieProfile,videoId,directorName,price,
+        actorsName,movieProfile,videoId,directorName,price,
         creatTime,updateTime,state,
-        isDelete,usesrId,score,img,
+        isDelete,userId,score,img,
         hot
     </sql>
+
+    <select id="getMovieHotListByType" resultMap="BaseResultMap">
+        select m.*, mt.typeName
+        from movie m
+                 left join movie_type mt on m.type = mt.id
+        where type = #{type}
+        order by hot desc limit 5
+    </select>
+    <select id="getMovieAndTypeNameById" resultMap="BaseResultMap">
+        select m.*, mt.typeName
+        from movie m
+                 left join movie_type mt on m.type = mt.id
+        where m.id = #{id}
+    </select>
 </mapper>
