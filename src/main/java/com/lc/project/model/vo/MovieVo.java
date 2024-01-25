@@ -1,13 +1,11 @@
 package com.lc.project.model.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.lc.project.model.entity.Actors;
+import com.lc.project.model.entity.MovieNation;
 import com.lc.project.model.entity.MovieType;
+import com.lc.project.model.entity.MovieYear;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.List;
 
 @Data
 public class MovieVo {
@@ -42,6 +40,8 @@ public class MovieVo {
      */
     private String nation;
 
+    private MovieNation moveNation;
+
     /**
      * 电影年代
      0 2023
@@ -63,6 +63,8 @@ public class MovieVo {
      16 更早（1979之前）
      */
     private Integer year;
+
+    private MovieYear movieYear;
 
     /**
      * 图片位置

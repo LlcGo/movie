@@ -30,6 +30,20 @@
                 <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
                 <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
             </association>
+            <association property="movieNation">
+                <id property="id" column="nation" jdbcType="INTEGER"/>
+                <result property="nationName" column="nationName" jdbcType="VARCHAR"/>
+                <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+                <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+                <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+            </association>
+            <association property="movieYear">
+                <id property="id" column="year" jdbcType="INTEGER"/>
+                <result property="yearName" column="yearName" jdbcType="VARCHAR"/>
+                <result property="createTiem" column="createTiem" jdbcType="TIMESTAMP"/>
+                <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+                <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+            </association>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -42,16 +56,20 @@
     </sql>
 
     <select id="getMovieHotListByType" resultMap="BaseResultMap">
-        select m.*, mt.typeName
+        select m.*, mt.typeName,my.yearName,mn.nationName
         from movie m
                  left join movie_type mt on m.type = mt.id
+                 left join movie_year my on m.year = my.id
+                 left join moive_nation mn on m.nation = mn.id
         where type = #{type}
         order by hot desc limit 5
     </select>
     <select id="getMovieAndTypeNameById" resultMap="BaseResultMap">
-        select m.*, mt.typeName
+        select m.*, mt.typeName,my.yearName,mn.nationName
         from movie m
                  left join movie_type mt on m.type = mt.id
+                 left join movie_year my on m.year = my.id
+                 left join moive_nation mn on m.nation = mn.id
         where m.id = #{id}
     </select>
 </mapper>

@@ -175,14 +175,14 @@ public class MovieController {
         }
         Integer year = movieQueryRequest.getYear();
         Integer type = movieQueryRequest.getType();
-        String nation = movieQueryRequest.getNation();
-        if(year != null && year == 17){
+        Integer nation = movieQueryRequest.getNation();
+        if(year != null && year == 0){
             movieQueryRequest.setYear(null);
         }
-        if(type!= null && type == 11){
+        if(type!= null && type == 0){
             movieQueryRequest.setType(null);
         }
-        if(nation!= null && nation.equals("10")){
+        if(nation!= null && nation == 0){
             movieQueryRequest.setNation(null);
         }
         Page<Movie> moviePage = movieService.listPage(movieQueryRequest);

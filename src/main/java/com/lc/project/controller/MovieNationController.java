@@ -2,7 +2,9 @@ package com.lc.project.controller;
 
 import com.lc.project.common.BaseResponse;
 import com.lc.project.common.ResultUtils;
+import com.lc.project.model.entity.MovieNation;
 import com.lc.project.model.entity.MovieType;
+import com.lc.project.service.MoveNationService;
 import com.lc.project.service.MovieTypeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,14 +15,18 @@ import java.util.List;
 
 @RestController
 @Slf4j
-public class MovieTyepController {
+public class MovieNationController {
 
     @Resource
-    private MovieTypeService movieTypeService;
+    private MoveNationService moveNationService;
 
-    @GetMapping("/getMovieType")
-    public  BaseResponse<List<MovieType>> getMovieNation(){
-        List<MovieType> movieTypes = movieTypeService.getMovieType();
+    @GetMapping("/getMovieNation")
+    public BaseResponse<List<MovieNation>> getMovieType(){
+        List<MovieNation> movieTypes = moveNationService.getMovieNation();
         return ResultUtils.success(movieTypes);
     }
+
+
+
+
 }

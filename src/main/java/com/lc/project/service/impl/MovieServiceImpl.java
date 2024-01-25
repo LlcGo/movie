@@ -66,13 +66,13 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
         Integer movieId = movie.getId();
         String movieName = movie.getMovieName();
         Integer type = movie.getType();
-        String nation = movie.getNation();
+        Integer nation = movie.getNation();
         Integer year = movie.getYear();
         String movieProfile = movie.getMovieProfile();
         // 创建时，所有参数必须非空
         if (add) {
             //前面判斷string 後面判斷 Integer
-            if (StringUtils.isAnyBlank(movieName,nation,movieProfile) || ObjectUtils.anyNull(type, year)) {
+            if (StringUtils.isAnyBlank(movieName,movieProfile) || ObjectUtils.anyNull(type, year,nation)) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR);
             }
         }
@@ -94,7 +94,7 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
         String sortOrder = movieQueryRequest.getSortOrder();
         String movieName = movieQuery.getMovieName();
         Integer type = movieQueryRequest.getType();
-        String nation = movieQueryRequest.getNation();
+        Integer nation = movieQueryRequest.getNation();
         Integer year = movieQueryRequest.getYear();
         Boolean isScore = movieQueryRequest.getScore();
         Boolean isHot = movieQueryRequest.getHot();
@@ -126,7 +126,7 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
         QueryWrapper<Movie> queryWrapper = new QueryWrapper<>();
         queryWrapper.like(StringUtils.isNotBlank(movieName), "movieName", movieName);
         queryWrapper.eq(type!=null,"type",type);
-        queryWrapper.eq(StringUtils.isNotBlank(nation),"nation",nation);
+        queryWrapper.eq(nation != null,"nation",nation);
         queryWrapper.eq(year!=null,"year",year);
         queryWrapper.orderBy(StringUtils.isNotBlank(sortField),
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);

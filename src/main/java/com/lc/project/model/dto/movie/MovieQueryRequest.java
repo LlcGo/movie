@@ -45,7 +45,7 @@ public class MovieQueryRequest extends PageRequest implements Serializable {
      8 泰国
      9 印度
      */
-    private String nation;
+    private Integer nation;
 
     /**
      * 电影年代

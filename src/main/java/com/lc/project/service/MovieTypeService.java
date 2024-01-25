@@ -1,4 +1,4 @@
-package com.lc.project.service.impl;
+package com.lc.project.service;
 
 import com.lc.project.model.entity.MovieType;
 import com.baomidou.mybatisplus.extension.service.IService;

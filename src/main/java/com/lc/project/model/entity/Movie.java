@@ -35,6 +35,12 @@ public class Movie implements Serializable {
     @TableField(exist = false)
     private MovieType movieType;
 
+    @TableField(exist = false)
+    private MovieYear movieYear;
+
+    @TableField(exist = false)
+    private MovieNation movieNation;
+
     /**
      * 0 中国
 1 美国
@@ -47,7 +53,7 @@ public class Movie implements Serializable {
 8 泰国
 9 印度
      */
-    private String nation;
+    private Integer nation;
 
     /**
      * 电影年代

@@ -2,7 +2,7 @@ package com.lc.project.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lc.project.model.entity.MovieType;
-import com.lc.project.service.impl.MovieTypeService;
+import com.lc.project.service.MovieTypeService;
 import com.lc.project.mapper.MovieTypeMapper;
 import org.springframework.stereotype.Service;
 
