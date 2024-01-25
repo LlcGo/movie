@@ -359,4 +359,10 @@ public class UserController {
         return ResultUtils.success(usersList);
     }
 
+    @PostMapping("/updateUserImg")
+    public BaseResponse<Boolean> updateUserImg(String imgUrI){
+       Boolean flag = userService.updateUserImg(imgUrI);
+       return ResultUtils.success(flag);
+    }
+
 }

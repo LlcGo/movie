@@ -293,6 +293,14 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
         }).collect(Collectors.toList());
     }
 
+    @Override
+    public Boolean updateUserImg(String imgUrI) {
+        Users loginUser = getLoginUser();
+        Users currentUser = this.getById(loginUser.getId());
+        currentUser.setFaceImage(imgUrI);
+        return this.updateById(currentUser);
+    }
+
 }
 
 

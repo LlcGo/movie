@@ -72,4 +72,6 @@ public interface UsersService extends IService<Users> {
     List<Users> searchFriend(UserQueryRequest userQueryRequest);
 
     List<Users> matchUsers(Integer num, Users loginUser);
+
+    Boolean updateUserImg(String imgUrI);
 }

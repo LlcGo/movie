@@ -2,6 +2,7 @@ package com.lc.project.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lc.project.model.entity.VideoUpload;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
 * @author asus
@@ -10,4 +11,5 @@ import com.lc.project.model.entity.VideoUpload;
 */
 public interface VideoUploadService extends IService<VideoUpload> {
 
+    String uploadUserImg(MultipartFile file);
 }

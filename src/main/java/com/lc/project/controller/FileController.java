@@ -6,8 +6,11 @@ import com.lc.project.common.ResultUtils;
 import com.lc.project.exception.BusinessException;
 import com.lc.project.mapper.VideoUploadMapper;
 import com.lc.project.model.dto.file.FileChunk;
+import com.lc.project.model.entity.Users;
 import com.lc.project.model.entity.VideoUpload;
 import com.lc.project.service.FileService;
+import com.lc.project.service.UsersService;
+import com.lc.project.service.VideoUploadService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +38,12 @@ public class FileController {
 
     @Resource
     private VideoUploadMapper videoUploadMapper;
+
+    @Resource
+    private VideoUploadService videoUploadService;
+
+    @Resource
+    private UsersService usersService;
 
     @PostMapping("/upload")
     public BaseResponse upload(@RequestParam("file") MultipartFile file,
@@ -120,4 +129,12 @@ public class FileController {
         }
         return 0L;
     }
+
+    @PostMapping("/uploadUserImg")
+    public BaseResponse<String> uploadUserImg(@RequestBody MultipartFile file){
+        String fileName =  videoUploadService.uploadUserImg(file);
+        System.out.println(file);
+        return ResultUtils.success(fileName);
+    }
+
 }
