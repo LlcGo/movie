@@ -16,6 +16,11 @@ public interface MovieMapper extends BaseMapper<Movie> {
     List<Movie> getMovieHotListByType(Integer type);
 
     Movie getMovieAndTypeNameById(long id);
+
+    List<Movie> getMovieIndexListByType(int type);
+
+    List<Movie> getAllHotMovieOrderByHot();
+
 }
 
 

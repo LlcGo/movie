@@ -51,21 +51,13 @@ public class ChatMsgServiceImpl extends ServiceImpl<ChatMsgMapper, ChatMsg>
 
     @Override
     public List<ChatMsg> getUsersChat(Long userId, Long otherUserId) {
-        QueryWrapper<ChatMsg> chatMsgQueryWrapper = new QueryWrapper<>();
         CompletableFuture<List<ChatMsg>> future01 = CompletableFuture.supplyAsync(()->{
-            chatMsgQueryWrapper.eq("sendUserId",userId);
-            chatMsgQueryWrapper.eq("acceptUserId",otherUserId);
-            chatMsgQueryWrapper.orderByAsc("createTime");
-            return this.list(chatMsgQueryWrapper);
+            return chatMsgMapper.getChatAndUsers(userId,otherUserId);
         },threadPoolExecutor);
 
 
         CompletableFuture<List<ChatMsg>> future02 = CompletableFuture.supplyAsync(()->{
-            QueryWrapper<ChatMsg> otherMsgQueryWrapper = new QueryWrapper<>();
-            otherMsgQueryWrapper.eq("sendUserId",otherUserId);
-            otherMsgQueryWrapper.eq("acceptUserId",userId);
-            otherMsgQueryWrapper.orderByAsc("createTime");
-            return this.list(otherMsgQueryWrapper);
+           return chatMsgMapper.getChatAndOtherUsers(userId,otherUserId);
         },threadPoolExecutor);
 
         List<ChatMsg> myChat = null;

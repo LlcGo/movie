@@ -126,7 +126,7 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
         QueryWrapper<Movie> queryWrapper = new QueryWrapper<>();
         queryWrapper.like(StringUtils.isNotBlank(movieName), "movieName", movieName);
         queryWrapper.eq(type!=null,"type",type);
-        queryWrapper.eq(nation != null,"nation",nation);
+        queryWrapper.eq(nation!= null,"nation",nation);
         queryWrapper.eq(year!=null,"year",year);
         queryWrapper.orderBy(StringUtils.isNotBlank(sortField),
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
@@ -184,27 +184,27 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
 
         ConcurrentHashMap<Integer, List<Movie>> movieList = new ConcurrentHashMap<>();
 
-        CompletableFuture<Boolean> future01 = CompletableFuture.supplyAsync(() -> selectMovieByType(0,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future01 = CompletableFuture.supplyAsync(() -> selectMovieByType(1,movieList),threadPoolExecutor);
 
-        CompletableFuture<Boolean> future02 = CompletableFuture.supplyAsync(() -> selectMovieByType(1,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future02 = CompletableFuture.supplyAsync(() -> selectMovieByType(2,movieList),threadPoolExecutor);
 
-        CompletableFuture<Boolean> future03 = CompletableFuture.supplyAsync(() -> selectMovieByType(2,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future03 = CompletableFuture.supplyAsync(() -> selectMovieByType(3,movieList),threadPoolExecutor);
 
-        CompletableFuture<Boolean> future04 = CompletableFuture.supplyAsync(() -> selectMovieByType(3,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future04 = CompletableFuture.supplyAsync(() -> selectMovieByType(4,movieList),threadPoolExecutor);
 
-        CompletableFuture<Boolean> future05 = CompletableFuture.supplyAsync(() -> selectMovieByType(4,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future05 = CompletableFuture.supplyAsync(() -> selectMovieByType(5,movieList),threadPoolExecutor);
 
-        CompletableFuture<Boolean> future06 = CompletableFuture.supplyAsync(() -> selectMovieByType(5,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future06 = CompletableFuture.supplyAsync(() -> selectMovieByType(6,movieList),threadPoolExecutor);
 
-        CompletableFuture<Boolean> future07 = CompletableFuture.supplyAsync(() -> selectMovieByType(6,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future07 = CompletableFuture.supplyAsync(() -> selectMovieByType(7,movieList),threadPoolExecutor);
 
-        CompletableFuture<Boolean> future08 = CompletableFuture.supplyAsync(() -> selectMovieByType(7,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future08 = CompletableFuture.supplyAsync(() -> selectMovieByType(8,movieList),threadPoolExecutor);
 
-        CompletableFuture<Boolean> future09 = CompletableFuture.supplyAsync(() -> selectMovieByType(8,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future09 = CompletableFuture.supplyAsync(() -> selectMovieByType(9,movieList),threadPoolExecutor);
 
-        CompletableFuture<Boolean> future010 = CompletableFuture.supplyAsync(() -> selectMovieByType(9,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future010 = CompletableFuture.supplyAsync(() -> selectMovieByType(10,movieList),threadPoolExecutor);
 
-        CompletableFuture<Boolean> future011 = CompletableFuture.supplyAsync(() -> selectMovieByType(10,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future011 = CompletableFuture.supplyAsync(() -> selectMovieByType(11,movieList),threadPoolExecutor);
 
         CompletableFuture<Void> future = CompletableFuture.allOf(future01, future02,future03,future04,future05,future06,future07,future08,future09,future010,future011);
         try {
@@ -225,13 +225,15 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
        return movieMapper.getMovieAndTypeNameById(id);
     }
 
+
+    @Override
+    public List<Movie> getHotMovie() {
+      return movieMapper.getAllHotMovieOrderByHot();
+    }
+
     public Boolean selectMovieByType(int type,ConcurrentHashMap<Integer, List<Movie>> movieList){
-        QueryWrapper<Movie> movieQueryWrapper = new QueryWrapper<>();
-        movieQueryWrapper.eq("type",type);
-        movieQueryWrapper.orderByDesc("creatTime");
-        movieQueryWrapper.last("limit 6");
-        List<Movie> list = this.list(movieQueryWrapper);
-        movieList.put(type,list);
+        List<Movie> movies = movieMapper.getMovieIndexListByType(type);
+        movieList.put(type,movies);
         return true;
     }
 

@@ -192,4 +192,13 @@ public class MySqlTest {
         System.out.println(movieHotListByType);
     }
 
+    @Test
+    public void testMapper12(){
+        List<ChatMsg> chatMsgList = chatMsgMapper.getChatAndOtherUsers(1741446004448710657L,1741461358159978498L);
+        List<ChatMsg> chatMsgList2 = chatMsgMapper.getChatAndUsers(1741446004448710657L,1741461358159978498L);
+
+        System.out.println(chatMsgList);
+        System.out.println(chatMsgList2);
+    }
+
 }

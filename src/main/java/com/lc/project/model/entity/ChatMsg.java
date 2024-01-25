@@ -58,5 +58,11 @@ public class ChatMsg implements Serializable {
     private Integer isDelete;
 
     @TableField(exist = false)
+    private Users otherUser;
+
+    @TableField(exist = false)
+    private Users myUser;
+
+    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

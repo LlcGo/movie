@@ -4,16 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lc.project.mapper.ChatMsgMapper">
 
-    <resultMap id="BaseResultMap" type="com.lc.project.model.entity.ChatMsg">
-            <id property="id" column="id" jdbcType="VARCHAR"/>
-            <result property="sendUserId" column="sendUserId" jdbcType="VARCHAR"/>
-            <result property="acceptUserId" column="acceptUserId" jdbcType="VARCHAR"/>
-            <result property="msg" column="msg" jdbcType="VARCHAR"/>
-            <result property="signFlag" column="signFlag" jdbcType="INTEGER"/>
-            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
-            <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
-    </resultMap>
+
 
     <sql id="Base_Column_List">
         id,sendUserId,acceptUserId,
@@ -24,4 +15,78 @@
     <update id="updateByMyIdAndOtherId">
         UPDATE chat_msg SET signFlag = 1 WHERE isDelete=0 AND (sendUserId = #{rOtherUserId} AND acceptUserId = #{sendUserId} AND signFlag = 0)
     </update>
+
+    <resultMap id="BaseResultMap2" type="com.lc.project.model.entity.ChatMsg">
+        <id property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="sendUserId" column="sendUserId" jdbcType="VARCHAR"/>
+        <result property="acceptUserId" column="acceptUserId" jdbcType="VARCHAR"/>
+        <result property="msg" column="msg" jdbcType="VARCHAR"/>
+        <result property="signFlag" column="signFlag" jdbcType="INTEGER"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+        <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+        <association property="myUser" javaType="com.lc.project.model.entity.Users">
+            <id property="id" column="sendUserId" jdbcType="VARCHAR"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
+            <result property="faceImage" column="face_image" jdbcType="VARCHAR"/>
+            <result property="signature" column="signature" jdbcType="VARCHAR"/>
+            <result property="sex" column="sex" jdbcType="VARCHAR"/>
+            <result property="likeType" column="likeType" jdbcType="VARCHAR"/>
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="userRole" column="userRole" jdbcType="VARCHAR"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+        </association>
+    </resultMap>
+
+<!--     能够查出我的头像 send 是我-->
+    <select id="getChatAndUsers" resultMap="BaseResultMap2">
+        select cm.*,u.*
+        from chat_msg cm
+                 left join users u on cm.sendUserId = u.id
+        where sendUserId = #{userId}
+          and acceptUserId = #{otherUserId}
+          and cm.isDelete = 0
+        order by cm.createTime asc ;
+    </select>
+
+
+    <resultMap id="BaseResultMap" type="com.lc.project.model.entity.ChatMsg">
+        <id property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="sendUserId" column="sendUserId" jdbcType="VARCHAR"/>
+        <result property="acceptUserId" column="acceptUserId" jdbcType="VARCHAR"/>
+        <result property="msg" column="msg" jdbcType="VARCHAR"/>
+        <result property="signFlag" column="signFlag" jdbcType="INTEGER"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+        <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+        <association property="otherUser" javaType="com.lc.project.model.entity.Users">
+            <id property="id" column="sendUserId" jdbcType="VARCHAR"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
+            <result property="faceImage" column="face_image" jdbcType="VARCHAR"/>
+            <result property="signature" column="signature" jdbcType="VARCHAR"/>
+            <result property="sex" column="sex" jdbcType="VARCHAR"/>
+            <result property="likeType" column="likeType" jdbcType="VARCHAR"/>
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="userRole" column="userRole" jdbcType="VARCHAR"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+        </association>
+    </resultMap>
+
+<!--    查出接受方的头像send是对方-->
+    <select id="getChatAndOtherUsers" resultMap="BaseResultMap">
+        select cm.*,u.*
+        from chat_msg cm
+                 left join users u on cm.sendUserId = u.id
+        where sendUserId = #{otherUserId}
+          and acceptUserId = #{userId}
+          and cm.isDelete = 0
+        order by cm.createTime asc ;
+    </select>
+
 </mapper>

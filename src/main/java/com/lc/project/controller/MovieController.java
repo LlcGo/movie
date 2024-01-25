@@ -217,6 +217,11 @@ public class MovieController {
         return ResultUtils.success(movieList);
     }
 
+    @GetMapping("/get/hotMovie")
+    public BaseResponse<List<Movie>> getHotMovie(){
+        List<Movie> movieList = movieService.getHotMovie();
+        return ResultUtils.success(movieList);
+    }
 
 
 }

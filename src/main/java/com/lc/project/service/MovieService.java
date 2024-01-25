@@ -47,4 +47,11 @@ public interface MovieService extends IService<Movie> {
     List<Movie> getHotByType(Integer type);
 
     Movie getMovieAndTypeNameById(long id);
+
+    /**
+     * 获得所有的电影热度进行排行
+     * @return
+     */
+    List<Movie> getHotMovie();
+
 }
