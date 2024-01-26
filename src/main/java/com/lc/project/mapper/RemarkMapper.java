@@ -3,6 +3,8 @@ package com.lc.project.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lc.project.model.entity.Remark;
 
+import java.util.List;
+
 /**
 * @author asus
 * @description 针对表【remark(评论表)】的数据库操作Mapper
@@ -11,6 +13,9 @@ import com.lc.project.model.entity.Remark;
 */
 public interface RemarkMapper extends BaseMapper<Remark> {
 
+    List<Remark> getRemarkAndUserPage(int movieId, long current, long pageSize);
+
+    Integer getCountByMovieId(Integer movieId);
 }
 
 

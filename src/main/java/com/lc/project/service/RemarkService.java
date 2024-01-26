@@ -36,7 +36,7 @@ public interface RemarkService extends IService<Remark> {
 
     List<Remark> getListRemark(Remark remarkQuery);
 
-    Page<RemarkVo> listPage(RemarkQueryRequest remarkQueryRequest);
+    List<Remark> listPage(RemarkQueryRequest remarkQueryRequest);
 
     Long listCount(RemarkQueryRequest remarkQueryRequest);
 

@@ -8,15 +8,14 @@ import com.lc.project.constant.CommonConstant;
 import com.lc.project.exception.BusinessException;
 import com.lc.project.mapper.MovieMapper;
 import com.lc.project.model.dto.movie.MovieQueryRequest;
-import com.lc.project.model.entity.ActorMovie;
-import com.lc.project.model.entity.Actors;
-import com.lc.project.model.entity.Movie;
+import com.lc.project.model.entity.*;
 import com.lc.project.model.vo.MovieVo;
 import com.lc.project.service.*;
 import io.swagger.models.auth.In;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -44,16 +43,11 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
     private UsersService userService;
 
     @Resource
-    private RemarkService remarkService;
-
-    @Resource
-    private ActorMovieService actorMovieService;
-
-    @Resource
     private MovieMapper movieMapper;
 
     @Resource
-    private ActorsService actorsService;
+    @Lazy
+    private PurchasedService purchasedService;
 
 
 
@@ -222,7 +216,15 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
 
     @Override
     public Movie getMovieAndTypeNameById(long id) {
-       return movieMapper.getMovieAndTypeNameById(id);
+        Users loginUser = userService.getLoginUser();
+        String currentUserId = loginUser.getId();
+        QueryWrapper<Purchased> purchasedQueryWrapper = new QueryWrapper<>();
+        purchasedQueryWrapper.eq("userId",currentUserId);
+        purchasedQueryWrapper.eq("movieId",id);
+        long count = purchasedService.count(purchasedQueryWrapper);
+        Movie movie = movieMapper.getMovieAndTypeNameById(id);
+        movie.setBuy(count > 0);
+        return movie;
     }
 
 

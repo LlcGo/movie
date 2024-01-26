@@ -27,16 +27,28 @@ public class Remark implements Serializable {
      */
     private String userId;
 
+    @TableField(exist = false)
+    private Users user;
     /**
      * 
      */
     private Integer movieId;
 
+    @TableField(exist = false)
+    private Boolean like;
+
+    @TableField(exist = false)
+    private Boolean hate;
+
+    @TableField(exist = false)
+    private Integer total;
     /**
      * 评论内容
      */
     private String content;
 
+    @TableField(exist = false)
+    private RemarkUser remarkUser;
     /**
      * 评分
      */

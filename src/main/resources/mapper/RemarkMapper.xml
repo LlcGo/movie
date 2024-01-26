@@ -15,6 +15,30 @@
             <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
             <result property="liked" column="liked" jdbcType="INTEGER"/>
             <result property="disLiked" column="disLiked" jdbcType="INTEGER"/>
+        <association property="remarkUser" javaType="com.lc.project.model.entity.RemarkUser">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="userId" column="userId" jdbcType="VARCHAR"/>
+            <result property="remarkId" column="remarkId" jdbcType="INTEGER"/>
+            <result property="support" column="support" jdbcType="INTEGER"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+        </association>
+        <association property="user" javaType="com.lc.project.model.entity.Users">
+            <id property="id" column="userId" jdbcType="VARCHAR"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
+            <result property="faceImage" column="face_image" jdbcType="VARCHAR"/>
+            <result property="signature" column="signature" jdbcType="VARCHAR"/>
+            <result property="sex" column="sex" jdbcType="VARCHAR"/>
+            <result property="likeType" column="likeType" jdbcType="VARCHAR"/>
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="userRole" column="userRole" jdbcType="VARCHAR"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+        </association>
+
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -22,4 +46,23 @@
         content,score,createTime,liked,disLiked,
         updateTime,isDelete
     </sql>
+
+    <select id="getRemarkAndUserPage" resultMap="BaseResultMap">
+        select r.*,u.*
+        from remark r
+                 left join users u on r.userId = u.id
+        where r.movieId = #{movieId}
+          and r.content is not null
+          and r.isDelete = 0
+        order by r.createTime desc limit #{current} , #{pageSize}
+    </select>
+
+    <select id="getCountByMovieId" resultType="java.lang.Integer">
+        select count(1)
+        from remark r
+                 left join users u on r.userId = u.id
+        where r.movieId = #{movieId}
+          and r.content is not null
+          and r.isDelete = 0
+    </select>
 </mapper>

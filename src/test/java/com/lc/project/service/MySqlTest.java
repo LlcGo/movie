@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.lc.project.common.PageRequest;
 import com.lc.project.mapper.*;
 import com.lc.project.model.dto.movie.MovieQueryRequest;
 import com.lc.project.model.entity.*;
@@ -36,6 +37,12 @@ public class MySqlTest {
 
     @Resource
     private RecentChatMapper recentChatMapper;
+
+    @Resource
+    private RemarkUserMapper remarkUserMapper;
+
+    @Resource
+    private RemarkMapper remarkMapper;
 
     @Resource
     private FriendsRequestMapper friendsRequestMapper;
@@ -199,6 +206,40 @@ public class MySqlTest {
 
         System.out.println(chatMsgList);
         System.out.println(chatMsgList2);
+    }
+
+    @Test
+    public void testMapper13(){
+        Integer current = 1;
+        Integer pageSize = 7;
+        current = (current - 1)* pageSize;
+        Users loginUser = usersService.getLoginUser();
+        List<Remark> page1 = remarkMapper.getRemarkAndUserPage(2,current,pageSize);
+        Gson gson = new Gson();
+        for (Remark remark : page1) {
+            RemarkUser remarkUser = remark.getRemarkUser();
+            //如果没有 RemarkId 代表没有评论过
+            if (remarkUser.getRemarkId() == null || remarkUser.getSupport() == 0){
+                remark.setLike(false);
+                remark.setHate(false);
+                continue;
+            }
+            //如果是我们的评论
+            if (remarkUser.getUserId().equals("1741446004448710657")){
+                Integer support = remarkUser.getSupport();
+                //1.不支持 2 支持
+                if (support == 1){
+                    remark.setLike(false);
+                    remark.setHate(true);
+                }
+                if(support == 2){
+                    remark.setLike(true);
+                    remark.setHate(false);
+                }
+            }
+        }
+        //根据remarkId 来确认是否有过评论
+        System.out.println(gson.toJson(page1));
     }
 
 }

@@ -14,6 +14,8 @@ public class MovieVo {
      */
     private Integer id;
 
+    private Boolean buy;
+
     /**
      * 电影名字
      */

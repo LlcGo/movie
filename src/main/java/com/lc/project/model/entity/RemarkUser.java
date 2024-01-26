@@ -26,6 +26,9 @@ public class RemarkUser implements Serializable {
      */
     private String userId;
 
+    @TableField(exist = false)
+    private Users user;
+
     /**
      * 
      */

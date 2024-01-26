@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.gson.Gson;
 import com.lc.project.common.ErrorCode;
 import com.lc.project.constant.CommonConstant;
 import com.lc.project.exception.BusinessException;
@@ -18,8 +19,10 @@ import com.lc.project.model.vo.RemarkVo;
 import com.lc.project.service.RemarkService;
 import com.lc.project.service.RemarkUserService;
 import com.lc.project.service.UsersService;
+import io.swagger.util.Json;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -43,7 +46,14 @@ public class RemarkServiceImpl extends ServiceImpl<RemarkMapper, Remark>
 
 
     @Resource
+    private RemarkMapper remarkMapper;
+
+    @Resource
     private RemarkUserMapper remarkUserMapper;
+
+    @Resource
+    @Lazy
+    private RemarkUserService remarkUserService;
 
     @Override
     public Integer toAddRemark(Remark remark) {
@@ -94,7 +104,11 @@ public class RemarkServiceImpl extends ServiceImpl<RemarkMapper, Remark>
 
     @Override
     public boolean removeRemarkById(RemarkDeleteRequest remarkDeleteRequest) {
-        return this.removeById(remarkDeleteRequest.getId());
+        Integer id = remarkDeleteRequest.getId();
+        QueryWrapper<RemarkUser> remarkUserQueryWrapper = new QueryWrapper<>();
+        remarkUserQueryWrapper.eq("remarkId",id);
+        remarkUserService.remove(remarkUserQueryWrapper);
+        return this.removeById(id);
     }
 
     @Override
@@ -108,40 +122,19 @@ public class RemarkServiceImpl extends ServiceImpl<RemarkMapper, Remark>
     }
 
     @Override
-    public Page<RemarkVo> listPage(RemarkQueryRequest remarkQueryRequest) {
+    public List<Remark> listPage(RemarkQueryRequest remarkQueryRequest) {
         Integer movieId = remarkQueryRequest.getMovieId();
         long current = remarkQueryRequest.getCurrent();
         long pageSize = remarkQueryRequest.getPageSize();
-        String sortField = remarkQueryRequest.getSortField();
-        String sortOrder = remarkQueryRequest.getSortOrder();
 
-        QueryWrapper<Remark> remarkQueryWrapper = new QueryWrapper<>();
-        remarkQueryWrapper.eq("movieId", movieId);
-        remarkQueryWrapper.isNotNull("content");
-        remarkQueryWrapper.orderByDesc("createTime");
-        remarkQueryWrapper.orderBy(StringUtils.isNotBlank(sortField),
-                sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
+        current = (current - 1)* pageSize;
+        List<Remark> remarkList = remarkMapper.getRemarkAndUserPage(movieId,current,pageSize);
 
-        Page<Remark> page = this.page(new Page<>(current, pageSize), remarkQueryWrapper);
-        Page<RemarkVo> remarkVoPage = new Page<>();
-
-        List<Remark> records = page.getRecords();
-        ArrayList<RemarkVo> remarkVos = new ArrayList<>();
-        //赋值
-        records.forEach(item -> {
-            String userId = item.getUserId();
-            Users currentUser = usersService.getById(userId);
-            RemarkVo remarkVo = new RemarkVo();
-            BeanUtils.copyProperties(item,remarkVo);
-            remarkVo.setUser(currentUser);
-            remarkVos.add(remarkVo);
-        });
-        BeanUtils.copyProperties(page,remarkVoPage);
 
         Users loginUser = usersService.getLoginUser();
 
 
-        remarkVos.forEach(item->{
+        remarkList.forEach(item->{
             QueryWrapper<RemarkUser> remarkUserQueryWrapper = new QueryWrapper<>();
             remarkUserQueryWrapper.eq("userId",loginUser.getId());
             //当前评论id
@@ -161,8 +154,12 @@ public class RemarkServiceImpl extends ServiceImpl<RemarkMapper, Remark>
                 item.setHate(false);
             }
         });
-        remarkVoPage.setRecords(remarkVos);
-        return remarkVoPage;
+
+        Integer total = remarkMapper.getCountByMovieId(movieId);
+        if(remarkList.size() > 0){
+            remarkList.get(0).setTotal(total);
+        }
+        return remarkList;
     }
 
     @Override

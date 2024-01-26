@@ -138,6 +138,9 @@ public class Movie implements Serializable {
      */
     private String actorsName;
 
+    @TableField(exist = false)
+    private Boolean buy;
+
 
     /**
      * 电影价格

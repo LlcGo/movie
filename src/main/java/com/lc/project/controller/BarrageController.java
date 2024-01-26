@@ -78,6 +78,20 @@ public class BarrageController {
     }
 
 
+    @PostMapping("/delete")
+    public BaseResponse<Boolean> delete(Barrage barrage){
+        if(barrage.getId() < 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        String userId = barrage.getUserId();
+        Users loginUser = userService.getLoginUser();
+        if(!userId.equals(loginUser.getId())){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"不能删除别人的弹幕");
+        }
+        boolean b = barrageService.removeById(barrage);
+        return ResultUtils.success(b);
+    }
+
     
 
 

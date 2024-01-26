@@ -1,7 +1,10 @@
 package com.lc.project.mapper;
 
+import com.lc.project.model.entity.Remark;
 import com.lc.project.model.entity.RemarkUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import java.util.List;
 
 /**
 * @author asus
@@ -11,6 +14,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface RemarkUserMapper extends BaseMapper<RemarkUser> {
 
+    List<Remark> getRemarkAndUserPage(Integer movieId, long current, long pageSize);
 }
 
 

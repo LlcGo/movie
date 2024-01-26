@@ -182,11 +182,11 @@ public class RemarkController {
      * @return
      */
     @GetMapping("/list/page")
-    public BaseResponse<Page<RemarkVo>> listRemarkByPage(RemarkQueryRequest remarkQueryRequest, HttpServletRequest request) {
+    public BaseResponse<List<Remark>> listRemarkByPage(RemarkQueryRequest remarkQueryRequest, HttpServletRequest request) {
         if (remarkQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Page<RemarkVo> remarkPage = remarkService.listPage(remarkQueryRequest);
+        List<Remark> remarkPage = remarkService.listPage(remarkQueryRequest);
         return ResultUtils.success(remarkPage);
     }
 
