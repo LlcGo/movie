@@ -54,8 +54,8 @@ spring:
     password: myredispassWord@666.
   servlet:
     multipart:
-      max-request-size: 100MB
-      max-file-size: 30MB
+      max-request-size: -1
+      max-file-size: -1
   rabbitmq:
     host: 47.113.223.242
     port: 5672
@@ -82,3 +82,8 @@ file:
 
 rabbit:
    ttl: 900000
+
+llg:
+  path:
+    upload: D:\www\videoSystem\file
+    filePath: http://localhost:7529/videoSystem/file/

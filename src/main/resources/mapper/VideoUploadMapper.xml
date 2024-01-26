@@ -9,13 +9,14 @@
             <result property="videoName" column="videoName" jdbcType="VARCHAR"/>
             <result property="videoUrl" column="videoUrl" jdbcType="VARCHAR"/>
             <result property="videoUUID" column="videoUUID" jdbcType="VARCHAR"/>
+            <result property="videoSixUrl" column="videoSixUrl" jdbcType="VARCHAR"/>
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
             <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,videoName,videoUrl,
+        id,videoName,videoUrl,videoSixUrl,
         videoUUID,createTime,updateTime,
         isDelete
     </sql>

@@ -26,6 +26,8 @@ public class VideoUpload implements Serializable {
      */
     private String videoName;
 
+
+    private String videoSixUrl;
     /**
      *
      */

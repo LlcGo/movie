@@ -79,7 +79,7 @@ public class BarrageController {
 
 
     @PostMapping("/delete")
-    public BaseResponse<Boolean> delete(Barrage barrage){
+    public BaseResponse<Boolean> delete(@RequestBody Barrage barrage){
         if(barrage.getId() < 0){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

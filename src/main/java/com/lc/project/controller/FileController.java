@@ -66,6 +66,7 @@ public class FileController {
 
 
     @GetMapping("/watchVedio")
+    @Deprecated
     public void videoPreview(HttpServletRequest request, HttpServletResponse response, @RequestParam("videoId") Integer videoId) throws Exception {
         VideoUpload videoPathList = videoUploadMapper.selectById(videoId);
         String videoPathUrl = videoPathList.getVideoUrl();
@@ -120,6 +121,7 @@ public class FileController {
 
     //获得总体的文件大小 准备为分片上传做准备
     @GetMapping("/getVideoSizeById/{videoId}")
+    @Deprecated
     public long getVideoSizeById(@PathVariable("videoId") Integer videoId) throws IOException {
         VideoUpload videoPathList = videoUploadMapper.selectById(videoId);
         String videoPathUrl = videoPathList.getVideoUrl();
@@ -130,11 +132,29 @@ public class FileController {
         return 0L;
     }
 
+
+    @GetMapping("/getVideo")
+    public BaseResponse<VideoUpload> getVideo(Integer videoId,Integer movieState,Integer movieId){
+        VideoUpload videoUpload =  videoUploadService.getVideoById(videoId,movieState,movieId);
+        return ResultUtils.success(videoUpload);
+    }
+
     @PostMapping("/uploadUserImg")
     public BaseResponse<String> uploadUserImg(@RequestBody MultipartFile file){
         String fileName =  videoUploadService.uploadUserImg(file);
         System.out.println(file);
         return ResultUtils.success(fileName);
+    }
+
+
+    @PostMapping(value = "/file/Img")
+    public BaseResponse<String> uploadFileAndImg(@RequestParam("file") MultipartFile multipartFile) {
+        return ResultUtils.success(videoUploadService.uploadImg(multipartFile));
+    }
+
+    @PostMapping(value = "/uploadVideoToM3U8")
+    public BaseResponse<String> uploadVideoToM3U8(@RequestParam("file") MultipartFile multipartFile) {
+        return ResultUtils.success(videoUploadService.uploadVideoToM3U82(multipartFile));
     }
 
 }

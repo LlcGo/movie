@@ -12,4 +12,12 @@ import org.springframework.web.multipart.MultipartFile;
 public interface VideoUploadService extends IService<VideoUpload> {
 
     String uploadUserImg(MultipartFile file);
+
+    String uploadImg(MultipartFile multipartFile);
+
+    String uploadVideoToM3U8(MultipartFile multipartFile);
+
+    String uploadVideoToM3U82(MultipartFile file);
+
+    VideoUpload getVideoById(Integer videoId,Integer movieState,Integer movieId);
 }

@@ -49,9 +49,11 @@ public class BarrageServiceImpl extends ServiceImpl<BarrageMapper, Barrage>
     public BarrageVO barrageToVo(Barrage barrage){
         BarrageVO barrageVO = new BarrageVO();
         barrageVO.setText(barrage.getContent());
+        barrageVO.setId(barrage.getId());
         barrageVO.setTime(Double.valueOf(barrage.getAppTime()));
         barrageVO.setColor(barrage.getColor());
         barrageVO.setCreateTime(barrage.getCreateTime());
+        barrageVO.setUserId(barrage.getUserId());
 //        barrageVO.setForce(true);
         return barrageVO;
     }

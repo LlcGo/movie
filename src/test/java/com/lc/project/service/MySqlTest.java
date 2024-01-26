@@ -68,6 +68,9 @@ public class MySqlTest {
     @Resource
     private FavoritesMapper favoritesMapper;
 
+    @Resource
+    private VipMapper vipMapper;
+
     @Test
     public void test(){
         MovieQueryRequest movieQueryRequest = new MovieQueryRequest();
@@ -242,4 +245,14 @@ public class MySqlTest {
         System.out.println(gson.toJson(page1));
     }
 
+    @Test
+    public void t(){
+        QueryWrapper<Vip> vipQueryWrapper = new QueryWrapper<>();
+        vipQueryWrapper.eq("userId","1743141189096329218");
+        Vip vip = vipMapper.selectOne(vipQueryWrapper);
+        Date overTime = vip.getOverTime();
+        Date date = new Date();
+        boolean after = date.after(overTime);
+        System.out.println(after);
+    }
 }
