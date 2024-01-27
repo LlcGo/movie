@@ -18,13 +18,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
-* @author asus
-* @description 针对表【barrage(弹幕表)】的数据库操作Service实现
-* @createDate 2024-01-06 11:09:18
-*/
+ * @author asus
+ * @description 针对表【barrage(弹幕表)】的数据库操作Service实现
+ * @createDate 2024-01-06 11:09:18
+ */
 @Service
 public class BarrageServiceImpl extends ServiceImpl<BarrageMapper, Barrage>
-    implements BarrageService{
+        implements BarrageService {
 
     @Resource
     private UsersService usersService;
@@ -36,7 +36,7 @@ public class BarrageServiceImpl extends ServiceImpl<BarrageMapper, Barrage>
     }
 
     @Override
-    public Barrage queryToBarrage(BarrageAddRequest barrageAddRequest){
+    public Barrage queryToBarrage(BarrageAddRequest barrageAddRequest) {
         Barrage barrage = new Barrage();
         barrage.setMovieId(barrageAddRequest.getMovieId());
         barrage.setUserId(barrageAddRequest.getUserId());
@@ -46,7 +46,7 @@ public class BarrageServiceImpl extends ServiceImpl<BarrageMapper, Barrage>
         return barrage;
     }
 
-    public BarrageVO barrageToVo(Barrage barrage){
+    public BarrageVO barrageToVo(Barrage barrage) {
         BarrageVO barrageVO = new BarrageVO();
         barrageVO.setText(barrage.getContent());
         barrageVO.setId(barrage.getId());
@@ -62,15 +62,26 @@ public class BarrageServiceImpl extends ServiceImpl<BarrageMapper, Barrage>
     public List<BarrageVO> getBarrageByMovieId(long movieId) {
         //根据电影Id获取所有的弹幕
         QueryWrapper<Barrage> barrageQueryWrapper = new QueryWrapper<>();
-        barrageQueryWrapper.eq("movieId",movieId);
+        barrageQueryWrapper.eq("movieId", movieId);
         barrageQueryWrapper.orderByDesc("appTime");
         List<Barrage> barrageList = this.list(barrageQueryWrapper);
         Users loginUser = usersService.getLoginUser();
+        if (loginUser == null) {
+            ArrayList<BarrageVO> barrageVOArrayList = new ArrayList<>();
+            barrageList.forEach(item -> {
+                BarrageVO barrageVO = barrageToVo(item);
+                barrageVOArrayList.add(barrageVO);
+            });
+            return barrageVOArrayList
+                    .stream()
+                    .sorted(Comparator.comparing(BarrageVO::getTime))
+                    .collect(Collectors.toList());
+        }
         String currentUserId = loginUser.getId();
         ArrayList<BarrageVO> barrageVOArrayList = new ArrayList<>();
         barrageList.forEach(item -> {
             BarrageVO barrageVO = barrageToVo(item);
-            if( item.getUserId().equals(currentUserId)){
+            if (item.getUserId().equals(currentUserId)) {
                 barrageVO.setIsMe(true);
             }
             barrageVOArrayList.add(barrageVO);

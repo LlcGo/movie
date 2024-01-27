@@ -206,6 +206,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         vipQueryWrapper.eq("userId",userId);
         Vip oldVip = vipMapper.selectOne(vipQueryWrapper);
         if(oldVip == null){
+            Users loginUser = usersService.getLoginUser();
+            loginUser.setUserRole("vip");
+            usersService.updateById(loginUser);
+
             //第一次开通 生成订单并且设置为已下单 往vip表里插入数据
             Order order = this.getById(orderId);
             order.setOrderState(1);
@@ -306,6 +310,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         vipQueryWrapper.eq("userId",userId);
         Vip oldVip = vipMapper.selectOne(vipQueryWrapper);
         if(oldVip == null){
+            Users loginUser = usersService.getLoginUser();
+            loginUser.setUserRole("vip");
+            usersService.updateById(loginUser);
             //第一次开通 往vip表里插入数据
             Vip vip = new Vip();
             vip.setUserId(userId);

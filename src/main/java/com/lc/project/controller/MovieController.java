@@ -25,9 +25,11 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.lc.project.constant.CommonConstant.REDIS_FA_MOVIE;
+import static com.lc.project.websocket.ChatHandler.threadPoolExecutor;
 
 /**
  * 電影
@@ -132,6 +134,13 @@ public class MovieController {
     @GetMapping("/get")
     public BaseResponse<MovieVo> getMovieById(long id) {
         Users loginUser = userService.getLoginUser();
+        //如果用户没有登录
+        if(loginUser == null){
+            Movie movie = movieService.getMovieAndTypeNameById(id);
+            MovieVo movieVo = new MovieVo();
+            BeanUtils.copyProperties(movie,movieVo);
+            return ResultUtils.success(movieVo);
+        }
         String currentUserId = loginUser.getId();
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -190,15 +199,11 @@ public class MovieController {
     }
 
     @PostMapping("/hot")
-    public void addHot(@RequestBody DeleteRequest movie){
-        if(movie == null){
+    public void addHot(Integer movieId){
+        if(movieId < 0){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Long id = movie.getId();
-        if(id < 0){
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        movieService.increaseHot(id.intValue());
+        CompletableFuture.runAsync(()->movieService.increaseHot(movieId),threadPoolExecutor);
     }
 
 

@@ -265,7 +265,12 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
     public VideoUpload getVideoById(Integer videoId,Integer movieState,Integer movieId) {
         Users loginUser = usersService.getLoginUser();
         VideoUpload videoUpload = videoUploadMapper.selectById(videoId);
+        //如果用户没有登录
         if (loginUser == null){
+            //如果电影不需要购买
+            if(movieState == 1){
+                return videoUpload;
+            }
             String videoSixUrl = videoUpload.getVideoSixUrl();
             videoUpload.setVideoUrl(videoSixUrl);
             return videoUpload;

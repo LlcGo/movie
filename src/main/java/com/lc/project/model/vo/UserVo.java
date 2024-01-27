@@ -18,6 +18,7 @@ public class UserVo {
 
     private String nickname;
 
+    private String userRole;
 
     public String getId() {
         return id;

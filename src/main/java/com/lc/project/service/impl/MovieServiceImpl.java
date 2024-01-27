@@ -217,6 +217,9 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
     @Override
     public Movie getMovieAndTypeNameById(long id) {
         Users loginUser = userService.getLoginUser();
+        if(loginUser == null){
+            return movieMapper.getMovieAndTypeNameById(id);
+        }
         String currentUserId = loginUser.getId();
         QueryWrapper<Purchased> purchasedQueryWrapper = new QueryWrapper<>();
         purchasedQueryWrapper.eq("userId",currentUserId);

@@ -132,7 +132,13 @@ public class RemarkServiceImpl extends ServiceImpl<RemarkMapper, Remark>
 
 
         Users loginUser = usersService.getLoginUser();
-
+        if(loginUser == null){
+            Integer total = remarkMapper.getCountByMovieId(movieId);
+            if(remarkList.size() > 0){
+                remarkList.get(0).setTotal(total);
+            }
+            return remarkList;
+        }
 
         remarkList.forEach(item->{
             QueryWrapper<RemarkUser> remarkUserQueryWrapper = new QueryWrapper<>();
