@@ -147,14 +147,16 @@ public class FileController {
     }
 
 
+    //上传视频图片
     @PostMapping(value = "/file/Img")
     public BaseResponse<String> uploadFileAndImg(@RequestParam("file") MultipartFile multipartFile) {
         return ResultUtils.success(videoUploadService.uploadImg(multipartFile));
     }
 
+    //上传视频并且分片
     @PostMapping(value = "/uploadVideoToM3U8")
     public BaseResponse<String> uploadVideoToM3U8(@RequestParam("file") MultipartFile multipartFile) {
-        return ResultUtils.success(videoUploadService.uploadVideoToM3U82(multipartFile));
+        return ResultUtils.success(videoUploadService.uploadVideoToM3U83(multipartFile));
     }
 
 }

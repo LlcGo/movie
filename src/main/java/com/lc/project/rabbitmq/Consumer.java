@@ -23,21 +23,41 @@ public class Consumer {
     @Resource
     private OrderService orderService;
 
-    @RabbitListener(queues = "dead_queue",ackMode = "MANUAL")
-    public void receiveMessage(Message message, Channel channel){
+    @RabbitListener(queues = "dead_queue", ackMode = "MANUAL")
+    public void receiveMessage(Message message, Channel channel) {
         String msg = new String(message.getBody());
         int orderId = Integer.parseInt(msg);
         Order order = orderService.getById(orderId);
         Integer orderState = order.getOrderState();
-        if(orderState != 1){
+        if (orderState != 1) {
             order.setOrderState(2);
             orderService.updateById(order);
-            log.info("已自动修改订单id信息为已取消",new Date().toString(),msg);
+            log.info("已自动修改订单id信息为已取消", new Date().toString(), msg);
         }
         try {
-            channel.basicAck(message.getMessageProperties().getDeliveryTag(),true);
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
+    //监听消息队列
+    @RabbitListener(queues = "delay_queue", ackMode = "MANUAL")
+    public void consumeMessage(Message message, Channel channel)  {
+        String msg = new String(message.getBody());
+        int orderId = Integer.parseInt(msg);
+        Order order = orderService.getById(orderId);
+        Integer orderState = order.getOrderState();
+        if (orderState != 1) {
+            order.setOrderState(2);
+            orderService.updateById(order);
+            log.info("已自动修改订单id为-->{}信息为已取消,时间{}", orderId, new Date().toString());
+        }
+        try {
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

@@ -139,7 +139,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
 //          直接插入订单标志 未完成
             this.save(order);
             //做延迟队列处理
-            rabbitMQUtils.sendMessage(order.getId().toString());
+            rabbitMQUtils.sendMessageDLX(order.getId().toString());
             return order.getId();
         }
         Movie movie = movieService.getById(movieId);
@@ -160,7 +160,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         }
         this.save(order);
         //做延迟队列处理
-        rabbitMQUtils.sendMessage(order.getId().toString());
+        rabbitMQUtils.sendMessageDLX(order.getId().toString());
         return order.getId();
     }
 

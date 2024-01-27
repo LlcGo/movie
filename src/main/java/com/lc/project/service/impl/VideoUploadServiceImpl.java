@@ -13,7 +13,6 @@ import com.lc.project.model.entity.Vip;
 import com.lc.project.service.PurchasedService;
 import com.lc.project.service.UsersService;
 import com.lc.project.service.VideoUploadService;
-import com.lc.project.service.VipService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -153,9 +152,9 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
         //被注释的这个快一点
         //ProcessBuilder pb = new ProcessBuilder("ffmpeg", "-i", video.getPath(), "-codec", "copy", "-start_number", "0", "-hls_time", "1", "-hls_list_size", "0", "-f", "hls", m3u8.getPath());
         ProcessBuilder pb = new ProcessBuilder("ffmpeg", "-i", video.getPath(), "-force_key_frames", "expr:gte(t,n_forced*1)", "-strict", "-2", "-c:a", "aac","-c:v", "libx264", "-hls_time", "1", "-hls_list_size", "0", "-f", "hls", m3u8.getPath());
-        ProcessBuilder pb2 = new ProcessBuilder("ffmpeg", "-i", video.getPath(), "-ss 00:00:00 -to 00:06:00", "-force_key_frames", "expr:gte(t,n_forced*1)", "-strict", "-2", "-c:a", "aac","-c:v", "libx264", "-hls_time", "1", "-hls_list_size", "0", "-f", "hls", m3u8.getPath());
+//        ProcessBuilder pb2 = new ProcessBuilder("ffmpeg", "-i", video.getPath(), "-ss 00:00:00 -to 00:06:00", "-force_key_frames", "expr:gte(t,n_forced*1)", "-strict", "-2", "-c:a", "aac","-c:v", "libx264", "-hls_time", "1", "-hls_list_size", "0", "-f", "hls", m3u8.getPath());
         // 将标准错误流和标准输出流合并
-        pb2.redirectErrorStream(true);
+//        pb2.redirectErrorStream(true);
         pb.redirectErrorStream(true);
 
         Process p = null;
@@ -219,7 +218,22 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
         //被注释的这个快一点
         //ProcessBuilder pb = new ProcessBuilder("ffmpeg", "-i", video.getPath(), "-codec", "copy", "-start_number", "0", "-hls_time", "1", "-hls_list_size", "0", "-f", "hls", m3u8.getPath());
 //        ProcessBuilder pb = new ProcessBuilder("ffmpeg", "-i", video.getPath(), "-force_key_frames", "expr:gte(t,n_forced*1)", "-strict", "-2", "-c:a", "aac","-c:v", "libx264", "-hls_time", "1", "-hls_list_size", "0", "-f", "hls", m3u8.getPath());
-        ProcessBuilder pb = new ProcessBuilder("ffmpeg", "-i", video.getPath(), "-ss", "00:00" ,"-to", "06:00","-force_key_frames", "expr:gte(t,n_forced*1)", "-strict", "-2", "-c:a", "aac","-c:v", "libx264", "-hls_time", "1", "-hls_list_size", "0", "-f", "hls", m3u8.getPath());
+        ProcessBuilder pb = new ProcessBuilder("ffmpeg", "-i", video.getPath(),
+                "-ss", "00:00" ,"-to", "06:00",
+                "-force_key_frames",
+                "expr:gte(t,n_forced*1)",
+                "-strict", "-2",
+                "-c:a",
+                "aac",
+                "-c:v",
+                "libx264",
+                "-hls_time",
+                "1",
+                "-hls_list_size",
+                "0",
+                "-f",
+                "hls",
+                m3u8.getPath());
         // 将标准错误流和标准输出流合并
 //        pb2.redirectErrorStream(true);
         pb.redirectErrorStream(true);
@@ -265,7 +279,7 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
             purchasedQueryWrapper.eq("movieId",movieId);
             long count = purchasedService.count(purchasedQueryWrapper);
             //如果没有购买电影
-            if(count < 0){
+            if(count <= 0){
                 String videoSixUrl = videoUpload.getVideoSixUrl();
                 videoUpload.setVideoUrl(videoSixUrl);
                 return videoUpload;
@@ -277,6 +291,11 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
             QueryWrapper<Vip> vipQueryWrapper = new QueryWrapper<>();
             vipQueryWrapper.eq("userId",currentUserId);
             Vip vip = vipMapper.selectOne(vipQueryWrapper);
+            if (vip == null){
+                String videoSixUrl = videoUpload.getVideoSixUrl();
+                videoUpload.setVideoUrl(videoSixUrl);
+                return videoUpload;
+            }
             Date overTime = vip.getOverTime();
             Date date = new Date();
             //如果已经过期
@@ -290,6 +309,91 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
         return videoUpload;
     }
 
+
+    @Override
+    public String uploadVideoToM3U83(MultipartFile file) {
+        String contentType = file.getContentType();
+        // 获取上传图片的名称
+        String filename = file.getOriginalFilename();
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String date = sdf.format(new Date());
+
+        // 为了保证图片在服务器中名字的唯一性，使用UUID来对filename进行改写
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+        // 将生成的uuid和filename惊醒拼接
+        String newFileName = "video" + File.separator + date + File.separator + uuid + File.separator + filename;
+        // 创建一个文件实例对象
+        File video = new File(basepath, newFileName);
+
+        if (!video.exists()) {
+            video.mkdirs();
+        }
+        // 对这个文件进行上传操作
+        try {
+            file.transferTo(video);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        File m3u8 = new File(basepath + File.separator + newFileName.substring(0, newFileName.lastIndexOf(".")) + ".m3u8");
+        try {
+            m3u8.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //m3u8分片编码
+        // 使用FFmpeg将视频分成多个小块
+
+        //被注释的这个快一点
+        //ProcessBuilder pb = new ProcessBuilder("ffmpeg", "-i", video.getPath(), "-codec", "copy", "-start_number", "0", "-hls_time", "1", "-hls_list_size", "0", "-f", "hls", m3u8.getPath());
+//        ProcessBuilder pb = new ProcessBuilder("ffmpeg", "-i", video.getPath(), "-force_key_frames", "expr:gte(t,n_forced*1)", "-strict", "-2", "-c:a", "aac","-c:v", "libx264", "-hls_time", "1", "-hls_list_size", "0", "-f", "hls", m3u8.getPath());
+//        ProcessBuilder pb = new ProcessBuilder("ffmpeg", "-i", video.getPath(), "-ss", "00:00" ,"-to", "06:00","-force_key_frames", "expr:gte(t,n_forced*1)", "-strict", "-2", "-c:a", "aac","-c:v", "libx264", "-hls_time", "1", "-hls_list_size", "0", "-f", "hls", m3u8.getPath());
+        //ffmpeg -threads 2 -re -fflags +genpts -i "D:\Program Files\nginx-1.8.1\html\zizhong.mp4"
+        //-c:v:0 libx265 -s:0 1920x1080 -profile:v:0 main -c:a:0 aac -ac 2 -b:v:0 2000k -b:a:0 128k -maxrate:0 2000k -bufsize:0 4000k -r 24 -ar 44100 -g 48
+        //-c:v:1 libx265 -s:2 1280x720 -profile:v:1 main -c:a:0 aac -ac 2 -b:v:1 1000k -b:a:1 128k -maxrate:2 1000k -bufsize:2 2000k -r 24 -ar 44100 -g 48
+        //-c:v:2 libx265 -s:4 720x480 -profile:v:2 main -c:a:0 aac -ac 2 -b:v:2 600k -b:a:2 128k -maxrate:4 600k -bufsize:4 1000k -r 24 -ar 44100 -g 48
+        //-map 0:v -map 0:a -map 0:v -map 0:a -map 0:v -map 0:a -f hls -var_stream_map "v:0,a:0 v:1,a:1 v:2,a:2" -hls_segment_type mpegts
+        //-hls_enc 1 -hls_enc_key 0123456789ABCDEF0123456789ABCDEF -hls_enc_key_url "123456.key" -start_number 10 -hls_time 10 -hls_list_size 0
+        //-hls_start_number_source 1 -master_pl_name "index.m3u8"
+        //-hls_segment_filename "D:\Program Files\nginx-1.8.1\html\index_%v-%09d.ts" "D:\Program Files\nginx-1.8.1\html\index_%v.m3u8"
+        System.out.println(m3u8.getPath());
+        String output1 = "D:/www/videoSystem/file/video/20240127/" + uuid +"/" + "meeting_01_%v.m3u8";
+        String output0 = "D:/www/videoSystem/file/video/20240127/" + uuid +"/" + "meeting_01_%v-%09d.ts";
+
+        //慢 但是可以用
+        ProcessBuilder pb = new ProcessBuilder("ffmpeg", "-threads", "2", "-re" ,"-fflags", "+genpts", "-i", video.getPath(),"-ss", "00:00" ,"-to", "06:00",
+                "-s:0", "1920x1080", "-ac", "2" ,"-vcodec", "libx264", "-profile:v", "main" ,"-b:v:0", "2000k" ,"-maxrate:0", "2000k", "-bufsize:0", "4000k" ,"-r", "30", "-ar", "44100" ,"-g" ,"48" ,"-c:a", "aac", "-b:a:0" ,"128k",
+                "-s:2", "1280x720", "-ac", "2", "-vcodec" ,"libx264", "-profile:v" ,"main" ,"-b:v:1" ,"1000k" ,"-maxrate:2" ,"1000k" ,"-bufsize:2" ,"2000k" ,"-r" ,"30" ,"-ar" ,"44100" ,"-g" ,"48" ,"-c:a" ,"aac" ,"-b:a:1" ,"128k",
+                "-s:4", "720x480", "-ac", "2", "-vcodec" ,"libx264", "-profile:v" ,"main" ,"-b:v:2" ,"600k" ,"-maxrate:4" ,"600k" ,"-bufsize:4" ,"1000k" ,"-r" ,"30" ,"-ar" ,"44100" ,"-g" ,"48" ,"-c:a" ,"aac" ,"-b:a:2" ,"128k",
+//                -s:4 720x480 -ac 2 -vcodec libx264 -profile:v main -b:v:2 600k -maxrate:4 600k -bufsize:4 1000k -r 30 -ar 44100 -g 48 -c:a aac -b:a:2 128k
+                "-map", "0:v", "-map", "0:a" ,"-map" ,"0:v" ,"-map" ,"0:a" ,"-map" ,"0:v" ,"-map" ,"0:a" ,"-f" ,"hls", "-var_stream_map", "v:0,a:0 v:1,a:1 v:2,a:2",
+                "-start_number", "10", "-hls_time", "10", "-hls_list_size", "0", "-hls_start_number_source", "1", "-master_pl_name", "index.m3u8" ,"-hls_segment_filename",
+                 output0,output1);
+        pb.redirectErrorStream(true);
+
+
+        Process p = null;
+        try {
+            p = pb.start();
+
+            // 处理FFmpeg的输出信息
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            p.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        String tempUrl = SERVER_PATH + newFileName.replace("\\", "/");
+        return tempUrl.substring(0, tempUrl.lastIndexOf(".")) + ".m3u8";
+    }
 }
 
 

@@ -35,5 +35,9 @@ public interface CommonConstant {
 
     String REDIS_FA_MOVIE = "movie:favorites:";
 
+    /**
+     * redis 设置的 订单延迟时间key
+     */
+    String ORDER_DDL_TIME = "DDL:Time";
 
 }

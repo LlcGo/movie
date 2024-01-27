@@ -6,6 +6,7 @@ import com.lc.project.common.BaseResponse;
 import com.lc.project.common.DeleteRequest;
 import com.lc.project.common.ErrorCode;
 import com.lc.project.common.ResultUtils;
+import com.lc.project.constant.CommonConstant;
 import com.lc.project.exception.BusinessException;
 import com.lc.project.model.dto.order.OrderAddRequest;
 import com.lc.project.model.dto.order.OrderByRequest;
@@ -15,10 +16,13 @@ import com.lc.project.model.entity.Order;
 import com.lc.project.model.entity.Users;
 import com.lc.project.model.enums.OrderDayEnum;
 import com.lc.project.model.vo.OrderVO;
+import com.lc.project.rabbitmq.RabbitMQUtils;
 import com.lc.project.service.OrderService;
 import com.lc.project.service.UsersService;
+import com.lc.project.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -41,6 +45,11 @@ public class OrderController {
     @Resource
     private UsersService userService;
 
+    @Value("${rabbit.ttl}")
+    private Integer rabbitTTL;
+
+    @Resource
+    private RedisUtils redisUtils;
 
     /**
      * 创建
@@ -201,5 +210,17 @@ public class OrderController {
         orderByRequest.setUserId(loginUser.getId());
         Boolean flag = orderService.toBuy(orderByRequest);
         return ResultUtils.success(flag);
+    }
+
+    @PostMapping("/getDDLTime")
+    public BaseResponse<Integer> getDDLTime() {
+        Integer ddlTime = null;
+        Object time = redisUtils.get(CommonConstant.ORDER_DDL_TIME);
+        if(time != null){
+            ddlTime = (Integer) time;
+        }else {
+            ddlTime = rabbitTTL;
+        }
+        return ResultUtils.success(ddlTime);
     }
 }

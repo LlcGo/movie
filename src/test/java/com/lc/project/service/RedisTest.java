@@ -55,4 +55,14 @@ public class RedisTest {
         boolean b3 = redisUtils.sHasKey("movie:favorites:" + 1, "121315646516");
         System.out.println(b3);
     }
+
+    @Test
+    public void testTime(){
+        boolean ddlTime = redisUtils.set("DDL_Time", 6000);
+        Object o = redisUtils.get("DDL_Time");
+        System.out.println(o);
+        redisUtils.set("DDL_Time",7000);
+        Object o1 = redisUtils.get("DDL_Time");
+        System.out.println(o1);
+    }
 }

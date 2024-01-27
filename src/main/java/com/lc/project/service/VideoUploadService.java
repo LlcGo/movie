@@ -15,9 +15,27 @@ public interface VideoUploadService extends IService<VideoUpload> {
 
     String uploadImg(MultipartFile multipartFile);
 
+    /**
+     * 全部直接分片处理不管分辨率
+     * @param multipartFile
+     * @return
+     */
     String uploadVideoToM3U8(MultipartFile multipartFile);
 
+    /**
+     * 只分片6分钟
+     * @param file
+     * @return
+     */
     String uploadVideoToM3U82(MultipartFile file);
 
+
     VideoUpload getVideoById(Integer videoId,Integer movieState,Integer movieId);
+
+    /**
+     * 将视频编码为3中清晰度
+     * @param file
+     * @return
+     */
+    String uploadVideoToM3U83(MultipartFile file);
 }
