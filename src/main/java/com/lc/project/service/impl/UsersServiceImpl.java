@@ -301,6 +301,39 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
         return this.updateById(currentUser);
     }
 
+    @Override
+    public Users adminLogin(String userAccount, String userPassword, HttpServletRequest request) {
+        // 1. 校验
+        if (StringUtils.isAnyBlank(userAccount, userPassword)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");
+        }
+        if (userAccount.length() < 4) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号错误");
+        }
+        if (userPassword.length() < 5) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码错误");
+        }
+        // 2. 加密
+        String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
+        // 查询用户是否存在
+        QueryWrapper<Users> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("username", userAccount);
+        queryWrapper.eq("password", encryptPassword);
+        Users user = userMapper.selectOne(queryWrapper);
+        // 用户不存在
+        if (user == null) {
+            log.info("user login failed, userAccount cannot match userPassword");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或密码错误");
+        }
+        String userRole = user.getUserRole();
+        if(!userRole.equals("admin")){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "您不是管理员，无权限登录");
+        }
+        // 3. 记录用户的登录态
+        request.getSession().setAttribute(USER_LOGIN_STATE, user);
+        return user;
+    }
+
 }
 
 

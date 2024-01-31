@@ -74,4 +74,13 @@ public interface UsersService extends IService<Users> {
     List<Users> matchUsers(Integer num, Users loginUser);
 
     Boolean updateUserImg(String imgUrI);
+
+    /**
+     * 管理员登录
+     * @param userAccount
+     * @param userPassword
+     * @param request
+     * @return
+     */
+    Users adminLogin(String userAccount, String userPassword, HttpServletRequest request);
 }

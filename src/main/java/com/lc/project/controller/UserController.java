@@ -90,6 +90,28 @@ public class UserController {
         return ResultUtils.success(user);
     }
 
+
+    /**
+     * 用户登录
+     *
+     * @param userLoginRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/AdminLogin")
+    public BaseResponse<Users> adminLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+        if (userLoginRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        String userAccount = userLoginRequest.getUserAccount();
+        String userPassword = userLoginRequest.getUserPassword();
+        if (StringUtils.isAnyBlank(userAccount, userPassword)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Users user = userService.adminLogin(userAccount, userPassword, request);
+        return ResultUtils.success(user);
+    }
+
     /**
      * 用户注销
      *
