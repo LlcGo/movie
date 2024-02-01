@@ -156,7 +156,8 @@ public class UserController {
         }
         Users user = new Users();
         BeanUtils.copyProperties(userAddRequest, user);
-        boolean result = userService.save(user);
+        boolean result = userService.addUser(user);
+//        boolean result = userService.save(user);
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }
@@ -175,7 +176,16 @@ public class UserController {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        boolean b = userService.removeById(deleteRequest.getId());
+        boolean b = userService.removeUser(deleteRequest.getId());
+        return ResultUtils.success(b);
+    }
+
+    @PostMapping("/re")
+    public BaseResponse<Boolean> reUser(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
+        if (deleteRequest == null || deleteRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        boolean b = userService.reUser(deleteRequest.getId());
         return ResultUtils.success(b);
     }
 
@@ -255,8 +265,8 @@ public class UserController {
      * @param request
      * @return
      */
-    @GetMapping("/list/page")
-    public BaseResponse<Page<UserVo>> listUserByPage(UserQueryRequest userQueryRequest, HttpServletRequest request) {
+    @PostMapping("/list/page")
+    public BaseResponse<Page<UserVo>> listUserByPage(@RequestBody UserQueryRequest userQueryRequest, HttpServletRequest request) {
         long current = 1;
         long size = 10;
         Users userQuery = new Users();
@@ -265,7 +275,8 @@ public class UserController {
             current = userQueryRequest.getCurrent();
             size = userQueryRequest.getPageSize();
         }
-        QueryWrapper<Users> queryWrapper = new QueryWrapper<>(userQuery);
+        QueryWrapper<Users> queryWrapper = userService.getqueryWrapper(userQuery);
+//        QueryWrapper<Users> queryWrapper = new QueryWrapper<>(userQuery);
         Page<Users> userPage = userService.page(new Page<>(current, size), queryWrapper);
         Page<UserVo> userVOPage = new PageDTO<>(userPage.getCurrent(), userPage.getSize(), userPage.getTotal());
         List<UserVo> userVOList = userPage.getRecords().stream().map(user -> {
@@ -386,5 +397,12 @@ public class UserController {
        Boolean flag = userService.updateUserImg(imgUrI);
        return ResultUtils.success(flag);
     }
+
+    @PostMapping("/admin/updatePassword")
+    public BaseResponse<Boolean> adminUpdatePassword(String password,String id){
+        Boolean flag = userService.updateAdminPassword(password,id);
+        return ResultUtils.success(flag);
+    }
+
 
 }

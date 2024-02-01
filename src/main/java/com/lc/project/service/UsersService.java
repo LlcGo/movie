@@ -1,5 +1,6 @@
 package com.lc.project.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lc.project.model.dto.user.UpdatePassWord;
 import com.lc.project.model.dto.user.UserQueryRequest;
@@ -83,4 +84,14 @@ public interface UsersService extends IService<Users> {
      * @return
      */
     Users adminLogin(String userAccount, String userPassword, HttpServletRequest request);
+
+    QueryWrapper<Users> getqueryWrapper(Users userQuery);
+
+    boolean addUser(Users user);
+
+    boolean removeUser(Long id);
+
+    boolean reUser(Long id);
+
+    Boolean updateAdminPassword(String password, String id);
 }

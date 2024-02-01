@@ -21,6 +21,8 @@ public class Users implements Serializable {
     @TableId
     private String id;
 
+    private Integer state;
+
     /**
      * 用户名，账号
      */

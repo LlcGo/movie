@@ -20,6 +20,8 @@ public class UserVo {
 
     private String userRole;
 
+    private Integer state;
+
     public String getId() {
         return id;
     }

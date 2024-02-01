@@ -212,13 +212,13 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
         String sex = userQueryRequest.getSex();
 //        String likeType = userQueryRequest.getLikeType();
         QueryWrapper<Users> wrapper = new QueryWrapper<>();
-        wrapper.like(StrUtil.isNotBlank(nickname),"nickname",nickname);
-        wrapper.eq(StrUtil.isNotBlank(sex),"sex",sex);
+        wrapper.like(StrUtil.isNotBlank(nickname), "nickname", nickname);
+        wrapper.eq(StrUtil.isNotBlank(sex), "sex", sex);
 //        wrapper.like(StrUtil.isNotBlank(likeType),"likeType",likeType);
         Users loginUser = getLoginUser();
         String id = loginUser.getId();
         //过滤掉自己 还有朋友
-        wrapper.ne("id",id);
+        wrapper.ne("id", id);
         List<MyFriends> list = myFriendsService.getMyFriends(Long.parseLong(id));
 
         //我的每一个朋友的id
@@ -239,11 +239,10 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
     }
 
 
-
     @Override
     public List<Users> matchUsers(Integer num, Users loginUser) {
         QueryWrapper<Users> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("id","likeType");
+        queryWrapper.select("id", "likeType");
         queryWrapper.isNotNull("likeType");
         List<Users> userList = this.list(queryWrapper);
         String tags = loginUser.getLikeType();
@@ -251,7 +250,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
         List<String> tagList = gson.fromJson(tags, new TypeToken<List<String>>() {
         }.getType());
         //long 为 分数
-        ArrayList<Pair<Users,Long>> list = new ArrayList<>();
+        ArrayList<Pair<Users, Long>> list = new ArrayList<>();
         for (Users user : userList) {
             String tagUser = user.getLikeType();
             if (StringUtils.isBlank(tagUser) || Objects.equals(loginUser.getId(), user.getId())) {
@@ -271,12 +270,14 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
                 .map(p -> p.getKey().getId())
                 .collect(Collectors.toList());
         QueryWrapper<Users> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.in("id",userIds);
+        userQueryWrapper.in("id", userIds);
         //查询出了没有顺序的用户
         Map<String, List<Users>> unOrderUser = this.list(userQueryWrapper)
                 .stream().collect(Collectors.groupingBy(Users::getId));
         ArrayList<Users> finalUsers = new ArrayList<>();
-        userIds.forEach(id -> { finalUsers.add(unOrderUser.get(id).get(0));});
+        userIds.forEach(id -> {
+            finalUsers.add(unOrderUser.get(id).get(0));
+        });
 
         List<MyFriends> myFriendsList = myFriendsService.getMyFriends(Long.parseLong(loginUser.getId()));
 
@@ -285,7 +286,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
             Users otherUsers = myFriends.getOtherUsers();
             return otherUsers.getId();
         }).collect(Collectors.toList());
-        return  finalUsers.stream().filter(searchUser -> {
+        return finalUsers.stream().filter(searchUser -> {
             //每一个准备过滤的用户id
             String id1 = searchUser.getId();
             //我的朋友的id
@@ -326,13 +327,79 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或密码错误");
         }
         String userRole = user.getUserRole();
-        if(!userRole.equals("admin")){
+        if (!userRole.equals("admin")) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "您不是管理员，无权限登录");
         }
         // 3. 记录用户的登录态
         request.getSession().setAttribute(USER_LOGIN_STATE, user);
         return user;
     }
+
+    @Override
+    public QueryWrapper<Users> getqueryWrapper(Users userQuery) {
+        String id = userQuery.getId();
+        Integer state = userQuery.getState();
+        String username = userQuery.getUsername();
+        String nickname = userQuery.getNickname();
+        String userRole = userQuery.getUserRole();
+
+        QueryWrapper<Users> wrapper = new QueryWrapper<>();
+        wrapper.eq(id != null,"id",id);
+        wrapper.eq(state != null,"state",state);
+        wrapper.eq(StrUtil.isNotBlank(userRole),"userRole",userRole);
+        wrapper.like(StrUtil.isNotBlank(username),"username",username);
+        wrapper.like(StrUtil.isNotBlank(nickname),"nickname",nickname);
+        return wrapper;
+    }
+
+    @Override
+    public boolean addUser(Users user) {
+        String userRole = user.getUserRole();
+        String username = user.getUsername();
+        QueryWrapper<Users> wrapper = new QueryWrapper<>();
+        wrapper.eq("username",username);
+        long count = this.count(wrapper);
+        if(count > 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"账户名不能相同");
+        }
+        String nickname = user.getNickname();
+        if (StrUtil.isBlank(userRole)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if (StrUtil.isBlank(username)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if (StrUtil.isBlank(nickname)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        user.setPassword(DigestUtils.md5DigestAsHex((SALT + "123456789").getBytes()));
+        user.setFaceImage("/api/uploads/img/img.png");
+        return this.save(user);
+    }
+
+    @Override
+    public boolean removeUser(Long id) {
+        UpdateWrapper<Users> usersUpdateWrapper = new UpdateWrapper<>();
+        usersUpdateWrapper.set("state",1);
+        usersUpdateWrapper.eq("id",id);
+        return this.update(usersUpdateWrapper);
+    }
+    @Override
+    public boolean reUser(Long id) {
+        UpdateWrapper<Users> usersUpdateWrapper = new UpdateWrapper<>();
+        usersUpdateWrapper.set("state",0);
+        usersUpdateWrapper.eq("id",id);
+        return this.update(usersUpdateWrapper);
+    }
+
+    @Override
+    public Boolean updateAdminPassword(String password, String id) {
+        UpdateWrapper<Users> usersUpdateWrapper = new UpdateWrapper<>();
+        usersUpdateWrapper.set("password",DigestUtils.md5DigestAsHex((SALT + password).getBytes()));
+        usersUpdateWrapper.eq("id",id);
+        return this.update(usersUpdateWrapper);
+    }
+
 
 }
 
