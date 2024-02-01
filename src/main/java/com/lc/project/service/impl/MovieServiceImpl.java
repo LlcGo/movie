@@ -80,6 +80,59 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
 
     @Override
     public Page<Movie> listPage(MovieQueryRequest movieQueryRequest) {
+        Users loginUser = userService.getLoginUser();
+        if(loginUser.getUserRole().equals("admin")){
+            Movie movieQuery = new Movie();
+            BeanUtils.copyProperties(movieQueryRequest, movieQuery);
+            long current = movieQueryRequest.getCurrent();
+            long size = movieQueryRequest.getPageSize();
+            String sortField = movieQueryRequest.getSortField();
+            String sortOrder = movieQueryRequest.getSortOrder();
+            String movieName = movieQuery.getMovieName();
+            Integer type = movieQueryRequest.getType();
+            Integer nation = movieQueryRequest.getNation();
+            Integer year = movieQueryRequest.getYear();
+            Boolean isScore = movieQueryRequest.getScore();
+            Boolean isHot = movieQueryRequest.getHot();
+            Integer id = movieQueryRequest.getId();
+            //根据创建时间查询
+            Date creatTime = movieQueryRequest.getCreatTime();
+            //根据是否上架查询
+            Integer state = movieQueryRequest.getState();
+            // content 需支持模糊搜索
+            movieQuery.setMovieName(movieName);
+            movieQuery.setType(type);
+            movieQuery.setNation(nation);
+            movieQuery.setYear(year);
+//        movieQuery.setDirectorId();
+//        movieQuery.setActorId();
+//        movieQuery.setUserId();
+            movieQuery.setCreatTime(creatTime);
+            movieQuery.setState(state);
+            // 限制爬虫
+            if (size > 50) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            }
+            //可以根据type name nation year 查询
+            QueryWrapper<Movie> queryWrapper = new QueryWrapper<>();
+            queryWrapper.like(StringUtils.isNotBlank(movieName), "movieName", movieName);
+            queryWrapper.eq(type!=null,"type",type);
+            queryWrapper.eq(id != null,"id",id);
+            queryWrapper.eq(nation!= null,"nation",nation);
+            queryWrapper.eq(year!=null,"year",year);
+            if(state != null){
+                if(state == 1){
+                    queryWrapper.in("state",1,2,3);
+                }else {
+                    queryWrapper.eq("state",state);
+                }
+            }
+            queryWrapper.orderBy(StringUtils.isNotBlank(sortField),
+                    sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
+            queryWrapper.orderByDesc(isScore != null && isScore,"score");
+            queryWrapper.orderByDesc(isHot != null && isHot,"hot");
+            return this.page(new Page<>(current, size), queryWrapper);
+        }
         Movie movieQuery = new Movie();
         BeanUtils.copyProperties(movieQueryRequest, movieQuery);
         long current = movieQueryRequest.getCurrent();
@@ -122,6 +175,7 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
         queryWrapper.eq(type!=null,"type",type);
         queryWrapper.eq(nation!= null,"nation",nation);
         queryWrapper.eq(year!=null,"year",year);
+        queryWrapper.in("state",1,2,3);
         queryWrapper.orderBy(StringUtils.isNotBlank(sortField),
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
         queryWrapper.orderByDesc(isScore != null && isScore,"score");
