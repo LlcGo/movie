@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lc.project.model.dto.movie.MovieQueryRequest;
 import com.lc.project.model.entity.Movie;
-import com.lc.project.model.vo.MovieVo;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -54,4 +52,9 @@ public interface MovieService extends IService<Movie> {
      */
     List<Movie> getHotMovie();
 
+    Boolean setState(Integer state, Integer movieId, Boolean flag);
+
+    Boolean setMf(Integer state, Integer movieId);
+
+    Boolean setPrice(Integer price, Integer movieId);
 }

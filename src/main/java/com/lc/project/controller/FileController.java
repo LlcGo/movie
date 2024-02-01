@@ -155,7 +155,7 @@ public class FileController {
 
     //上传视频并且分片
     @PostMapping(value = "/uploadVideoToM3U8")
-    public BaseResponse<String> uploadVideoToM3U8(@RequestParam("file") MultipartFile multipartFile) {
+    public BaseResponse<Integer> uploadVideoToM3U8(@RequestParam("file") MultipartFile multipartFile) {
         return ResultUtils.success(videoUploadService.uploadVideoToM3U83(multipartFile));
     }
 

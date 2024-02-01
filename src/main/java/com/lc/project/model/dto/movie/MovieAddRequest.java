@@ -1,8 +1,15 @@
 package com.lc.project.model.dto.movie;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.lc.project.model.entity.MovieNation;
+import com.lc.project.model.entity.MovieType;
+import com.lc.project.model.entity.MovieYear;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 添加影视
@@ -12,35 +19,50 @@ import java.io.Serializable;
 @Data
 public class MovieAddRequest implements Serializable {
 
-    /**
-     * 用户昵称
-     */
-    private String userName;
 
     /**
-     * 账号
+     * 电影名字
      */
-    private String userAccount;
+    private String movieName;
 
     /**
-     * 用户头像
+     * 电影类型
      */
-    private String userAvatar;
+    private Integer type;
+
+
+    private Integer nation;
+
+
+    private Integer year;
 
     /**
-     * 性别
+     * 图片位置
      */
-    private Integer gender;
+    private String img;
 
     /**
-     * 用户角色: user, admin
+     * 导演名
      */
-    private String userRole;
+    private String directorName;
+
 
     /**
-     * 密码
+     * 电影简介
      */
-    private String userPassword;
+    private String movieProfile;
 
-    private static final long serialVersionUID = 1L;
+    /**
+     * 视频为id
+     */
+    private Integer videoId;
+
+
+
+    /**
+     * 演员名
+     */
+    private String actorsName;
+
+
 }

@@ -1,6 +1,7 @@
 package com.lc.project.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lc.project.common.ErrorCode;
@@ -31,13 +32,13 @@ import java.util.stream.Collectors;
 import static com.lc.project.websocket.ChatHandler.threadPoolExecutor;
 
 /**
-* @author asus
-* @description 针对表【movie(电影表)】的数据库操作Service实现
-* @createDate 2024-01-06 11:09:38
-*/
+ * @author asus
+ * @description 针对表【movie(电影表)】的数据库操作Service实现
+ * @createDate 2024-01-06 11:09:38
+ */
 @Service
 public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
-    implements MovieService{
+        implements MovieService {
 
     @Resource
     private UsersService userService;
@@ -48,8 +49,6 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
     @Resource
     @Lazy
     private PurchasedService purchasedService;
-
-
 
 
     @Override
@@ -66,14 +65,14 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
         // 创建时，所有参数必须非空
         if (add) {
             //前面判斷string 後面判斷 Integer
-            if (StringUtils.isAnyBlank(movieName,movieProfile) || ObjectUtils.anyNull(type, year,nation)) {
+            if (StringUtils.isAnyBlank(movieName, movieProfile) || ObjectUtils.anyNull(type, year, nation)) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR);
             }
         }
         if (StringUtils.isNotBlank(movieProfile) && movieProfile.length() > 8192) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "内容过长");
         }
-        if(movieId != null && movieId < 0){
+        if (movieId != null && movieId < 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "修改id出錯");
         }
     }
@@ -81,7 +80,7 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
     @Override
     public Page<Movie> listPage(MovieQueryRequest movieQueryRequest) {
         Users loginUser = userService.getLoginUser();
-        if(loginUser.getUserRole().equals("admin")){
+        if (loginUser.getUserRole().equals("admin")) {
             Movie movieQuery = new Movie();
             BeanUtils.copyProperties(movieQueryRequest, movieQuery);
             long current = movieQueryRequest.getCurrent();
@@ -116,21 +115,22 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
             //可以根据type name nation year 查询
             QueryWrapper<Movie> queryWrapper = new QueryWrapper<>();
             queryWrapper.like(StringUtils.isNotBlank(movieName), "movieName", movieName);
-            queryWrapper.eq(type!=null,"type",type);
-            queryWrapper.eq(id != null,"id",id);
-            queryWrapper.eq(nation!= null,"nation",nation);
-            queryWrapper.eq(year!=null,"year",year);
-            if(state != null){
-                if(state == 1){
-                    queryWrapper.in("state",1,2,3);
-                }else {
-                    queryWrapper.eq("state",state);
+            queryWrapper.eq(type != null, "type", type);
+            queryWrapper.eq(id != null, "id", id);
+            queryWrapper.eq(nation != null, "nation", nation);
+            queryWrapper.eq(year != null, "year", year);
+            if (state != null) {
+                if (state == 1) {
+                    queryWrapper.in("state", 1, 2, 3);
+                } else {
+                    queryWrapper.eq("state", state);
                 }
             }
             queryWrapper.orderBy(StringUtils.isNotBlank(sortField),
                     sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
-            queryWrapper.orderByDesc(isScore != null && isScore,"score");
-            queryWrapper.orderByDesc(isHot != null && isHot,"hot");
+            queryWrapper.orderByDesc("creatTime");
+            queryWrapper.orderByDesc(isScore != null && isScore, "score");
+            queryWrapper.orderByDesc(isHot != null && isHot, "hot");
             return this.page(new Page<>(current, size), queryWrapper);
         }
         Movie movieQuery = new Movie();
@@ -172,14 +172,14 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
         //可以根据type name nation year 查询
         QueryWrapper<Movie> queryWrapper = new QueryWrapper<>();
         queryWrapper.like(StringUtils.isNotBlank(movieName), "movieName", movieName);
-        queryWrapper.eq(type!=null,"type",type);
-        queryWrapper.eq(nation!= null,"nation",nation);
-        queryWrapper.eq(year!=null,"year",year);
-        queryWrapper.in("state",1,2,3);
+        queryWrapper.eq(type != null, "type", type);
+        queryWrapper.eq(nation != null, "nation", nation);
+        queryWrapper.eq(year != null, "year", year);
+        queryWrapper.in("state", 1, 2, 3);
         queryWrapper.orderBy(StringUtils.isNotBlank(sortField),
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
-        queryWrapper.orderByDesc(isScore != null && isScore,"score");
-        queryWrapper.orderByDesc(isHot != null && isHot,"hot");
+        queryWrapper.orderByDesc(isScore != null && isScore, "score");
+        queryWrapper.orderByDesc(isHot != null && isHot, "hot");
         return this.page(new Page<>(current, size), queryWrapper);
     }
 
@@ -228,33 +228,33 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
     }
 
     @Override
-    public ConcurrentHashMap<Integer,List<Movie>> listIndexPage() {
+    public ConcurrentHashMap<Integer, List<Movie>> listIndexPage() {
 
         ConcurrentHashMap<Integer, List<Movie>> movieList = new ConcurrentHashMap<>();
 
-        CompletableFuture<Boolean> future01 = CompletableFuture.supplyAsync(() -> selectMovieByType(1,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future01 = CompletableFuture.supplyAsync(() -> selectMovieByType(1, movieList), threadPoolExecutor);
 
-        CompletableFuture<Boolean> future02 = CompletableFuture.supplyAsync(() -> selectMovieByType(2,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future02 = CompletableFuture.supplyAsync(() -> selectMovieByType(2, movieList), threadPoolExecutor);
 
-        CompletableFuture<Boolean> future03 = CompletableFuture.supplyAsync(() -> selectMovieByType(3,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future03 = CompletableFuture.supplyAsync(() -> selectMovieByType(3, movieList), threadPoolExecutor);
 
-        CompletableFuture<Boolean> future04 = CompletableFuture.supplyAsync(() -> selectMovieByType(4,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future04 = CompletableFuture.supplyAsync(() -> selectMovieByType(4, movieList), threadPoolExecutor);
 
-        CompletableFuture<Boolean> future05 = CompletableFuture.supplyAsync(() -> selectMovieByType(5,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future05 = CompletableFuture.supplyAsync(() -> selectMovieByType(5, movieList), threadPoolExecutor);
 
-        CompletableFuture<Boolean> future06 = CompletableFuture.supplyAsync(() -> selectMovieByType(6,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future06 = CompletableFuture.supplyAsync(() -> selectMovieByType(6, movieList), threadPoolExecutor);
 
-        CompletableFuture<Boolean> future07 = CompletableFuture.supplyAsync(() -> selectMovieByType(7,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future07 = CompletableFuture.supplyAsync(() -> selectMovieByType(7, movieList), threadPoolExecutor);
 
-        CompletableFuture<Boolean> future08 = CompletableFuture.supplyAsync(() -> selectMovieByType(8,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future08 = CompletableFuture.supplyAsync(() -> selectMovieByType(8, movieList), threadPoolExecutor);
 
-        CompletableFuture<Boolean> future09 = CompletableFuture.supplyAsync(() -> selectMovieByType(9,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future09 = CompletableFuture.supplyAsync(() -> selectMovieByType(9, movieList), threadPoolExecutor);
 
-        CompletableFuture<Boolean> future010 = CompletableFuture.supplyAsync(() -> selectMovieByType(10,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future010 = CompletableFuture.supplyAsync(() -> selectMovieByType(10, movieList), threadPoolExecutor);
 
-        CompletableFuture<Boolean> future011 = CompletableFuture.supplyAsync(() -> selectMovieByType(11,movieList),threadPoolExecutor);
+        CompletableFuture<Boolean> future011 = CompletableFuture.supplyAsync(() -> selectMovieByType(11, movieList), threadPoolExecutor);
 
-        CompletableFuture<Void> future = CompletableFuture.allOf(future01, future02,future03,future04,future05,future06,future07,future08,future09,future010,future011);
+        CompletableFuture<Void> future = CompletableFuture.allOf(future01, future02, future03, future04, future05, future06, future07, future08, future09, future010, future011);
         try {
             future.get();
         } catch (InterruptedException | ExecutionException e) {
@@ -265,19 +265,19 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
 
     @Override
     public List<Movie> getHotByType(Integer type) {
-       return movieMapper.getMovieHotListByType(type);
+        return movieMapper.getMovieHotListByType(type);
     }
 
     @Override
     public Movie getMovieAndTypeNameById(long id) {
         Users loginUser = userService.getLoginUser();
-        if(loginUser == null){
+        if (loginUser == null) {
             return movieMapper.getMovieAndTypeNameById(id);
         }
         String currentUserId = loginUser.getId();
         QueryWrapper<Purchased> purchasedQueryWrapper = new QueryWrapper<>();
-        purchasedQueryWrapper.eq("userId",currentUserId);
-        purchasedQueryWrapper.eq("movieId",id);
+        purchasedQueryWrapper.eq("userId", currentUserId);
+        purchasedQueryWrapper.eq("movieId", id);
         long count = purchasedService.count(purchasedQueryWrapper);
         Movie movie = movieMapper.getMovieAndTypeNameById(id);
         movie.setBuy(count > 0);
@@ -287,12 +287,61 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
 
     @Override
     public List<Movie> getHotMovie() {
-      return movieMapper.getAllHotMovieOrderByHot();
+        return movieMapper.getAllHotMovieOrderByHot();
     }
 
-    public Boolean selectMovieByType(int type,ConcurrentHashMap<Integer, List<Movie>> movieList){
+    @Override
+    public Boolean setState(Integer state, Integer movieId,Boolean flag) {
+        UpdateWrapper<Movie> movieUpdateWrapper = new UpdateWrapper<>();
+        movieUpdateWrapper.eq("id", movieId);
+        //如果是要设置为会员
+        if(flag){
+            movieUpdateWrapper.set("state", 2);
+            movieUpdateWrapper.set("price",null);
+            return this.update(movieUpdateWrapper);
+        }
+
+        //如果是下架
+        if (state == 1 || state == 2 || state == 3) {
+            movieUpdateWrapper.set("state", 0);
+            return this.update(movieUpdateWrapper);
+        }
+
+
+
+        Movie movie = this.getById(movieId);
+        //如果是有价格的
+        if (movie.getPrice() != null) {
+            movieUpdateWrapper.set("state", 3);
+            return this.update(movieUpdateWrapper);
+        }
+        //正常上架
+        movieUpdateWrapper.set("state",1);
+        return this.update(movieUpdateWrapper);
+    }
+
+    @Override
+    public Boolean setMf(Integer state, Integer movieId) {
+        UpdateWrapper<Movie> movieUpdateWrapper = new UpdateWrapper<>();
+        movieUpdateWrapper.set("price",null);
+        movieUpdateWrapper.eq("id",movieId);
+        movieUpdateWrapper.set("state",1);
+        return this.update(movieUpdateWrapper);
+    }
+
+    @Override
+    public Boolean setPrice(Integer price, Integer movieId) {
+        UpdateWrapper<Movie> movieUpdateWrapper = new UpdateWrapper<>();
+        movieUpdateWrapper.eq("id",movieId);
+        movieUpdateWrapper.set("price",price);
+        movieUpdateWrapper.set("state",3);
+        return this.update(movieUpdateWrapper);
+    }
+
+
+    public Boolean selectMovieByType(int type, ConcurrentHashMap<Integer, List<Movie>> movieList) {
         List<Movie> movies = movieMapper.getMovieIndexListByType(type);
-        movieList.put(type,movies);
+        movieList.put(type, movies);
         return true;
     }
 

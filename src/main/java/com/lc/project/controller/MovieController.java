@@ -228,5 +228,21 @@ public class MovieController {
         return ResultUtils.success(movieList);
     }
 
+    @PostMapping("/set/state")
+    public BaseResponse<Boolean> setState(Integer state,Integer movieId,Boolean flag){
+        Boolean update = movieService.setState(state,movieId,flag);
+        return ResultUtils.success(update);
+    }
 
+    @PostMapping("/set/mf")
+    public BaseResponse<Boolean> setMf(Integer state,Integer movieId){
+        Boolean update = movieService.setMf(state,movieId);
+        return ResultUtils.success(update);
+    }
+
+    @PostMapping("/set/price")
+    public BaseResponse<Boolean> setPrice(Integer movieId,Integer price){
+        Boolean update = movieService.setPrice(price,movieId);
+        return ResultUtils.success(update);
+    }
 }

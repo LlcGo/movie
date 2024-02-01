@@ -20,14 +20,14 @@ public interface VideoUploadService extends IService<VideoUpload> {
      * @param multipartFile
      * @return
      */
-    String uploadVideoToM3U8(MultipartFile multipartFile);
+    Integer uploadVideoToM3U8(MultipartFile multipartFile);
 
     /**
      * 只分片6分钟
      * @param file
      * @return
      */
-    String uploadVideoToM3U82(MultipartFile file);
+    Integer uploadVideoToM3U82(MultipartFile file);
 
 
     VideoUpload getVideoById(Integer videoId,Integer movieState,Integer movieId);
@@ -37,5 +37,5 @@ public interface VideoUploadService extends IService<VideoUpload> {
      * @param file
      * @return
      */
-    String uploadVideoToM3U83(MultipartFile file);
+    Integer uploadVideoToM3U83(MultipartFile file);
 }
