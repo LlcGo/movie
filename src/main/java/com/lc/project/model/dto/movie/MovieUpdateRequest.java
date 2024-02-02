@@ -6,47 +6,55 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 用户更新请求
+ * 影视更新
  *
  * @author Lc
  */
 @Data
 public class MovieUpdateRequest implements Serializable {
+
+    private Integer Id;
     /**
-     * id
+     * 电影名字
      */
-    private Long id;
+    private String movieName;
 
     /**
-     * 用户昵称
+     * 电影类型
      */
-    private String userName;
+    private Integer type;
+
+
+    private Integer nation;
+
+
+    private Integer year;
 
     /**
-     * 账号
+     * 图片位置
      */
-    private String userAccount;
+    private String img;
 
     /**
-     * 用户头像
+     * 导演名
      */
-    private String userAvatar;
+    private String directorName;
+
 
     /**
-     * 性别
+     * 电影简介
      */
-    private Integer gender;
+    private String movieProfile;
 
     /**
-     * 用户角色: user, admin
+     * 视频为id
      */
-    private String userRole;
+    private Integer videoId;
+
+
 
     /**
-     * 密码
+     * 演员名
      */
-    private String userPassword;
-
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
+    private String actorsName;
 }
