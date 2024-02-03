@@ -17,10 +17,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class MovieQueryRequest extends PageRequest implements Serializable {
-    /**
-     * 电影标识Id
-     */
-    @TableId(type = IdType.AUTO)
+
     private Integer id;
 
     /**

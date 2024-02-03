@@ -9,12 +9,12 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * 电影类型
- * @TableName movie_type
+ * 
+ * @TableName movie_year
  */
-@TableName(value ="movie_type")
+@TableName(value ="movie_year")
 @Data
-public class MovieType implements Serializable {
+public class MovieYear implements Serializable {
     /**
      * 
      */
@@ -22,16 +22,16 @@ public class MovieType implements Serializable {
     private Integer id;
 
     /**
-     * 电影类型名字
+     * 
      */
-    private String typeName;
+    private String yearName;
+
+    private Integer state;
 
     /**
      * 
      */
-    private Date createTime;
-
-    private Integer state;
+    private Date createTiem;
 
     /**
      * 

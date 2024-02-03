@@ -1,5 +1,6 @@
 package com.lc.project.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lc.project.model.entity.MovieType;
 import com.lc.project.service.MovieTypeService;
@@ -19,7 +20,9 @@ public class MovieTypeServiceImpl extends ServiceImpl<MovieTypeMapper, MovieType
 
     @Override
     public List<MovieType> getMovieType() {
-       return this.list();
+        QueryWrapper<MovieType> movieTypeQueryWrapper = new QueryWrapper<>();
+        movieTypeQueryWrapper.eq("state",0);
+        return this.list(movieTypeQueryWrapper);
     }
 }
 

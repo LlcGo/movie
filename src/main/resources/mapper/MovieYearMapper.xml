@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lc.project.mapper.MovieYearMapper">
+
+    <resultMap id="BaseResultMap" type="com.lc.project.model.entity.MovieYear">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="yearName" column="yearName" jdbcType="VARCHAR"/>
+            <result property="createTiem" column="createTiem" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,yearName,createTiem,
+        updateTime,isDelete
+    </sql>
+</mapper>
