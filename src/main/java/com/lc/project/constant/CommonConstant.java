@@ -40,4 +40,10 @@ public interface CommonConstant {
      */
     String ORDER_DDL_TIME = "DDL:Time";
 
+    /**
+     * redis 设置推荐
+     */
+    String TYPE_RE = "typeRe";
+
+    String SEARCH_RE = "typeSearch";
 }

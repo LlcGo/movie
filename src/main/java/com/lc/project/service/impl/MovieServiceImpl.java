@@ -12,6 +12,7 @@ import com.lc.project.model.dto.movie.MovieQueryRequest;
 import com.lc.project.model.entity.*;
 import com.lc.project.model.vo.MovieVo;
 import com.lc.project.service.*;
+import com.lc.project.utils.RedisUtils;
 import io.swagger.models.auth.In;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +51,8 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
     @Lazy
     private PurchasedService purchasedService;
 
+    @Resource
+    private RedisUtils redisUtils;
 
     @Override
     public void validMovie(Movie movie, boolean add) {
@@ -265,7 +268,16 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
 
     @Override
     public List<Movie> getHotByType(Integer type) {
-        return movieMapper.getMovieHotListByType(type);
+        Object o = redisUtils.get(CommonConstant.TYPE_RE);
+        //默认按照 热度
+        String re = "1";
+        if(o != null){
+            re = (String) o;
+        }
+        if(re.equals("1")){
+            return movieMapper.getMovieHotListByType(type);
+        }
+        return movieMapper.getMovieHotListByScore(type);
     }
 
     @Override
@@ -287,7 +299,16 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
 
     @Override
     public List<Movie> getHotMovie() {
-        return movieMapper.getAllHotMovieOrderByHot();
+        Object o = redisUtils.get(CommonConstant.SEARCH_RE);
+        //默认按照 热度
+        String re = "1";
+        if(o != null){
+            re = (String) o;
+        }
+        if(re.equals("1")){
+            return movieMapper.getAllHotMovieOrderByHot();
+        }
+        return movieMapper.getAllHotMovieOrderByScore();
     }
 
     @Override

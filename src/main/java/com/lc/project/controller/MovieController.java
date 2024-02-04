@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.lc.project.constant.CommonConstant.REDIS_FA_MOVIE;
+import static com.lc.project.constant.CommonConstant.*;
 import static com.lc.project.websocket.ChatHandler.threadPoolExecutor;
 
 /**
@@ -244,5 +244,37 @@ public class MovieController {
     public BaseResponse<Boolean> setPrice(Integer movieId,Integer price){
         Boolean update = movieService.setPrice(price,movieId);
         return ResultUtils.success(update);
+    }
+
+    @PostMapping("/set/TypeRe")
+    public BaseResponse<Boolean> setTypeRe(String state){
+        boolean typeRe = redisUtils.set(TYPE_RE, state);
+        return ResultUtils.success(typeRe);
+    }
+
+    @PostMapping("/set/SearchRe")
+    public BaseResponse<Boolean> setSearchRe(String state){
+        boolean typeSearch = redisUtils.set(SEARCH_RE, state);
+        return ResultUtils.success(typeSearch);
+    }
+
+    @PostMapping("/get/TypeRe")
+    public BaseResponse<String> getTypeRe(){
+        Object o = redisUtils.get(TYPE_RE);
+        String re = "1";
+        if(o != null){
+            re = (String) o;
+        }
+        return ResultUtils.success(re);
+    }
+
+    @PostMapping("/get/SearchRe")
+    public BaseResponse<String> getSearchRe(){
+        Object o = redisUtils.get(SEARCH_RE);
+        String re = "1";
+        if(o != null){
+            re = (String) o;
+        }
+        return ResultUtils.success(re);
     }
 }

@@ -64,14 +64,25 @@
         where type = #{type} and m.isDelete = 0
         order by hot desc limit 5
     </select>
+
+    <select id="getMovieHotListByScore" resultMap="BaseResultMap">
+        select m.*, mt.typeName,my.yearName,mn.nationName
+        from movie m
+                 left join movie_type mt on m.type = mt.id
+                 left join movie_year my on m.year = my.id
+                 left join moive_nation mn on m.nation = mn.id
+        where type = #{type} and m.isDelete = 0
+        order by score desc limit 5
+    </select>
+
+
     <select id="getMovieAndTypeNameById" resultMap="BaseResultMap">
         select m.*, mt.typeName,my.yearName,mn.nationName
         from movie m
                  left join movie_type mt on m.type = mt.id
                  left join movie_year my on m.year = my.id
                  left join moive_nation mn on m.nation = mn.id
-            and m.isDelete = 0
-        where m.id = #{id}
+        where  m.id = #{id} and m.isDelete = 0
     </select>
 
     <select id="getMovieIndexListByType" resultMap="BaseResultMap">
@@ -79,9 +90,8 @@
         from movie m
                  left join movie_type mt on m.type = mt.id
                  left join movie_year my on m.year = my.id
-                 left join moive_nation mn on m.nation = mn.
-            and m.isDelete = 0
-        where type = #{type} limit 6
+                 left join moive_nation mn on m.nation = mn.id
+        where type = #{type} and m.isDelete = 0 limit 6
     </select>
 
     <select id="getAllHotMovieOrderByHot" resultMap="BaseResultMap">
@@ -89,6 +99,13 @@
         from movie m
                  left join moive_nation mn on m.nation = mn.id and m.isDelete = 0
         order by hot desc limit 12
+    </select>
+
+    <select id="getAllHotMovieOrderByScore" resultMap="BaseResultMap">
+        select m.*, mn.nationName
+        from movie m
+                 left join moive_nation mn on m.nation = mn.id and m.isDelete = 0
+        order by score desc limit 12
     </select>
 
 </mapper>
