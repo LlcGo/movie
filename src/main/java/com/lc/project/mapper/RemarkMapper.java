@@ -2,6 +2,7 @@ package com.lc.project.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lc.project.model.entity.Remark;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -16,6 +17,17 @@ public interface RemarkMapper extends BaseMapper<Remark> {
     List<Remark> getRemarkAndUserPage(int movieId, long current, long pageSize);
 
     Integer getCountByMovieId(Integer movieId);
+
+    List<Remark> listPageByUserAndMovie(@Param("current") long current,
+                                        @Param("pageSize")long pageSize,
+                                        @Param("nickName")String nickName,
+                                        @Param("movieName")String movieName, String content);
+
+
+    Integer countUserAndMovie(@Param("current") long current,
+                              @Param("pageSize")long pageSize,
+                              @Param("nickName")String nickName,
+                              @Param("movieName")String movieName, String content);
 }
 
 

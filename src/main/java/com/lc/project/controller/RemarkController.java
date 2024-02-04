@@ -1,6 +1,8 @@
 package com.lc.project.controller;
 import java.util.Date;
 
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lc.project.annotation.AuthCheck;
 import com.lc.project.common.BaseResponse;
@@ -8,13 +10,16 @@ import com.lc.project.common.DeleteRequest;
 import com.lc.project.common.ErrorCode;
 import com.lc.project.common.ResultUtils;
 import com.lc.project.exception.BusinessException;
+import com.lc.project.mapper.MovieMapper;
 import com.lc.project.model.dto.remark.RemarkAddRequest;
 import com.lc.project.model.dto.remark.RemarkDeleteRequest;
 import com.lc.project.model.dto.remark.RemarkQueryRequest;
 import com.lc.project.model.dto.remark.RemarkUpdateRequest;
+import com.lc.project.model.entity.Movie;
 import com.lc.project.model.entity.Remark;
 import com.lc.project.model.entity.Users;
 import com.lc.project.model.vo.RemarkVo;
+import com.lc.project.service.MovieService;
 import com.lc.project.service.RemarkService;
 import com.lc.project.service.UsersService;
 import org.springframework.beans.BeanUtils;
@@ -34,6 +39,9 @@ public class RemarkController {
 
     @Resource
     private UsersService userService;
+
+    @Resource
+    private MovieMapper movieMapper;
     
     /**
      * 创建
@@ -166,11 +174,8 @@ public class RemarkController {
     @AuthCheck(mustRole = "admin")
     @GetMapping("/list")
     public BaseResponse<List<Remark>> listRemark(RemarkQueryRequest remarkQueryRequest) {
-        Remark remarkQuery = new Remark();
-        if (remarkQueryRequest != null) {
-            BeanUtils.copyProperties(remarkQueryRequest, remarkQuery);
-        }
-        List<Remark> remarkList = remarkService.getListRemark(remarkQuery);
+
+        List<Remark> remarkList = remarkService.getListRemark(remarkQueryRequest);
         return ResultUtils.success(remarkList);
     }
 
@@ -197,5 +202,51 @@ public class RemarkController {
         }
         Long total = remarkService.listCount(remarkQueryRequest);
         return ResultUtils.success(total);
+    }
+
+    @PostMapping("/admin/delete")
+    public BaseResponse<Boolean> adminDelete(Integer id) {
+        if (id == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Remark remark = new Remark();
+        remark.setId(id);
+        remark.setState(1);
+        return ResultUtils.success(remarkService.updateById(remark));
+    }
+
+    @PostMapping("/admin/hf")
+    public BaseResponse<Boolean> adminHf(Integer id) {
+        if (id == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Remark remark = new Remark();
+        remark.setId(id);
+        remark.setState(0);
+        return ResultUtils.success(remarkService.updateById(remark));
+    }
+
+    @PostMapping("/admin/add")
+    public BaseResponse<Boolean> adminAdd(String movieName,String userId,String content) {
+        if (StrUtil.isBlank(movieName)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"请输入电影名");
+        }
+        if (StrUtil.isBlank(userId)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"请重新登录");
+        }
+        if (StrUtil.isBlank(content)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"请输入内容");
+        }
+        QueryWrapper<Movie> movieQueryWrapper = new QueryWrapper<>();
+        movieQueryWrapper.eq("movieName",movieName);
+        Movie movie = movieMapper.selectOne(movieQueryWrapper);
+        if(movie == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"没有该电影,请重新输入");
+        }
+        Remark remark = new Remark();
+        remark.setMovieId(movie.getId());
+        remark.setContent(content);
+        remark.setUserId(userId);
+        return ResultUtils.success(remarkService.save(remark));
     }
 }

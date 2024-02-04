@@ -23,6 +23,13 @@ public class RemarkQueryRequest extends PageRequest implements Serializable {
      */
     private Integer movieId;
 
+    private String userName;
+
+    private String movieName;
+
+    private String nickName;
+
+    private String content;
 
 
     private static final long serialVersionUID = 1L;

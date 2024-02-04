@@ -47,6 +47,7 @@
         updateTime,isDelete
     </sql>
 
+<!--    用户使用-->
     <select id="getRemarkAndUserPage" resultMap="BaseResultMap">
         select r.*,u.*
         from remark r
@@ -54,6 +55,7 @@
         where r.movieId = #{movieId}
           and r.content is not null
           and r.isDelete = 0
+          and r.state = 0
         order by r.createTime desc limit #{current} , #{pageSize}
     </select>
 
@@ -63,6 +65,95 @@
                  left join users u on r.userId = u.id
         where r.movieId = #{movieId}
           and r.content is not null
+          and r.state = 0
           and r.isDelete = 0
+    </select>
+
+
+<!--    管理员使用-->
+    <resultMap id="BaseResultMap2" type="com.lc.project.model.entity.Remark">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="userId" jdbcType="VARCHAR"/>
+        <result property="movieId" column="movieId" jdbcType="INTEGER"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="score" column="score" jdbcType="INTEGER"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+        <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+        <result property="liked" column="liked" jdbcType="INTEGER"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="disLiked" column="disLiked" jdbcType="INTEGER"/>
+        <association property="user" javaType="com.lc.project.model.entity.Users">
+            <id property="id" column="userId" jdbcType="VARCHAR"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
+            <result property="faceImage" column="face_image" jdbcType="VARCHAR"/>
+            <result property="signature" column="signature" jdbcType="VARCHAR"/>
+            <result property="sex" column="sex" jdbcType="VARCHAR"/>
+            <result property="likeType" column="likeType" jdbcType="VARCHAR"/>
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="userRole" column="userRole" jdbcType="VARCHAR"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+        </association>
+        <association property="movie" javaType="com.lc.project.model.entity.Movie">
+            <id property="id" column="movieId" jdbcType="INTEGER"/>
+            <result property="price" column="price" jdbcType="INTEGER"/>
+            <result property="movieName" column="movieName" jdbcType="VARCHAR"/>
+            <result property="type" column="type" jdbcType="INTEGER"/>
+            <result property="nation" column="nation" jdbcType="VARCHAR"/>
+            <result property="year" column="year" jdbcType="INTEGER"/>
+            <result property="directorName" column="directorName" jdbcType="VARCHAR"/>
+            <result property="actorsName" column="actorsName" jdbcType="VARCHAR"/>
+            <result property="movieProfile" column="movieProfile" jdbcType="VARCHAR"/>
+            <result property="videoId" column="videoId" jdbcType="INTEGER"/>
+            <result property="creatTime" column="creatTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="state" column="state" jdbcType="INTEGER"/>
+            <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+            <result property="userId" column="userId" jdbcType="VARCHAR"/>
+            <result property="img" column="img" jdbcType="VARCHAR"/>
+            <result property="bigImg" column="bigImg" jdbcType="VARCHAR"/>
+            <result property="score" column="score" jdbcType="DOUBLE"/>
+            <result property="hot" column="hot" jdbcType="DOUBLE"/>
+        </association>
+
+    </resultMap>
+    <select id="listPageByUserAndMovie" resultMap="BaseResultMap2">
+        select r.*, m.*, u.*
+        from remark r
+        left join movie m on r.movieId = m.id
+        left join users u on r.userId = u.id
+        where r.isDelete = 0
+        <if test="nickName != '' and nickName != null ">
+            AND u.nickname = #{nickName}
+        </if>
+        <if test="movieName != '' and movieName != null ">
+            AND m.movieName = #{movieName}
+        </if>
+        <if test="content != '' and content != null">
+            AND r.content like "%"#{content}"%"
+        </if>
+        and r.content is not null order by r.createTime desc
+        limit #{current} , #{pageSize}
+    </select>
+
+    <select id="countUserAndMovie" resultType="java.lang.Integer">
+        select count(1)
+        from remark r
+        left join movie m on r.movieId = m.id
+        left join users u on r.userId = u.id
+        where r.isDelete = 0
+        <if test="nickName != '' and nickName != null ">
+            AND u.nickname = #{nickName}
+        </if>
+        <if test="movieName != '' and movieName != null ">
+            AND m.movieName = #{movieName}
+        </if>
+        <if test="content != '' and content != null">
+            AND r.content like "%"#{content}"%"
+        </if>
+        and r.content is not null
     </select>
 </mapper>

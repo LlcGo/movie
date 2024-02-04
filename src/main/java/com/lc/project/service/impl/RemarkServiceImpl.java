@@ -2,11 +2,8 @@ package com.lc.project.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.google.gson.Gson;
 import com.lc.project.common.ErrorCode;
-import com.lc.project.constant.CommonConstant;
 import com.lc.project.exception.BusinessException;
 import com.lc.project.mapper.RemarkMapper;
 import com.lc.project.mapper.RemarkUserMapper;
@@ -15,18 +12,14 @@ import com.lc.project.model.dto.remark.RemarkQueryRequest;
 import com.lc.project.model.entity.Remark;
 import com.lc.project.model.entity.RemarkUser;
 import com.lc.project.model.entity.Users;
-import com.lc.project.model.vo.RemarkVo;
 import com.lc.project.service.RemarkService;
 import com.lc.project.service.RemarkUserService;
 import com.lc.project.service.UsersService;
-import io.swagger.util.Json;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -117,8 +110,19 @@ public class RemarkServiceImpl extends ServiceImpl<RemarkMapper, Remark>
     }
 
     @Override
-    public List<Remark> getListRemark(Remark remarkQuery) {
-        return null;
+    public List<Remark> getListRemark(RemarkQueryRequest remarkQuery) {
+        long current = remarkQuery.getCurrent();
+        long pageSize = remarkQuery.getPageSize();
+        current = (current - 1)* pageSize;
+        String nickName = remarkQuery.getNickName();
+        String movieName = remarkQuery.getMovieName();
+        String content = remarkQuery.getContent();
+        List<Remark> remarkList = remarkMapper.listPageByUserAndMovie(current,pageSize,nickName,movieName,content);
+        Integer total = remarkMapper.countUserAndMovie(current,pageSize,nickName,movieName,content);
+        if(remarkList.size() > 0){
+            remarkList.get(0).setTotal(total);
+        }
+        return remarkList;
     }
 
     @Override

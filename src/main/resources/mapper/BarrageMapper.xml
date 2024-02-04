@@ -8,6 +8,7 @@
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="movieId" column="movieId" jdbcType="INTEGER"/>
             <result property="userId" column="userId" jdbcType="VARCHAR"/>
+            <result property="state" column="state" jdbcType="INTEGER"/>
             <result property="content" column="content" jdbcType="VARCHAR"/>
             <result property="appTime" column="appTime" jdbcType="VARCHAR"/>
             <result property="barType" column="barType" jdbcType="VARCHAR"/>
@@ -15,6 +16,41 @@
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
             <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+        <association property="user" javaType="com.lc.project.model.entity.Users">
+            <id property="id" column="userId" jdbcType="VARCHAR"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
+            <result property="faceImage" column="face_image" jdbcType="VARCHAR"/>
+            <result property="signature" column="signature" jdbcType="VARCHAR"/>
+            <result property="sex" column="sex" jdbcType="VARCHAR"/>
+            <result property="likeType" column="likeType" jdbcType="VARCHAR"/>
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="userRole" column="userRole" jdbcType="VARCHAR"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+        </association>
+        <association property="movie" javaType="com.lc.project.model.entity.Movie">
+            <id property="id" column="movieId" jdbcType="INTEGER"/>
+            <result property="price" column="price" jdbcType="INTEGER"/>
+            <result property="movieName" column="movieName" jdbcType="VARCHAR"/>
+            <result property="type" column="type" jdbcType="INTEGER"/>
+            <result property="nation" column="nation" jdbcType="VARCHAR"/>
+            <result property="year" column="year" jdbcType="INTEGER"/>
+            <result property="directorName" column="directorName" jdbcType="VARCHAR"/>
+            <result property="actorsName" column="actorsName" jdbcType="VARCHAR"/>
+            <result property="movieProfile" column="movieProfile" jdbcType="VARCHAR"/>
+            <result property="videoId" column="videoId" jdbcType="INTEGER"/>
+            <result property="creatTime" column="creatTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="state" column="state" jdbcType="INTEGER"/>
+            <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+            <result property="userId" column="userId" jdbcType="VARCHAR"/>
+            <result property="img" column="img" jdbcType="VARCHAR"/>
+            <result property="bigImg" column="bigImg" jdbcType="VARCHAR"/>
+            <result property="score" column="score" jdbcType="DOUBLE"/>
+            <result property="hot" column="hot" jdbcType="DOUBLE"/>
+        </association>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -22,4 +58,39 @@
         content,createTime,updateTime,barType,appTime,color
         isDelete
     </sql>
+    <select id="getListByNickNameAndMovieName" resultMap="BaseResultMap">
+        select b.*, m.*, u.*
+        from barrage b
+                 left join movie m on b.movieId = m.id
+                 left join users u on b.userId = u.id
+        where b.isDelete = 0
+        <if test="nickName != '' and nickName != null ">
+            AND u.nickname = #{nickName}
+        </if>
+        <if test="movieName != '' and movieName != null ">
+            AND m.movieName = #{movieName}
+        </if>
+        <if test="content != '' and content != null">
+            AND b.content like "%"#{content}"%"
+        </if>
+         order by b.createTime desc
+        limit  #{current} , #{pageSize}
+    </select>
+    <select id="countListByNickNameAndMovieName" resultType="java.lang.Integer">
+        select count(1)
+        from barrage b
+        left join movie m on b.movieId = m.id
+        left join users u on b.userId = u.id
+        where b.isDelete = 0
+        <if test="nickName != '' and nickName != null ">
+            AND u.nickname = #{nickName}
+        </if>
+        <if test="movieName != '' and movieName != null ">
+            AND m.movieName = #{movieName}
+        </if>
+        <if test="content != '' and content != null">
+            AND b.content like "%"#{content}"%"
+        </if>
+
+    </select>
 </mapper>

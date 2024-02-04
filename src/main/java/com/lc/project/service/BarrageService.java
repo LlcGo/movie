@@ -2,6 +2,7 @@ package com.lc.project.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lc.project.model.dto.barrage.BarrageAddRequest;
+import com.lc.project.model.dto.barrage.BarrageQueryRequest;
 import com.lc.project.model.entity.Barrage;
 import com.lc.project.model.vo.BarrageVO;
 
@@ -20,4 +21,6 @@ public interface BarrageService extends IService<Barrage> {
     Barrage queryToBarrage(BarrageAddRequest barrageAddRequest);
 
     List<BarrageVO> getBarrageByMovieId(long movieId);
+
+    List<Barrage> getListByNickNameAndMovieName(BarrageQueryRequest barrageQueryRequest);
 }

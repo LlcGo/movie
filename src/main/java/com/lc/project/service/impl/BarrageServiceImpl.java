@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lc.project.mapper.BarrageMapper;
 import com.lc.project.model.dto.barrage.BarrageAddRequest;
+import com.lc.project.model.dto.barrage.BarrageQueryRequest;
 import com.lc.project.model.entity.Barrage;
 import com.lc.project.model.entity.Users;
 import com.lc.project.model.vo.BarrageVO;
 import com.lc.project.service.BarrageService;
 import com.lc.project.service.UsersService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -28,6 +30,9 @@ public class BarrageServiceImpl extends ServiceImpl<BarrageMapper, Barrage>
 
     @Resource
     private UsersService usersService;
+
+    @Resource
+    private BarrageMapper barrageMapper;
 
     @Override
     public Integer toAddBarrage(Barrage barrage) {
@@ -64,6 +69,7 @@ public class BarrageServiceImpl extends ServiceImpl<BarrageMapper, Barrage>
         QueryWrapper<Barrage> barrageQueryWrapper = new QueryWrapper<>();
         barrageQueryWrapper.eq("movieId", movieId);
         barrageQueryWrapper.orderByDesc("appTime");
+        barrageQueryWrapper.eq("state",0);
         List<Barrage> barrageList = this.list(barrageQueryWrapper);
         Users loginUser = usersService.getLoginUser();
         if (loginUser == null) {
@@ -90,6 +96,23 @@ public class BarrageServiceImpl extends ServiceImpl<BarrageMapper, Barrage>
                 .stream()
                 .sorted(Comparator.comparing(BarrageVO::getTime))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Barrage> getListByNickNameAndMovieName(@RequestBody BarrageQueryRequest barrageQueryRequest) {
+        long pageSize = barrageQueryRequest.getPageSize();
+        long current = barrageQueryRequest.getCurrent();
+        current = (current - 1)* pageSize;
+        String movieName = barrageQueryRequest.getMovieName();
+        String nickName = barrageQueryRequest.getNickName();
+        String content = barrageQueryRequest.getContent();
+        List<Barrage> barrageList= barrageMapper.getListByNickNameAndMovieName(pageSize,current,movieName,nickName,content);
+
+        Integer total = barrageMapper.countListByNickNameAndMovieName(movieName,nickName,content);
+        if (barrageList.size() > 0){
+            barrageList.get(0).setTotal(total);
+        }
+        return barrageList;
     }
 }
 

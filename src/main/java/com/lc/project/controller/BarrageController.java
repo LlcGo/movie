@@ -92,8 +92,35 @@ public class BarrageController {
         return ResultUtils.success(b);
     }
 
-    
+    @PostMapping("/admin/list")
+    public BaseResponse<List<Barrage>> getListByNickNameAndMovieName(@RequestBody BarrageQueryRequest barrageQueryRequest){
+        if(barrageQueryRequest == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        List<Barrage> barrageList =  barrageService.getListByNickNameAndMovieName(barrageQueryRequest);
+        return ResultUtils.success(barrageList);
+    }
 
+    @PostMapping("/admin/delete")
+    public BaseResponse<Boolean> adminDelete(Integer id){
+        if(id == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Barrage barrage = new Barrage();
+        barrage.setId(id);
+        barrage.setState(1);
+        return ResultUtils.success(barrageService.updateById(barrage));
+    }
 
+    @PostMapping("/admin/hufu")
+    public BaseResponse<Boolean> adminHuiFu(Integer id){
+        if(id == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Barrage barrage = new Barrage();
+        barrage.setId(id);
+        barrage.setState(0);
+        return ResultUtils.success(barrageService.updateById(barrage));
+    }
    
 }

@@ -1,11 +1,9 @@
 package com.lc.project.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lc.project.model.dto.remark.RemarkDeleteRequest;
 import com.lc.project.model.dto.remark.RemarkQueryRequest;
 import com.lc.project.model.entity.Remark;
-import com.lc.project.model.vo.RemarkVo;
 
 import java.util.List;
 
@@ -34,7 +32,7 @@ public interface RemarkService extends IService<Remark> {
 
     Remark getRemarkById(long id);
 
-    List<Remark> getListRemark(Remark remarkQuery);
+    List<Remark> getListRemark(RemarkQueryRequest remarkQuery);
 
     List<Remark> listPage(RemarkQueryRequest remarkQueryRequest);
 

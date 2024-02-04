@@ -74,6 +74,9 @@ public class Remark implements Serializable {
      */
     private Integer disLiked;
 
+    private Movie movie;
+
+    private Integer state;
     /**
      * 0 未删除 1 已删除
      */
