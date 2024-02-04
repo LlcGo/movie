@@ -46,4 +46,9 @@ public interface CommonConstant {
     String TYPE_RE = "typeRe";
 
     String SEARCH_RE = "typeSearch";
+
+    /**
+     * 首页推荐key
+     */
+    String SY_TJ = "sytj";
 }

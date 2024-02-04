@@ -21,6 +21,7 @@
             <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
             <result property="userId" column="userId" jdbcType="VARCHAR"/>
             <result property="img" column="img" jdbcType="VARCHAR"/>
+            <result property="bigImg" column="bigImg" jdbcType="VARCHAR"/>
             <result property="score" column="score" jdbcType="DOUBLE"/>
             <result property="hot" column="hot" jdbcType="DOUBLE"/>
             <association property="movieType" javaType="com.lc.project.model.entity.MovieType">

@@ -1,5 +1,6 @@
 package com.lc.project.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lc.project.annotation.AuthCheck;
 import com.lc.project.common.BaseResponse;
@@ -8,6 +9,7 @@ import com.lc.project.common.ErrorCode;
 import com.lc.project.common.ResultUtils;
 import com.lc.project.exception.BusinessException;
 import com.lc.project.mapper.MovieMapper;
+import com.lc.project.model.dto.movie.MovieAddRe;
 import com.lc.project.model.dto.movie.MovieAddRequest;
 import com.lc.project.model.dto.movie.MovieQueryRequest;
 import com.lc.project.model.dto.movie.MovieUpdateRequest;
@@ -25,6 +27,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -276,5 +279,28 @@ public class MovieController {
             re = (String) o;
         }
         return ResultUtils.success(re);
+    }
+
+    @PostMapping("/set/SyRe")
+    public BaseResponse<Boolean> setSyRe(@RequestBody MovieAddRe movie, String state){
+        if(movie == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Boolean flag = movieService.SyRe(movie,state);
+        return ResultUtils.success(flag);
+    }
+
+    @PostMapping("/get/SyRe")
+    public BaseResponse<Map<Object, Object>> getSyRe(){
+        Map<Object, Object> re = movieService.getRe();
+        return ResultUtils.success(re);
+    }
+
+    @PostMapping("/get/ids")
+    public BaseResponse<List<Movie>> getSyReMovieById(Integer id,Integer id2,Integer id3){
+        QueryWrapper<Movie> movieQueryWrapper = new QueryWrapper<>();
+        movieQueryWrapper.in("id",id,id2,id3);
+        List<Movie> list = movieService.list(movieQueryWrapper);
+        return ResultUtils.success(list);
     }
 }

@@ -8,12 +8,11 @@ import com.lc.project.common.ErrorCode;
 import com.lc.project.constant.CommonConstant;
 import com.lc.project.exception.BusinessException;
 import com.lc.project.mapper.MovieMapper;
+import com.lc.project.model.dto.movie.MovieAddRe;
 import com.lc.project.model.dto.movie.MovieQueryRequest;
 import com.lc.project.model.entity.*;
-import com.lc.project.model.vo.MovieVo;
 import com.lc.project.service.*;
 import com.lc.project.utils.RedisUtils;
-import io.swagger.models.auth.In;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -21,14 +20,12 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import static com.lc.project.websocket.ChatHandler.threadPoolExecutor;
 
@@ -357,6 +354,20 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
         movieUpdateWrapper.set("price",price);
         movieUpdateWrapper.set("state",3);
         return this.update(movieUpdateWrapper);
+    }
+
+    @Override
+    public Boolean SyRe(MovieAddRe movie, String state) {
+        redisUtils.hset(CommonConstant.SY_TJ, state, movie);
+        Movie movie1 = new Movie();
+        movie1.setId(movie.getId());
+        movie1.setBigImg(movie.getBigImg());
+        return this.updateById(movie1);
+    }
+
+    @Override
+    public Map<Object, Object> getRe() {
+        return redisUtils.hmget(CommonConstant.SY_TJ);
     }
 
 

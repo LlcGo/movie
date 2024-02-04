@@ -147,6 +147,11 @@ public class Movie implements Serializable {
      */
     private Integer price;
 
+    /**
+     * 首页大图
+     */
+    private String bigImg;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

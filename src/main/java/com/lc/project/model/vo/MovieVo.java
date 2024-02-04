@@ -68,6 +68,7 @@ public class MovieVo {
 
     private MovieYear movieYear;
 
+    private String bigImg;
     /**
      * 图片位置
      */

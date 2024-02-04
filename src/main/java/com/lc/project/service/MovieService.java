@@ -2,10 +2,12 @@ package com.lc.project.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.lc.project.model.dto.movie.MovieAddRe;
 import com.lc.project.model.dto.movie.MovieQueryRequest;
 import com.lc.project.model.entity.Movie;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -57,4 +59,15 @@ public interface MovieService extends IService<Movie> {
     Boolean setMf(Integer state, Integer movieId);
 
     Boolean setPrice(Integer price, Integer movieId);
+
+    /**
+     * 首页推荐 存入redis 与 mysql
+     *
+     * @param movie
+     * @param state
+     * @return
+     */
+    Boolean SyRe(MovieAddRe movie, String state);
+
+    Map<Object, Object> getRe();
 }
