@@ -213,10 +213,15 @@ public class OrderController {
         Integer ddlTime = null;
         Object time = redisUtils.get(CommonConstant.ORDER_DDL_TIME);
         if(time != null){
-            ddlTime = (Integer) time;
+            ddlTime = Integer.parseInt(time.toString());
         }else {
             ddlTime = rabbitTTL;
         }
         return ResultUtils.success(ddlTime);
+    }
+
+    @PostMapping("/setDDLTime")
+    public BaseResponse<Boolean> setDDLTime(String time) {
+        return ResultUtils.success(redisUtils.set(CommonConstant.ORDER_DDL_TIME,time));
     }
 }
