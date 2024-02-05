@@ -18,7 +18,7 @@ public interface OrderService extends IService<Order> {
 
     Page<Order> listPage(OrderQueryRequest orderQueryRequest);
 
-    List<Order> getListOrder(Order orderQuery);
+    List<Order> getListOrder(OrderQueryRequest orderQuery);
 
     Order getOrderById(long id);
 

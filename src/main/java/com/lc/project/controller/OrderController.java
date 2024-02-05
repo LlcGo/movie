@@ -156,13 +156,9 @@ public class OrderController {
      * @return
      */
     @AuthCheck(mustRole = "admin")
-    @GetMapping("/list")
-    public BaseResponse<List<Order>> listOrder(OrderQueryRequest orderQueryRequest) {
-        Order orderQuery = new Order();
-        if (orderQueryRequest != null) {
-            BeanUtils.copyProperties(orderQueryRequest, orderQuery);
-        }
-        List<Order> orderList = orderService.getListOrder(orderQuery);
+    @PostMapping("/admin/list")
+    public BaseResponse<List<Order>> listOrder(@RequestBody OrderQueryRequest orderQueryRequest) {
+        List<Order> orderList = orderService.getListOrder(orderQueryRequest);
         return ResultUtils.success(orderList);
     }
 

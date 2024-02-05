@@ -1,5 +1,8 @@
 package com.lc.project.service.impl;
 
+import com.lc.project.model.entity.Movie;
+import com.lc.project.model.entity.Users;
+
 import cn.hutool.core.date.LocalDateTimeUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -63,6 +66,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
 
     @Resource
     private UsersService usersService;
+
     @Override
     public Page<Order> listPage(OrderQueryRequest orderQueryRequest) {
         Order orderQuery = new Order();
@@ -86,9 +90,33 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
     }
 
     @Override
-    public List<Order> getListOrder(Order orderQuery) {
-        QueryWrapper<Order> queryWrapper = new QueryWrapper<>(orderQuery);
-        return this.list(queryWrapper);
+    public List<Order> getListOrder(OrderQueryRequest orderQuery) {
+        Integer id = orderQuery.getId();
+        Integer state = orderQuery.getState();
+        String movieName = orderQuery.getMovieName();
+        String nickName = orderQuery.getNickName();
+        Integer orderState = orderQuery.getOrderState();
+        Integer vipType = orderQuery.getVipType();
+        List<String> date = orderQuery.getDate();
+        System.out.println(date);
+        if (date != null && date.size() != 2) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请选择完整的时间段");
+        }
+        String startTime = null;
+        String endTime = null;
+        if (date != null) {
+            startTime = date.get(0);
+            endTime = date.get(1);
+        }
+        long current = orderQuery.getCurrent();
+        long pageSize = orderQuery.getPageSize();
+        current = (current - 1) * pageSize;
+        List<Order> orderList = orderMapper.getAdminSelect(id, state, movieName, nickName, orderState, vipType, current, pageSize, startTime, endTime);
+        Integer total = orderMapper.getCountAdminSelect(id, state, movieName, nickName, orderState, vipType, startTime, endTime);
+        if (orderList.size() > 0) {
+            orderList.get(0).setTotal(total);
+        }
+        return orderList;
     }
 
     @Override
@@ -171,7 +199,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         String userId = orderByRequest.getUserId();
         Integer movieId = orderByRequest.getMovieId();
         String date = orderByRequest.getDate();
-        if(orderId < 0){
+        if (orderId < 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         if (state < 0 || state > 2) {
@@ -183,9 +211,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
             //电影已购买不可以再下单购买
             QueryWrapper<Order> orderQueryWrapper = new QueryWrapper<>();
             orderQueryWrapper.eq("userId", userId);
-            orderQueryWrapper.eq("id",orderId);
+            orderQueryWrapper.eq("id", orderId);
             orderQueryWrapper.eq("movieId", movieId);
-            orderQueryWrapper.eq("orderState",1);
+            orderQueryWrapper.eq("orderState", 1);
             long count = this.count(orderQueryWrapper);
             if (count > 0) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR, "您已购买");
@@ -203,9 +231,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
 
         //state 0 //开会员：//是否第一次开通 （查询vip数据库是否有数据）
         QueryWrapper<Vip> vipQueryWrapper = new QueryWrapper<>();
-        vipQueryWrapper.eq("userId",userId);
+        vipQueryWrapper.eq("userId", userId);
         Vip oldVip = vipMapper.selectOne(vipQueryWrapper);
-        if(oldVip == null){
+        if (oldVip == null) {
             Users loginUser = usersService.getLoginUser();
             loginUser.setUserRole("vip");
             usersService.updateById(loginUser);
@@ -217,20 +245,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
             Vip vip = new Vip();
             vip.setUserId(userId);
             //开通多少天
-            if(date.equals(OrderDayEnum.YEAR.getText())){
-                  //年多少天
+            if (date.equals(OrderDayEnum.YEAR.getText())) {
+                //年多少天
                 int currentYear = dayUtils.getCurrentYear();
-                SetVipOverTime(currentYear,vip);
+                SetVipOverTime(currentYear, vip);
             }
-            if(date.equals(OrderDayEnum.MONTHS.getText())){
-                 //月多少天
+            if (date.equals(OrderDayEnum.MONTHS.getText())) {
+                //月多少天
                 int currentMonth = dayUtils.getCurrentMonth();
-                SetVipOverTime(currentMonth,vip);
+                SetVipOverTime(currentMonth, vip);
             }
-            if(date.equals(OrderDayEnum.QUARTER.getText())){
+            if (date.equals(OrderDayEnum.QUARTER.getText())) {
                 //季度多少天
                 int currentQuarter = dayUtils.getCurrentQuarter();
-                SetVipOverTime(currentQuarter,vip);
+                SetVipOverTime(currentQuarter, vip);
             }
             return vipService.save(vip);
         }
@@ -246,22 +274,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
 
         LocalDateTime localOverTime = instant.atZone(zoneId).toLocalDateTime();
         //续费多少天 //获取数据库时间，将其加上开会员的时间,最后修改Vip数据库增加时长
-        if(date.equals(OrderDayEnum.YEAR.getText())){
+        if (date.equals(OrderDayEnum.YEAR.getText())) {
             //年多少天
             int currentYear = dayUtils.getCurrentYear();
-            setVipLayTime(localOverTime,currentYear,zoneId,oldVip);
+            setVipLayTime(localOverTime, currentYear, zoneId, oldVip);
         }
-        if(date.equals(OrderDayEnum.MONTHS.getText())){
+        if (date.equals(OrderDayEnum.MONTHS.getText())) {
             //月多少天
             int currentMonth = dayUtils.getCurrentMonth();
-            setVipLayTime(localOverTime,currentMonth,zoneId,oldVip);
+            setVipLayTime(localOverTime, currentMonth, zoneId, oldVip);
         }
-        if(date.equals(OrderDayEnum.QUARTER.getText())){
+        if (date.equals(OrderDayEnum.QUARTER.getText())) {
             //季度多少天
             int currentQuarter = dayUtils.getCurrentQuarter();
-            setVipLayTime(localOverTime,currentQuarter,zoneId,oldVip);
+            setVipLayTime(localOverTime, currentQuarter, zoneId, oldVip);
         }
-       return vipService.updateById(oldVip);
+        return vipService.updateById(oldVip);
     }
 
     @Override
@@ -272,7 +300,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
     }
 
     /**
-     *  可以直接购买vip ，直接续费 ，直接购买电影
+     * 可以直接购买vip ，直接续费 ，直接购买电影
+     *
      * @param orderByRequest
      * @return
      */
@@ -283,7 +312,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         Integer movieId = orderByRequest.getMovieId();
         String date = orderByRequest.getDate();
         //如果是电影直接购买
-        if(state == 1){
+        if (state == 1) {
             //电影已购买不可以再下单购买
             QueryWrapper<Purchased> orderQueryWrapper = new QueryWrapper<>();
             orderQueryWrapper.eq("userId", userId);
@@ -307,9 +336,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         //如果是vip直接购买
         //state 0 //开会员：//是否第一次开通 （查询vip数据库是否有数据）
         QueryWrapper<Vip> vipQueryWrapper = new QueryWrapper<>();
-        vipQueryWrapper.eq("userId",userId);
+        vipQueryWrapper.eq("userId", userId);
         Vip oldVip = vipMapper.selectOne(vipQueryWrapper);
-        if(oldVip == null){
+        if (oldVip == null) {
             Users loginUser = usersService.getLoginUser();
             loginUser.setUserRole("vip");
             usersService.updateById(loginUser);
@@ -317,20 +346,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
             Vip vip = new Vip();
             vip.setUserId(userId);
             //开通多少天
-            if(date.equals(OrderDayEnum.YEAR.getText())){
+            if (date.equals(OrderDayEnum.YEAR.getText())) {
                 //年多少天
                 int currentYear = dayUtils.getCurrentYear();
-                SetVipOverTime(currentYear,vip);
+                SetVipOverTime(currentYear, vip);
             }
-            if(date.equals(OrderDayEnum.MONTHS.getText())){
+            if (date.equals(OrderDayEnum.MONTHS.getText())) {
                 //月多少天
                 int currentMonth = dayUtils.getCurrentMonth();
-                SetVipOverTime(currentMonth,vip);
+                SetVipOverTime(currentMonth, vip);
             }
-            if(date.equals(OrderDayEnum.QUARTER.getText())){
+            if (date.equals(OrderDayEnum.QUARTER.getText())) {
                 //季度多少天
                 int currentQuarter = dayUtils.getCurrentQuarter();
-                SetVipOverTime(currentQuarter,vip);
+                SetVipOverTime(currentQuarter, vip);
             }
             Order order = new Order();
             order.setUserId(userId);
@@ -347,20 +376,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         ZoneId zoneId = ZoneId.systemDefault();
         LocalDateTime localOverTime = instant.atZone(zoneId).toLocalDateTime();
         //续费多少天 //获取数据库时间，将其加上开会员的时间,最后修改Vip数据库增加时长
-        if(date.equals(OrderDayEnum.YEAR.getText())){
+        if (date.equals(OrderDayEnum.YEAR.getText())) {
             //年多少天
             int currentYear = dayUtils.getCurrentYear();
-            setVipLayTime(localOverTime,currentYear,zoneId,oldVip);
+            setVipLayTime(localOverTime, currentYear, zoneId, oldVip);
         }
-        if(date.equals(OrderDayEnum.MONTHS.getText())){
+        if (date.equals(OrderDayEnum.MONTHS.getText())) {
             //月多少天
             int currentMonth = dayUtils.getCurrentMonth();
-            setVipLayTime(localOverTime,currentMonth,zoneId,oldVip);
+            setVipLayTime(localOverTime, currentMonth, zoneId, oldVip);
         }
-        if(date.equals(OrderDayEnum.QUARTER.getText())){
+        if (date.equals(OrderDayEnum.QUARTER.getText())) {
             //季度多少天
             int currentQuarter = dayUtils.getCurrentQuarter();
-            setVipLayTime(localOverTime,currentQuarter,zoneId,oldVip);
+            setVipLayTime(localOverTime, currentQuarter, zoneId, oldVip);
         }
         Order order = new Order();
         order.setState(state);
@@ -372,7 +401,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
     }
 
 
-    public void SetVipOverTime(int day,Vip vip){
+    public void SetVipOverTime(int day, Vip vip) {
         LocalDateTime now = LocalDateTimeUtil.now();
         LocalDateTime localDateTime = LocalDateTimeUtil.parse(now.toString());
         LocalDateTime offset = LocalDateTimeUtil.offset(localDateTime, day, ChronoUnit.DAYS);
@@ -382,7 +411,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         vip.setOverTime(OverTime);
     }
 
-    public void setVipLayTime(LocalDateTime localOverTime,int day,ZoneId zoneId,Vip oldVip){
+    public void setVipLayTime(LocalDateTime localOverTime, int day, ZoneId zoneId, Vip oldVip) {
         LocalDateTime offset = LocalDateTimeUtil.offset(localOverTime, day, ChronoUnit.DAYS);
         ZonedDateTime zdt = offset.atZone(zoneId);
         Date OverTime = Date.from(zdt.toInstant());

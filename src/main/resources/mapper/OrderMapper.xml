@@ -47,4 +47,110 @@
             left join movie m on o.movieId = m.id
                  where o.userId = #{id} and o.isDelete = 0 order by o.createTime desc
     </select>
+
+    <resultMap id="BaseResultMap2" type="com.lc.project.model.entity.Order">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="userId" column="userId" jdbcType="VARCHAR"/>
+        <result property="movieId" column="movieId" jdbcType="INTEGER"/>
+        <result property="vipType" column="vipType" jdbcType="INTEGER"/>
+        <result property="orderState" column="orderState" jdbcType="INTEGER"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+        <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+        <association property="movie" javaType="com.lc.project.model.entity.Movie">
+            <id property="id" column="movieId" jdbcType="INTEGER"/>
+            <result property="price" column="price" jdbcType="INTEGER"/>
+            <result property="movieName" column="movieName" jdbcType="VARCHAR"/>
+            <result property="type" column="type" jdbcType="INTEGER"/>
+            <result property="nation" column="nation" jdbcType="VARCHAR"/>
+            <result property="year" column="year" jdbcType="INTEGER"/>
+            <result property="directorName" column="directorName" jdbcType="VARCHAR"/>
+            <result property="actorsName" column="actorsName" jdbcType="VARCHAR"/>
+            <result property="movieProfile" column="movieProfile" jdbcType="VARCHAR"/>
+            <result property="videoId" column="videoId" jdbcType="INTEGER"/>
+            <result property="creatTime" column="creatTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="state" column="state" jdbcType="INTEGER"/>
+            <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+            <result property="userId" column="userId" jdbcType="VARCHAR"/>
+            <result property="img" column="img" jdbcType="VARCHAR"/>
+            <result property="score" column="score" jdbcType="DOUBLE"/>
+            <result property="hot" column="hot" jdbcType="DOUBLE"/>
+        </association>
+        <association property="user" javaType="com.lc.project.model.entity.Users">
+            <id property="id" column="userId" jdbcType="VARCHAR"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="password" column="password" jdbcType="VARCHAR"/>
+            <result property="faceImage" column="face_image" jdbcType="VARCHAR"/>
+            <result property="signature" column="signature" jdbcType="VARCHAR"/>
+            <result property="sex" column="sex" jdbcType="VARCHAR"/>
+            <result property="likeType" column="likeType" jdbcType="VARCHAR"/>
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="userRole" column="userRole" jdbcType="VARCHAR"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="INTEGER"/>
+        </association>
+    </resultMap>
+    <select id="getAdminSelect" resultMap="BaseResultMap2">
+        select mo.*,m.*,u.*
+        from movie_order mo
+                 left join movie m on mo.movieId = m.id
+                 left join users u on mo.userId = u.id
+        where mo.isDelete = 0
+        <if test="nickName != '' and nickName != null ">
+            AND u.nickname = #{nickName}
+        </if>
+        <if test="movieName != '' and movieName != null ">
+            AND m.movieName = #{movieName}
+        </if>
+        <if test="id != '' and id != null">
+            AND mo.id = #{id}
+        </if>
+        <if test="state != '' and state != null">
+            AND mo.state = #{state}
+        </if>
+        <if test="orderState != null">
+            AND mo.orderState = #{orderState}
+        </if>
+        <if test="vipType != null">
+            AND mo.vipType = #{vipType}
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            AND left(mo.createTime,10)   between #{startTime} and #{endTime}
+        </if>
+        order by mo.createTime desc
+        limit #{current} , #{pageSize}
+    </select>
+    <select id="getCountAdminSelect" resultType="java.lang.Integer">
+        select count(1)
+        from movie_order mo
+        left join movie m on mo.movieId = m.id
+        left join users u on mo.userId = u.id
+        where mo.isDelete = 0
+        <if test="nickName != '' and nickName != null ">
+            AND u.nickname = #{nickName}
+        </if>
+        <if test="movieName != '' and movieName != null ">
+            AND m.movieName = #{movieName}
+        </if>
+        <if test="id != '' and id != null">
+            AND mo.id = #{id}
+        </if>
+        <if test="state != '' and state != null">
+            AND mo.state = #{state}
+        </if>
+        <if test="orderState != null">
+            AND mo.orderState = #{orderState}
+        </if>
+        <if test="vipType != null">
+            AND mo.vipType = #{vipType}
+        </if>
+        <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+            AND left(mo.createTime,10)   between #{startTime} and #{endTime}
+        </if>
+        order by mo.createTime desc
+
+    </select>
 </mapper>

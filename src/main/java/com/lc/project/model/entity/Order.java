@@ -58,6 +58,11 @@ public class Order implements Serializable {
     private Integer isDelete;
 
 
+    @TableField(exist = false)
+    private Users user;
+
+    @TableField(exist = false)
+    private Integer total;
     /**
      * 开的是哪种类型vip
      */
