@@ -344,7 +344,6 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
         String newFileName = "video" + File.separator + date + File.separator + sixUuid + File.separator + filename;
         // 创建一个文件实例对象
         File sixVideo = new File(basepath, newFileName);
-
         if (!sixVideo.getParentFile().exists()) {
             sixVideo.getParentFile().mkdirs();
         }
@@ -364,6 +363,8 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
             e.printStackTrace();
         }
 
+        String path = sixVideo.getPath();
+        System.out.println(path);
         //所有的视频的uuid
         String uuid = UUID.randomUUID().toString().replace("-", "");
         String allNewFileName = "video" + File.separator + date + File.separator + uuid + File.separator + filename;
@@ -406,11 +407,11 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
         videoUpload.setVideoName(filename);
         String six = "/api/videoSystem/file/" + "video" + File.separator + date + File.separator + sixUuid + File.separator + "index.m3u8";
         String all = "/api/videoSystem/file/" + "video" + File.separator + date + File.separator + uuid + File.separator + "index.m3u8";
-        videoUpload.setVideoSixUrl(six);
-        videoUpload.setVideoUrl(all);
-        videoUpload.setVideoUUID(uuid);
-        boolean save = this.save(videoUpload);
-        return videoUpload.getId();
+//        videoUpload.setVideoSixUrl(six);
+//        videoUpload.setVideoUrl(all);
+//        videoUpload.setVideoUUID(uuid);
+//        boolean save = this.save(videoUpload);
+        return  null;
     }
 
     public void uploadM3u8Six(File video, String sixOut0, String sixOut1) {

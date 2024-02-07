@@ -24,6 +24,12 @@ public interface MovieMapper extends BaseMapper<Movie> {
     List<Movie> getAllHotMovieOrderByHot();
 
     List<Movie> getAllHotMovieOrderByScore();
+
+    List<Movie> getMovieHotToEChars();
+
+    List<Movie> getMovieScoreToEChars();
+
+    List<Movie> getAllByTypeEChars();
 }
 
 

@@ -48,6 +48,12 @@
                  where o.userId = #{id} and o.isDelete = 0 order by o.createTime desc
     </select>
 
+    <select id="getEchars" resultMap="BaseResultMap">
+        select o.*, m.price, m.movieName, m.img, m.type
+        from movie_order o
+                 left join movie m on o.movieId = m.id and movieId
+    </select>
+
     <resultMap id="BaseResultMap2" type="com.lc.project.model.entity.Order">
         <id property="id" column="id" jdbcType="INTEGER"/>
         <result property="state" column="state" jdbcType="INTEGER"/>
@@ -153,4 +159,6 @@
         order by mo.createTime desc
 
     </select>
+
+
 </mapper>

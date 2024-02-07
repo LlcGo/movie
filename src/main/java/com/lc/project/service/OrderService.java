@@ -4,10 +4,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.lc.project.model.dto.order.OrderByRequest;
 import com.lc.project.model.dto.order.OrderQueryRequest;
+import com.lc.project.model.entity.Movie;
 import com.lc.project.model.entity.Order;
-import com.lc.project.model.vo.OrderVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author asus
@@ -45,5 +46,11 @@ public interface OrderService extends IService<Order> {
      * @return
      */
     Boolean toBuy(OrderByRequest orderByRequest);
+
+    /**
+     * 用户下单统计（根据各个电影的类型进行统计出购买的数量）
+     * @return
+     */
+    Map<Integer, List<Movie>> getEChars();
 
 }

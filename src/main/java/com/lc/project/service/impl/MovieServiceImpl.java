@@ -20,12 +20,11 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import static com.lc.project.websocket.ChatHandler.threadPoolExecutor;
 
@@ -268,10 +267,10 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
         Object o = redisUtils.get(CommonConstant.TYPE_RE);
         //默认按照 热度
         String re = "1";
-        if(o != null){
+        if (o != null) {
             re = (String) o;
         }
-        if(re.equals("1")){
+        if (re.equals("1")) {
             return movieMapper.getMovieHotListByType(type);
         }
         return movieMapper.getMovieHotListByScore(type);
@@ -299,23 +298,23 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
         Object o = redisUtils.get(CommonConstant.SEARCH_RE);
         //默认按照 热度
         String re = "1";
-        if(o != null){
+        if (o != null) {
             re = (String) o;
         }
-        if(re.equals("1")){
+        if (re.equals("1")) {
             return movieMapper.getAllHotMovieOrderByHot();
         }
         return movieMapper.getAllHotMovieOrderByScore();
     }
 
     @Override
-    public Boolean setState(Integer state, Integer movieId,Boolean flag) {
+    public Boolean setState(Integer state, Integer movieId, Boolean flag) {
         UpdateWrapper<Movie> movieUpdateWrapper = new UpdateWrapper<>();
         movieUpdateWrapper.eq("id", movieId);
         //如果是要设置为会员
-        if(flag){
+        if (flag) {
             movieUpdateWrapper.set("state", 2);
-            movieUpdateWrapper.set("price",null);
+            movieUpdateWrapper.set("price", null);
             return this.update(movieUpdateWrapper);
         }
 
@@ -326,7 +325,6 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
         }
 
 
-
         Movie movie = this.getById(movieId);
         //如果是有价格的
         if (movie.getPrice() != null) {
@@ -334,25 +332,25 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
             return this.update(movieUpdateWrapper);
         }
         //正常上架
-        movieUpdateWrapper.set("state",1);
+        movieUpdateWrapper.set("state", 1);
         return this.update(movieUpdateWrapper);
     }
 
     @Override
     public Boolean setMf(Integer state, Integer movieId) {
         UpdateWrapper<Movie> movieUpdateWrapper = new UpdateWrapper<>();
-        movieUpdateWrapper.set("price",null);
-        movieUpdateWrapper.eq("id",movieId);
-        movieUpdateWrapper.set("state",1);
+        movieUpdateWrapper.set("price", null);
+        movieUpdateWrapper.eq("id", movieId);
+        movieUpdateWrapper.set("state", 1);
         return this.update(movieUpdateWrapper);
     }
 
     @Override
     public Boolean setPrice(Integer price, Integer movieId) {
         UpdateWrapper<Movie> movieUpdateWrapper = new UpdateWrapper<>();
-        movieUpdateWrapper.eq("id",movieId);
-        movieUpdateWrapper.set("price",price);
-        movieUpdateWrapper.set("state",3);
+        movieUpdateWrapper.eq("id", movieId);
+        movieUpdateWrapper.set("price", price);
+        movieUpdateWrapper.set("state", 3);
         return this.update(movieUpdateWrapper);
     }
 
@@ -368,6 +366,53 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
     @Override
     public Map<Object, Object> getRe() {
         return redisUtils.hmget(CommonConstant.SY_TJ);
+    }
+
+    @Override
+    public Map<Integer, List<Movie>> getHotEChars() {
+        List<Movie> movieList = movieMapper.getMovieHotToEChars();
+        Map<Integer, List<Movie>> collect = movieList.stream().collect(Collectors.groupingBy(Movie::getType));
+//        System.out.println(movieList);
+        return collect;
+    }
+
+    @Override
+    public Map<Integer, List<Movie>> getScoreEChars() {
+        List<Movie> movieList = movieMapper.getMovieScoreToEChars();
+        Map<Integer, List<Movie>> collect = movieList.stream().collect(Collectors.groupingBy(Movie::getType));
+        return collect;
+    }
+
+    @Override
+    public Map<Integer, List<Movie>> getAllByTypeEChars() {
+        List<Movie> movieList = movieMapper.getAllByTypeEChars();
+        Map<Integer, List<Movie>> collect = movieList.stream().collect(Collectors.groupingBy(Movie::getType));
+        return collect;
+    }
+
+    @Override
+    public HashMap<Integer, List<Integer>> getScoreAndScoreEChars() {
+        List<Movie> movieScoreToEChars = movieMapper.getMovieScoreToEChars();
+        List<Movie> movieHotToEChars = movieMapper.getMovieHotToEChars();
+        Map<Integer, List<Movie>> collect = movieScoreToEChars.stream().collect(Collectors.groupingBy(Movie::getType));
+        Map<Integer, List<Movie>> collect2 = movieHotToEChars.stream().collect(Collectors.groupingBy(Movie::getType));
+        HashMap<Integer, List<Integer>> integerIntegerHashMap = new HashMap<>();
+        for (Map.Entry<Integer, List<Movie>> entry : collect.entrySet()) {
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue().size());
+            ArrayList<Integer> objects = new ArrayList<>();
+            int size = entry.getValue().size();
+            objects.add(size);
+            integerIntegerHashMap.put(entry.getKey(),objects);
+        }
+        for (Map.Entry<Integer, List<Movie>> entry : collect2.entrySet()) {
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue().size());
+            for (Map.Entry<Integer, List<Integer>> entry2 : integerIntegerHashMap.entrySet()) {
+                if(entry2.getKey().equals(entry.getKey())){
+                    entry2.getValue().add(entry.getValue().size());
+                }
+            }
+        }
+        return integerIntegerHashMap;
     }
 
 

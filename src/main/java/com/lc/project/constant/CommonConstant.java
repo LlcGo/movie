@@ -51,4 +51,11 @@ public interface CommonConstant {
      * 首页推荐key
      */
     String SY_TJ = "sytj";
+
+    /**
+     * 会员价格 key
+     */
+    String YK = "YK";
+    String JK = "JK";
+    String NK = "NK";
 }

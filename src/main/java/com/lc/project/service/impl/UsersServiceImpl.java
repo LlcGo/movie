@@ -11,10 +11,12 @@ import com.google.gson.reflect.TypeToken;
 import com.lc.project.common.ErrorCode;
 import com.lc.project.exception.BusinessException;
 import com.lc.project.mapper.UsersMapper;
+import com.lc.project.mapper.VipMapper;
 import com.lc.project.model.dto.user.UpdatePassWord;
 import com.lc.project.model.dto.user.UserQueryRequest;
 import com.lc.project.model.entity.MyFriends;
 import com.lc.project.model.entity.Users;
+import com.lc.project.model.entity.Vip;
 import com.lc.project.service.MyFriendsService;
 import com.lc.project.service.UsersService;
 import com.lc.project.utils.Aig;
@@ -46,6 +48,9 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
         implements UsersService {
     @Resource
     private UsersMapper userMapper;
+
+    @Resource
+    private VipMapper vipMapper;
 
     @Resource
     @Lazy
@@ -118,6 +123,13 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
         if (user == null) {
             log.info("user login failed, userAccount cannot match userPassword");
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或密码错误");
+        }
+        if (user.getUserRole().equals("vip")){
+            QueryWrapper<Vip> vipQueryWrapper = new QueryWrapper<>();
+            vipQueryWrapper.eq("userId",user.getId());
+            Vip vip = vipMapper.selectOne(vipQueryWrapper);
+            Date overTime = vip.getOverTime();
+            user.setVipOverTime(overTime);
         }
         // 3. 记录用户的登录态
         request.getSession().setAttribute(USER_LOGIN_STATE, user);

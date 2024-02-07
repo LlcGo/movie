@@ -8,7 +8,6 @@ import com.lc.project.common.DeleteRequest;
 import com.lc.project.common.ErrorCode;
 import com.lc.project.common.ResultUtils;
 import com.lc.project.exception.BusinessException;
-import com.lc.project.mapper.MovieMapper;
 import com.lc.project.model.dto.movie.MovieAddRe;
 import com.lc.project.model.dto.movie.MovieAddRequest;
 import com.lc.project.model.dto.movie.MovieQueryRequest;
@@ -303,4 +302,43 @@ public class MovieController {
         List<Movie> list = movieService.list(movieQueryWrapper);
         return ResultUtils.success(list);
     }
+
+
+    @GetMapping("/getHot/EChars")
+    public BaseResponse<Map<Integer, List<Movie>>> getHotEChars(){
+//        if (type == null || type < 0){
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+//        }
+        Map<Integer, List<Movie>> movieList = movieService.getHotEChars();
+        return ResultUtils.success(movieList);
+    }
+
+    @GetMapping("/getScore/EChars")
+    public BaseResponse<Map<Integer, List<Movie>>> getScoreEChars(){
+//        if (type == null || type < 0){
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+//        }
+        Map<Integer, List<Movie>> movieList = movieService.getScoreEChars();
+        return ResultUtils.success(movieList);
+    }
+
+
+    @GetMapping("/getScoreAndScore/EChars")
+    public BaseResponse<?> getScoreAndScoreEChars(){
+//        if (type == null || type < 0){
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+//        }
+        HashMap<Integer, List<Integer>> movieList = movieService.getScoreAndScoreEChars();
+        return ResultUtils.success(movieList);
+    }
+
+    @GetMapping("/allByType/EChars")
+    public BaseResponse<Map<Integer, List<Movie>>> getAllByTypeEChars(){
+//        if (type == null || type < 0){
+//            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+//        }
+        Map<Integer, List<Movie>> movieList = movieService.getAllByTypeEChars();
+        return ResultUtils.success(movieList);
+    }
+
 }

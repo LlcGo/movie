@@ -6,6 +6,7 @@ import com.lc.project.model.dto.movie.MovieAddRe;
 import com.lc.project.model.dto.movie.MovieQueryRequest;
 import com.lc.project.model.entity.Movie;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,4 +71,25 @@ public interface MovieService extends IService<Movie> {
     Boolean SyRe(MovieAddRe movie, String state);
 
     Map<Object, Object> getRe();
+
+    /**
+     * top 20 热度 的电影的类型
+     * @return
+     */
+    Map<Integer, List<Movie>> getHotEChars();
+
+    /**
+     * top 20 分数 的电影的类型
+     * @return
+     */
+    Map<Integer, List<Movie>> getScoreEChars();
+
+    /**
+     * 电影类型的数量
+     * @return
+     */
+    Map<Integer, List<Movie>> getAllByTypeEChars();
+
+
+    HashMap<Integer, List<Integer>> getScoreAndScoreEChars();
 }

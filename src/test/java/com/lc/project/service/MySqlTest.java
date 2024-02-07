@@ -21,10 +21,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @SpringBootTest
 public class MySqlTest {
@@ -70,6 +70,9 @@ public class MySqlTest {
 
     @Resource
     private VipMapper vipMapper;
+
+    @Resource
+    private MovieTypeService movieTypeService;
 
     @Test
     public void test(){
@@ -254,5 +257,48 @@ public class MySqlTest {
         Date date = new Date();
         boolean after = date.after(overTime);
         System.out.println(after);
+    }
+
+    @Test
+    public void toEC(){
+        List<Movie> movieList = movieMapper.getAllByTypeEChars();
+//        Map<Integer, List<Movie>> collect1 = movieList.stream().collect(Collectors.groupingBy(Movie::getType));
+        List<Movie> movieScoreToEChars = movieMapper.getMovieScoreToEChars();
+        List<Movie> movieHotToEChars = movieMapper.getMovieHotToEChars();
+        Map<Integer, List<Movie>> collect = movieScoreToEChars.stream().collect(Collectors.groupingBy(Movie::getType));
+        Map<Integer, List<Movie>> collect2 = movieHotToEChars.stream().collect(Collectors.groupingBy(Movie::getType));
+        HashMap<Integer, List<Integer>> integerIntegerHashMap = new HashMap<>();
+        for (Map.Entry<Integer, List<Movie>> entry : collect.entrySet()) {
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue().size());
+            ArrayList<Integer> objects = new ArrayList<>();
+            int size = entry.getValue().size();
+            objects.add(size);
+            integerIntegerHashMap.put(entry.getKey(),objects);
+        }
+        for (Map.Entry<Integer, List<Movie>> entry : collect2.entrySet()) {
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue().size());
+            for (Map.Entry<Integer, List<Integer>> entry2 : integerIntegerHashMap.entrySet()) {
+               if(entry2.getKey().equals(entry.getKey())){
+                   entry2.getValue().add(entry.getValue().size());
+               }
+            }
+        }
+        System.out.println(integerIntegerHashMap);
+    }
+
+    @Test
+    public void toEC2(){
+        List<Order> echars = orderMapper.getEchars();
+        System.out.println(echars);
+        ArrayList<Movie> movies = new ArrayList<>();
+        echars.forEach(item -> {
+            Movie movie = item.getMovie();
+            if(movie.getId() != null){
+                movies.add(movie);
+            }
+        });
+        System.out.println(movies);
+        Map<Integer, List<Movie>> collect = movies.stream().collect(Collectors.groupingBy(Movie::getType));
+        System.out.println(collect);
     }
 }

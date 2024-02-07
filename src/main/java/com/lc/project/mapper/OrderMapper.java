@@ -35,6 +35,8 @@ public interface OrderMapper extends BaseMapper<Order> {
                                 Integer vipType,
                                 String startTime,
                                 String endTime);
+
+    List<Order> getEchars();
 }
 
 

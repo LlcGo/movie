@@ -76,6 +76,8 @@ public class Users implements Serializable {
      */
     private Integer isDelete;
 
+    @TableField(exist = false)
+    private Date vipOverTime;
     /**
      * 用户角色: user, admin
      */

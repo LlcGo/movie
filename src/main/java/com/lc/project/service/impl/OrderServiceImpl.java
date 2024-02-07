@@ -16,7 +16,6 @@ import com.lc.project.model.dto.order.OrderByRequest;
 import com.lc.project.model.dto.order.OrderQueryRequest;
 import com.lc.project.model.entity.*;
 import com.lc.project.model.enums.OrderDayEnum;
-import com.lc.project.model.vo.OrderVO;
 import com.lc.project.rabbitmq.RabbitMQUtils;
 import com.lc.project.service.*;
 import com.lc.project.utils.DayUtils;
@@ -33,6 +32,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author asus
@@ -398,6 +399,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
         order.setOrderState(1);
         this.save(order);
         return vipService.updateById(oldVip);
+    }
+
+    @Override
+    public Map<Integer, List<Movie>> getEChars() {
+      List<Order> orderList = orderMapper.getEchars();
+//        System.out.println(echars);
+        ArrayList<Movie> movies = new ArrayList<>();
+        orderList.forEach(item -> {
+            Movie movie = item.getMovie();
+            if(movie.getId() != null){
+                movies.add(movie);
+            }
+        });
+        System.out.println(movies);
+        Map<Integer, List<Movie>> collect = movies.stream().collect(Collectors.groupingBy(Movie::getType));
+      return collect;
     }
 
 

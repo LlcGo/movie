@@ -12,6 +12,7 @@ import com.lc.project.model.dto.order.OrderAddRequest;
 import com.lc.project.model.dto.order.OrderByRequest;
 import com.lc.project.model.dto.order.OrderQueryRequest;
 import com.lc.project.model.dto.order.OrderUpdateRequest;
+import com.lc.project.model.entity.Movie;
 import com.lc.project.model.entity.Order;
 import com.lc.project.model.entity.Users;
 import com.lc.project.model.enums.OrderDayEnum;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 電影
@@ -224,4 +226,38 @@ public class OrderController {
     public BaseResponse<Boolean> setDDLTime(String time) {
         return ResultUtils.success(redisUtils.set(CommonConstant.ORDER_DDL_TIME,time));
     }
+
+    @PostMapping("/set/YK")
+    public BaseResponse<Boolean> setYK(String price) {
+        return ResultUtils.success(redisUtils.set(CommonConstant.YK,price));
+    }
+    @PostMapping("/set/JK")
+    public BaseResponse<Boolean> setJK(String price) {
+        return ResultUtils.success(redisUtils.set(CommonConstant.JK,price));
+    }
+    @PostMapping("/set/NK")
+    public BaseResponse<Boolean> setNK(String price) {
+        return ResultUtils.success(redisUtils.set(CommonConstant.NK,price));
+    }
+
+
+    @PostMapping("/get/YK")
+    public BaseResponse<Integer> getYK() {
+        return ResultUtils.success(Integer.parseInt(redisUtils.get(CommonConstant.YK).toString()));
+    }
+    @PostMapping("/get/JK")
+    public BaseResponse<Integer> getJK() {
+        return ResultUtils.success(Integer.parseInt(redisUtils.get(CommonConstant.JK).toString()));
+    }
+    @PostMapping("/get/NK")
+    public BaseResponse<Integer> getNK() {
+        return ResultUtils.success(Integer.parseInt(redisUtils.get(CommonConstant.NK).toString()));
+    }
+
+    @GetMapping("/get/EChars")
+    public BaseResponse<Map<Integer, List<Movie>>> getEChars(){
+        Map<Integer, List<Movie>> orderList = orderService.getEChars();
+        return ResultUtils.success(orderList);
+    }
+
 }
