@@ -54,6 +54,10 @@
                  left join movie m on o.movieId = m.id and movieId
     </select>
 
+    <select id="getVipEChars" resultType="com.lc.project.model.entity.Order">
+
+    </select>
+
     <resultMap id="BaseResultMap2" type="com.lc.project.model.entity.Order">
         <id property="id" column="id" jdbcType="INTEGER"/>
         <result property="state" column="state" jdbcType="INTEGER"/>
@@ -159,6 +163,7 @@
         order by mo.createTime desc
 
     </select>
+
 
 
 </mapper>

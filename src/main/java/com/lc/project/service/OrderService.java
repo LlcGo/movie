@@ -53,4 +53,11 @@ public interface OrderService extends IService<Order> {
      */
     Map<Integer, List<Movie>> getEChars();
 
+    /**
+     * 用户vip 下单 月卡 季卡 年卡统计
+     *
+     * @return
+     */
+    Map<Integer, List<Order>> getVipEChars();
+
 }

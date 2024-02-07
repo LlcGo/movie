@@ -417,6 +417,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order>
       return collect;
     }
 
+    @Override
+    public Map<Integer, List<Order>> getVipEChars() {
+        QueryWrapper<Order> orderQueryWrapper = new QueryWrapper<>();
+        orderQueryWrapper.isNotNull("vipType");
+        List<Order> orderList =  this.list(orderQueryWrapper);
+        System.out.println(orderList);
+        Map<Integer, List<Order>> collect = orderList.stream().collect(Collectors.groupingBy(Order::getVipType));
+        return collect;
+    }
+
 
     public void SetVipOverTime(int day, Vip vip) {
         LocalDateTime now = LocalDateTimeUtil.now();

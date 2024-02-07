@@ -16,8 +16,6 @@ import com.lc.project.model.entity.Movie;
 import com.lc.project.model.entity.Order;
 import com.lc.project.model.entity.Users;
 import com.lc.project.model.enums.OrderDayEnum;
-import com.lc.project.model.vo.OrderVO;
-import com.lc.project.rabbitmq.RabbitMQUtils;
 import com.lc.project.service.OrderService;
 import com.lc.project.service.UsersService;
 import com.lc.project.utils.RedisUtils;
@@ -257,6 +255,12 @@ public class OrderController {
     @GetMapping("/get/EChars")
     public BaseResponse<Map<Integer, List<Movie>>> getEChars(){
         Map<Integer, List<Movie>> orderList = orderService.getEChars();
+        return ResultUtils.success(orderList);
+    }
+
+    @GetMapping("/get/Vip/EChars")
+    public BaseResponse<Map<Integer, List<Order>>> getVipEChars(){
+        Map<Integer, List<Order>> orderList = orderService.getVipEChars();
         return ResultUtils.success(orderList);
     }
 

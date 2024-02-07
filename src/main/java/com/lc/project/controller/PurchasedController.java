@@ -42,11 +42,13 @@ public class PurchasedController {
 
 
 
+
     @PostMapping("/get")
     public BaseResponse<List<Purchased>> getMyPurchased() {
         List<Purchased> list = purchasedService.getMyPurchased();
         return ResultUtils.success(list);
     }
+
 
 
 }

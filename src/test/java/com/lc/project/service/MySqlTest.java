@@ -74,6 +74,8 @@ public class MySqlTest {
     @Resource
     private MovieTypeService movieTypeService;
 
+    @Resource
+    private OrderService orderService;
     @Test
     public void test(){
         MovieQueryRequest movieQueryRequest = new MovieQueryRequest();
@@ -299,6 +301,16 @@ public class MySqlTest {
         });
         System.out.println(movies);
         Map<Integer, List<Movie>> collect = movies.stream().collect(Collectors.groupingBy(Movie::getType));
+        System.out.println(collect);
+    }
+
+    @Test
+    public void toEC3(){
+        QueryWrapper<Order> orderQueryWrapper = new QueryWrapper<>();
+        orderQueryWrapper.isNotNull("vipType");
+        List<Order> orderList =  orderService.list(orderQueryWrapper);
+        System.out.println(orderList);
+        Map<Integer, List<Order>> collect = orderList.stream().collect(Collectors.groupingBy(Order::getVipType));
         System.out.println(collect);
     }
 }
