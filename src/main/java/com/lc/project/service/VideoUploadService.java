@@ -1,6 +1,8 @@
 package com.lc.project.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.lc.project.model.dto.file.VideQueryRequest;
 import com.lc.project.model.entity.VideoUpload;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,4 +40,6 @@ public interface VideoUploadService extends IService<VideoUpload> {
      * @return
      */
     Integer uploadVideoToM3U83(MultipartFile file);
+
+    Page<VideoUpload> getListVideo(VideQueryRequest videQueryRequest);
 }

@@ -36,7 +36,7 @@ public class VideoUpload implements Serializable {
     /**
      *
      */
-    private String videoUUID;
+    private Integer state;
 
     /**
      *

@@ -23,10 +23,11 @@ public class Barrage implements Serializable {
     @TableId(type = IdType.AUTO)
     private Integer id;
 
+    @TableField(exist = false)
     private Integer total;
-
+    @TableField(exist = false)
     private Movie movie;
-
+    @TableField(exist = false)
     private Users user;
     /**
      * 

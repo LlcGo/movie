@@ -3,11 +3,13 @@ package com.lc.project.service.impl;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lc.project.common.ErrorCode;
 import com.lc.project.exception.BusinessException;
 import com.lc.project.mapper.VideoUploadMapper;
 import com.lc.project.mapper.VipMapper;
+import com.lc.project.model.dto.file.VideQueryRequest;
 import com.lc.project.model.entity.Purchased;
 import com.lc.project.model.entity.Users;
 import com.lc.project.model.entity.VideoUpload;
@@ -414,6 +416,14 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
         return  null;
     }
 
+    @Override
+    public Page<VideoUpload> getListVideo(VideQueryRequest videQueryRequest) {
+        long current = videQueryRequest.getCurrent();
+        long pageSize = videQueryRequest.getPageSize();
+        Page<VideoUpload> page = this.page(new Page<>(current, pageSize));
+        return page;
+    }
+
     public void uploadM3u8Six(File video, String sixOut0, String sixOut1) {
         ProcessBuilder pb = new ProcessBuilder("ffmpeg", "-threads", "2", "-re", "-fflags", "+genpts", "-i", video.getPath(), "-ss", "00:00", "-to", "06:00",
                 "-s:0", "1920x1080", "-ac", "2", "-vcodec", "libx264", "-profile:v", "main", "-b:v:0", "2000k", "-maxrate:0", "2000k", "-bufsize:0", "4000k", "-r", "30", "-ar", "44100", "-g", "48", "-c:a", "aac", "-b:a:0", "128k",
@@ -423,6 +433,26 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
                 "-map", "0:v", "-map", "0:a", "-map", "0:v", "-map", "0:a", "-map", "0:v", "-map", "0:a", "-f", "hls", "-var_stream_map", "v:0,a:0 v:1,a:1 v:2,a:2",
                 "-start_number", "10", "-hls_time", "10", "-hls_list_size", "0", "-hls_start_number_source", "1", "-master_pl_name", "index.m3u8", "-hls_segment_filename",
                 sixOut0, sixOut1);
+
+//        ProcessBuilder pb = new ProcessBuilder("ffmpeg", "-threads", "2", "-re", "-fflags", "+genpts", "-i", video.getPath(), "-ss", "00:00", "-to", "06:00",
+//                "-c:v:0", "libx265", "-s:0", "1920x1080", "-profile:v:0", "main", "-c:a:0", "aac", "-ac", "2", "-b:v:0", "2000k", "-b:a:0", "128k", "-maxrate:0", "2000k", "-bufsize:0", "4000k", "-r", "24", "-ar", "44100", "-g", "48",
+//                "-c:v:1", "libx265", "-s:2", "1280x720", "-profile:v:1", "main", "-c:a:0", "aac", "-ac", "2", "-b:v:0", "1000k", "-b:a:1", "128k", "-maxrate:2", "1000k", "-bufsize:2", "2000k", "-r", "24", "-ar", "44100", "-g", "48",
+//                "-c:v:2", "libx265", "-s:4", "720x480", "-profile:v:2", "main", "-c:a:0", "aac", "-ac", "2", "-b:v:0", "600k", "-b:a:2", "128k", "-maxrate:4", "600k", "-bufsize:4", "1000k", "-r", "24", "-ar", "44100", "-g", "48",
+//
+////                -s:4 720x480 -ac 2 -vcodec libx264 -profile:v main -b:v:2 600k -maxrate:4 600k -bufsize:4 1000k -r 30 -ar 44100 -g 48 -c:a aac -b:a:2 128k
+//                "-map", "0:v", "-map", "0:a", "-map", "0:v", "-map", "0:a", "-map", "0:v", "-map", "0:a", "-f", "hls", "-var_stream_map", "v:0,a:0 v:1,a:1 v:2,a:2",
+//                "-hls_segment_type" ,"mpegts",
+//                "-start_number", "10", "-hls_time", "10", "-hls_list_size", "0", "-hls_start_number_source", "1", "-master_pl_name", "index.m3u8", "-hls_segment_filename",
+//                sixOut0, sixOut1);
+
+        //ffmpeg -threads 2 -re -fflags +genpts -i "D:\Program Files\nginx-1.8.1\html\zizhong.mp4"
+        //
+        //-c:v:1 libx265 -s:2 1280x720 -profile:v:1 main -c:a:0 aac -ac 2 -b:v:1 1000k -b:a:1 128k -maxrate:2 1000k -bufsize:2 2000k -r 24 -ar 44100 -g 48
+        //-c:v:2 libx265 -s:4 720x480 -profile:v:2 main -c:a:0 aac -ac 2 -b:v:2 600k -b:a:2 128k -maxrate:4 600k -bufsize:4 1000k -r 24 -ar 44100 -g 48
+        //-map 0:v -map 0:a -map 0:v -map 0:a -map 0:v -map 0:a -f hls -var_stream_map "v:0,a:0 v:1,a:1 v:2,a:2" -hls_segment_type mpegts
+        //-hls_enc 1 -hls_enc_key 0123456789ABCDEF0123456789ABCDEF -hls_enc_key_url "123456.key" -start_number 10 -hls_time 10 -hls_list_size 0
+        //-hls_start_number_source 1 -master_pl_name "index.m3u8"
+        //-hls_segment_filename "D:\Program Files\nginx-1.8.1\html\index_%v-%09d.ts" "D:\Program Files\nginx-1.8.1\html\index_%v.m3u8"
         pb.redirectErrorStream(true);
         Process p = null;
         try {
@@ -455,6 +485,17 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
                 "-map", "0:v", "-map", "0:a", "-map", "0:v", "-map", "0:a", "-map", "0:v", "-map", "0:a", "-f", "hls", "-var_stream_map", "v:0,a:0 v:1,a:1 v:2,a:2",
                 "-start_number", "10", "-hls_time", "10", "-hls_list_size", "0", "-hls_start_number_source", "1", "-master_pl_name", "index.m3u8", "-hls_segment_filename",
                 allOut0, allOut1);
+
+//        ProcessBuilder pb = new ProcessBuilder("ffmpeg", "-threads", "2", "-re", "-fflags", "+genpts", "-i", video.getPath(),
+//                "-c:v:0", "libx265", "-s:0", "1920x1080", "-profile:v:0", "main", "-c:a:0", "aac", "-ac", "2", "-b:v:0", "2000k", "-b:a:0", "128k", "-maxrate:0", "2000k", "-bufsize:0", "4000k", "-r", "24", "-ar", "44100", "-g", "48",
+//                "-c:v:1", "libx265", "-s:2", "1280x720", "-profile:v:1", "main", "-c:a:0", "aac", "-ac", "2", "-b:v:0", "1000k", "-b:a:1", "128k", "-maxrate:2", "1000k", "-bufsize:2", "2000k", "-r", "24", "-ar", "44100", "-g", "48",
+//                "-c:v:2", "libx265", "-s:4", "720x480", "-profile:v:2", "main", "-c:a:0", "aac", "-ac", "2", "-b:v:0", "600k", "-b:a:2", "128k", "-maxrate:4", "600k", "-bufsize:4", "1000k", "-r", "24", "-ar", "44100", "-g", "48",
+//
+////                -s:4 720x480 -ac 2 -vcodec libx264 -profile:v main -b:v:2 600k -maxrate:4 600k -bufsize:4 1000k -r 30 -ar 44100 -g 48 -c:a aac -b:a:2 128k
+//                "-map", "0:v", "-map", "0:a", "-map", "0:v", "-map", "0:a", "-map", "0:v", "-map", "0:a", "-f", "hls", "-var_stream_map", "v:0,a:0 v:1,a:1 v:2,a:2",
+//                "-hls_segment_type" ,"mpegts",
+//                "-start_number", "10", "-hls_time", "10", "-hls_list_size", "0", "-hls_start_number_source", "1", "-master_pl_name", "index.m3u8", "-hls_segment_filename",
+//                allOut0, allOut1);
         pb.redirectErrorStream(true);
         Process p = null;
         try {
