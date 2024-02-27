@@ -39,7 +39,7 @@ public interface VideoUploadService extends IService<VideoUpload> {
      * @param file
      * @return
      */
-    Integer uploadVideoToM3U83(MultipartFile file);
+    String uploadVideoToM3U83(MultipartFile file);
 
     Page<VideoUpload> getListVideo(VideQueryRequest videQueryRequest);
 }

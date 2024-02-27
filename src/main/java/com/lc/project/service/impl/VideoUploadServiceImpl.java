@@ -1,10 +1,12 @@
 package com.lc.project.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.coremedia.iso.IsoFile;
 import com.lc.project.common.ErrorCode;
 import com.lc.project.exception.BusinessException;
 import com.lc.project.mapper.VideoUploadMapper;
@@ -328,14 +330,14 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
 
 
     @Override
-    public Integer uploadVideoToM3U83(MultipartFile file) {
+    public String uploadVideoToM3U83(MultipartFile file) {
         // 获取上传资源的名称
         String filename = file.getOriginalFilename();
         QueryWrapper<VideoUpload> videoUploadQueryWrapper = new QueryWrapper<>();
         videoUploadQueryWrapper.eq("videoName",filename);
         VideoUpload oldVideoUpload = videoUploadMapper.selectOne(videoUploadQueryWrapper);
         if(oldVideoUpload != null){
-            return oldVideoUpload.getId();
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"该视频已存在");
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         String date = sdf.format(new Date());
@@ -350,6 +352,7 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
             sixVideo.getParentFile().mkdirs();
         }
 
+
         // 对这个文件进行上传操作
         try {
             FileUtils.copyInputStreamToFile(file.getInputStream(),sixVideo);
@@ -358,12 +361,16 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
         } catch (IOException e) {
             e.printStackTrace();
         }
-        File m3u8 = new File(basepath + File.separator + newFileName.substring(0, newFileName.lastIndexOf(".")) + ".m3u8");
-        try {
-            m3u8.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+
+
+
+////        File m3u8 = new File(basepath + File.separator + newFileName.substring(0, newFileName.lastIndexOf(".")) + ".m3u8");
+////        try {
+////            m3u8.createNewFile();
+////        } catch (IOException e) {
+////            e.printStackTrace();
+////        }
 
         String path = sixVideo.getPath();
         System.out.println(path);
@@ -384,12 +391,12 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
         } catch (IOException e) {
             e.printStackTrace();
         }
-        File Allm3u8 = new File(basepath + File.separator + allNewFileName.substring(0, allNewFileName.lastIndexOf(".")) + ".m3u8");
-        try {
-            Allm3u8.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        File Allm3u8 = new File(basepath + File.separator + allNewFileName.substring(0, allNewFileName.lastIndexOf(".")) + ".m3u8");
+//        try {
+//            Allm3u8.createNewFile();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
 
 //        System.out.println(m3u8.getPath());
@@ -404,16 +411,35 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
         CompletableFuture.runAsync(() -> {
             uploadM3u8All(allVideo,allOutput0,allOutput1);
         }, threadPoolExecutor);
-
         VideoUpload videoUpload = new VideoUpload();
+        filename = filename.replace(".mp4",".m3u8");
         videoUpload.setVideoName(filename);
         String six = "/api/videoSystem/file/" + "video" + File.separator + date + File.separator + sixUuid + File.separator + "index.m3u8";
         String all = "/api/videoSystem/file/" + "video" + File.separator + date + File.separator + uuid + File.separator + "index.m3u8";
-//        videoUpload.setVideoSixUrl(six);
-//        videoUpload.setVideoUrl(all);
-//        videoUpload.setVideoUUID(uuid);
-//        boolean save = this.save(videoUpload);
-        return  null;
+
+        String time = "";
+        //获取视频时间
+        IsoFile isoFile = null;
+        Long lengthInSeconds = null;
+        try {
+            isoFile = new IsoFile(sixVideo.getPath());
+            lengthInSeconds =
+                    isoFile.getMovieBox().getMovieHeaderBox().getDuration();
+            time = String.valueOf(lengthInSeconds);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        lengthInSeconds = lengthInSeconds / 1000;
+        // 加上10秒
+        Date nextSeconds = DateUtil.offsetSecond(new Date(), Math.toIntExact(lengthInSeconds));
+        videoUpload.setUpdateTime(nextSeconds);
+        videoUpload.setVideoSixUrl(six);
+        videoUpload.setVideoUrl(all);
+        videoUpload.setState(0);
+        boolean save = this.save(videoUpload);
+
+        return  time;
     }
 
     @Override

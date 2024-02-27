@@ -8,6 +8,7 @@ import com.lc.project.common.ErrorCode;
 import com.lc.project.constant.CommonConstant;
 import com.lc.project.exception.BusinessException;
 import com.lc.project.mapper.MovieMapper;
+import com.lc.project.mapper.VideoUploadMapper;
 import com.lc.project.model.dto.movie.MovieAddRe;
 import com.lc.project.model.dto.movie.MovieQueryRequest;
 import com.lc.project.model.entity.*;
@@ -49,6 +50,9 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
 
     @Resource
     private RedisUtils redisUtils;
+
+    @Resource
+    private VideoUploadMapper videoUploadMapper;
 
     @Override
     public void validMovie(Movie movie, boolean add) {
@@ -198,6 +202,12 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
         long id = movie.getId();
         // 判断是否存在
         Movie oldMovie = this.getById(id);
+        Integer videoId = movie.getVideoId();
+        VideoUpload videoUpload = videoUploadMapper.selectById(videoId);
+        Integer state = videoUpload.getState();
+        if(state.equals(0)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"视频正在解析，请解析完成后在选择该视频");
+        }
         if (oldMovie == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
@@ -212,6 +222,12 @@ public class MovieServiceImpl extends ServiceImpl<MovieMapper, Movie>
     @Override
     public Integer toAddMovie(Movie movie) {
         boolean result = this.save(movie);
+        Integer videoId = movie.getVideoId();
+        VideoUpload videoUpload = videoUploadMapper.selectById(videoId);
+        Integer state = videoUpload.getState();
+        if(state.equals(0)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"视频正在解析，请解析完成后在选择该视频");
+        }
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }

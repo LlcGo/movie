@@ -1,5 +1,7 @@
 package com.lc.project.service;
 
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
 
 import java.text.DateFormat;
@@ -12,24 +14,30 @@ import java.util.Date;
 
 public class Main {
     public static void main(String[] args) throws ParseException {
-        LocalDateTime now = LocalDateTimeUtil.now();
-        System.out.println(now);
-        final LocalDateTime localDateTime = LocalDateTimeUtil.parse(now.toString());
-        // 增加一天
-        // "2020-01-24T12:23:56"
-        LocalDateTime offset = LocalDateTimeUtil.offset(localDateTime, 30, ChronoUnit.DAYS);
-        System.out.println(offset);
-        ZoneId zoneId = ZoneId.systemDefault();
-        ZonedDateTime zdt = offset.atZone(zoneId);
-        Date OverTime = Date.from(zdt.toInstant());
-        System.out.println("overTime---->"+OverTime);
 
-        //获取时间间隔
-        LocalDateTime start = LocalDateTimeUtil.parse("2024-02-01T00:00:00");
-        LocalDateTime end = LocalDateTimeUtil.parse("2024-03-01T00:00:00");
-        Duration between = LocalDateTimeUtil.between(start, end);
-        long days = between.toDays();
-        System.out.println(days);
+        Long time = 436340L;
+        time = time / 1000;
+        // 加上10秒
+        Date next10Seconds = DateUtil.offsetSecond(new Date(), Math.toIntExact(time));
+        System.out.println(next10Seconds);
+//        LocalDateTime now = LocalDateTimeUtil.now();
+//        System.out.println(now);
+//        final LocalDateTime localDateTime = LocalDateTimeUtil.parse(now.toString());
+//        // 增加一天
+//        // "2020-01-24T12:23:56"
+//        LocalDateTime offset = LocalDateTimeUtil.offset(localDateTime, 30, ChronoUnit.DAYS);
+//        System.out.println(offset);
+//        ZoneId zoneId = ZoneId.systemDefault();
+//        ZonedDateTime zdt = offset.atZone(zoneId);
+//        Date OverTime = Date.from(zdt.toInstant());
+//        System.out.println("overTime---->"+OverTime);
+//
+//        //获取时间间隔
+//        LocalDateTime start = LocalDateTimeUtil.parse("2024-02-01T00:00:00");
+//        LocalDateTime end = LocalDateTimeUtil.parse("2024-03-01T00:00:00");
+//        Duration between = LocalDateTimeUtil.between(start, end);
+//        long days = between.toDays();
+//        System.out.println(days);
 
 
 //        Date date = new Date(System.currentTimeMillis());
