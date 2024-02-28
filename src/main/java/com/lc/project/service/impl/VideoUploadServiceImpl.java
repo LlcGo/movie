@@ -16,6 +16,7 @@ import com.lc.project.model.entity.Purchased;
 import com.lc.project.model.entity.Users;
 import com.lc.project.model.entity.VideoUpload;
 import com.lc.project.model.entity.Vip;
+import com.lc.project.rabbitmq.RabbitMQUtils;
 import com.lc.project.service.PurchasedService;
 import com.lc.project.service.UsersService;
 import com.lc.project.service.VideoUploadService;
@@ -65,6 +66,9 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
 
     @Resource
     private VipMapper vipMapper;
+
+    @Resource
+    private RabbitMQUtils rabbitMQUtils;
 
     @Override
     public String uploadUserImg(MultipartFile file) {
@@ -421,11 +425,13 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
         //获取视频时间
         IsoFile isoFile = null;
         Long lengthInSeconds = null;
+        String DDLTime = null;
         try {
             isoFile = new IsoFile(sixVideo.getPath());
             lengthInSeconds =
                     isoFile.getMovieBox().getMovieHeaderBox().getDuration();
             time = String.valueOf(lengthInSeconds);
+            DDLTime = lengthInSeconds.toString();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -438,7 +444,8 @@ public class VideoUploadServiceImpl extends ServiceImpl<VideoUploadMapper, Video
         videoUpload.setVideoUrl(all);
         videoUpload.setState(0);
         boolean save = this.save(videoUpload);
-
+        Integer id = videoUpload.getId();
+        rabbitMQUtils.sendMessageDLXWithMovie("video"+id,DDLTime);
         return  time;
     }
 

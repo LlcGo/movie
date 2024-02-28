@@ -1,7 +1,9 @@
 package com.lc.project.rabbitmq;
 
 import com.lc.project.model.entity.Order;
+import com.lc.project.model.entity.VideoUpload;
 import com.lc.project.service.OrderService;
+import com.lc.project.service.VideoUploadService;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
@@ -22,6 +24,9 @@ public class Consumer {
 
     @Resource
     private OrderService orderService;
+
+    @Resource
+    private VideoUploadService videoUploadService;
 
     @RabbitListener(queues = "dead_queue", ackMode = "MANUAL")
     public void receiveMessage(Message message, Channel channel) {
@@ -45,6 +50,20 @@ public class Consumer {
     @RabbitListener(queues = "delay_queue", ackMode = "MANUAL")
     public void consumeMessage(Message message, Channel channel)  {
         String msg = new String(message.getBody());
+        //解析视频
+        if (msg.startsWith("video")){
+            msg = msg.substring(5);
+            VideoUpload upload = videoUploadService.getById(Integer.parseInt(msg));
+            upload.setState(1);
+            videoUploadService.updateById(upload);
+            log.info("已自动修改视频状态-->{}信息,时间{}", msg, new Date().toString());
+            try {
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return;
+        }
         int orderId = Integer.parseInt(msg);
         Order order = orderService.getById(orderId);
         Integer orderState = order.getOrderState();

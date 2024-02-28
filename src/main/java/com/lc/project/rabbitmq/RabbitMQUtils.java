@@ -50,4 +50,17 @@ public class RabbitMQUtils {
         );
 
     }
+    public void sendMessageDLXWithMovie(String videoUploadId,String DDLTime){
+
+        log.info("当前时间：{},解析视频,发送一条信息给两个TTL队列{},延迟时间为{}",new Date().toString(),videoUploadId,DDLTime);
+        rabbitTemplate.convertAndSend(
+                "delay_exchange",
+                "delay_key",
+                videoUploadId, message -> {//配置消息的过期时间
+                    message.getMessageProperties().setDelay(Integer.parseInt(DDLTime));
+                    return message;
+                }
+        );
+
+    }
 }

@@ -14,7 +14,9 @@ import java.util.Date;
 
 public class Main {
     public static void main(String[] args) throws ParseException {
-
+        String msg = "video6";
+        msg = msg.substring(5);
+        System.out.println(msg);
         Long time = 436340L;
         time = time / 1000;
         // 加上10秒
