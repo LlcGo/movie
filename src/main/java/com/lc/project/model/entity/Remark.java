@@ -74,8 +74,12 @@ public class Remark implements Serializable {
      */
     private Integer disLiked;
 
+    @TableField(exist = false)
     private Movie movie;
 
+    /**
+     * 0 为 审核同意  1 为 未审核
+     */
     private Integer state;
     /**
      * 0 未删除 1 已删除

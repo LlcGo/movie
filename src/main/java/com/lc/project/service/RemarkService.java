@@ -40,4 +40,6 @@ public interface RemarkService extends IService<Remark> {
 
 
     boolean updateBySupport(Integer oldSupport, Integer nowSupport, Integer remarkId);
+
+    Integer shRemark(Remark remark);
 }

@@ -240,6 +240,19 @@ public class RemarkServiceImpl extends ServiceImpl<RemarkMapper, Remark>
         throw new BusinessException(ErrorCode.SYSTEM_ERROR);
     }
 
+    @Override
+    public Integer shRemark(Remark remark) {
+        Integer id = remark.getId();
+        Integer state = remark.getState();
+        if(state.equals(0)){
+            remark.setState(1);
+        }else {
+            remark.setState(0);
+        }
+        this.updateById(remark);
+        return id;
+    }
+
 }
 
 

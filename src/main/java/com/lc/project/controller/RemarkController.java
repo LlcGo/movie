@@ -226,6 +226,22 @@ public class RemarkController {
         return ResultUtils.success(remarkService.updateById(remark));
     }
 
+    /**
+     * 评论是否通过
+     */
+    @PostMapping("/sh")
+    public BaseResponse<Integer> shRemark(Integer id) {
+        if (id == null || id < 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Remark remark = remarkService.getById(id);
+        if(remark == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Integer newRemarkId = remarkService.shRemark(remark);
+        return ResultUtils.success(newRemarkId);
+    }
+
     @PostMapping("/admin/add")
     public BaseResponse<Boolean> adminAdd(String movieName,String userId,String content) {
         if (StrUtil.isBlank(movieName)){
