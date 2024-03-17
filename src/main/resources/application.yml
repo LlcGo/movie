@@ -34,6 +34,9 @@ spring:
 #          merge-sql: false                                  # 合并多个连接池的监控数据，默认false
 
 
+  elasticsearch:
+      uris: http://47.99.144.75:9200
+
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
@@ -87,3 +90,8 @@ llg:
   path:
     upload: D:\www\videoSystem\file
     filePath: http://localhost:7529/videoSystem/file/
+minio:
+  endpoint: http://47.99.144.75:9000 #Minio服务所在地址
+  bucketName: test #存储桶名称
+  accessKey: ANuJIbPR6AEOubAVkNUF #访问的key
+  secretKey: AwkJkxl0dfph0zl0GLqOd6QWRTmHQcLsTJAsIBKw #访问的秘钥

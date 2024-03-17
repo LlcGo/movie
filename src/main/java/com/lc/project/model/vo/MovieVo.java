@@ -42,7 +42,7 @@ public class MovieVo {
      */
     private String nation;
 
-    private MovieNation moveNation;
+    private MovieNation movieNation;
 
     /**
      * 电影年代

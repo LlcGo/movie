@@ -1,5 +1,9 @@
 package com.lc.project.controller;
 
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
+import cn.hutool.crypto.symmetric.SymmetricCrypto;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
@@ -8,6 +12,7 @@ import com.lc.project.common.DeleteRequest;
 import com.lc.project.common.ErrorCode;
 import com.lc.project.common.ResultUtils;
 import com.lc.project.exception.BusinessException;
+import com.lc.project.mapper.UsersMapper;
 import com.lc.project.model.dto.security.QCCode;
 import com.lc.project.model.dto.user.*;
 import com.lc.project.model.entity.Users;
@@ -32,6 +37,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
 
+import static com.lc.project.service.impl.UsersServiceImpl.SALT;
+
 /**
  * 用户接口
  *
@@ -47,6 +54,9 @@ public class UserController {
 
     @Resource
     private RedisUtils redisUtils;
+
+    @Resource
+    private UsersMapper usersMapper;
 
     /**
      * 用户注册
@@ -90,6 +100,64 @@ public class UserController {
         return ResultUtils.success(user);
     }
 
+    @PostMapping("/add/secret")
+    public BaseResponse<Boolean> userSecret(@RequestBody SecretRequest secretRequest, HttpServletRequest request) {
+        if (secretRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Users loginUser = userService.getLoginUser(request);
+        String username = loginUser.getUsername();
+        boolean set = redisUtils.set(username, JSONUtil.toJsonStr(secretRequest));
+        return ResultUtils.success(set);
+    }
+
+    @PostMapping("/get/secret")
+    public BaseResponse<Object> getSecret(@RequestBody String userName) {
+        if (userName == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Object o = redisUtils.get(userName);
+        if(o == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"账号未设置密保");
+        }
+        String res = (String) o;
+        SecretRequest bean = JSONUtil.toBean(res, SecretRequest.class);
+        bean.setAnswer1(null);
+        bean.setAnswer2(null);
+        return ResultUtils.success(bean);
+    }
+
+    @PostMapping("/get/secretNoUserName")
+    public BaseResponse<Object> getsecretNoUserName(HttpServletRequest request) {
+        Users loginUser = userService.getLoginUser(request);
+        String username = loginUser.getUsername();
+        Object o = redisUtils.get(username);
+        String res = (String) o;
+        SecretRequest bean = JSONUtil.toBean(res, SecretRequest.class);
+        bean.setAnswer1(null);
+        bean.setAnswer2(null);
+        return ResultUtils.success(bean);
+    }
+
+    @PostMapping("/check/secre")
+    public BaseResponse<String> getSecretNoUserName(String userName,String answer1,String answer2) {
+        Object o = redisUtils.get(userName);
+        String res = (String) o;
+        SecretRequest secretRequest = JSONUtil.toBean(res, SecretRequest.class);
+        String answer11 = secretRequest.getAnswer1();
+        String answer21 = secretRequest.getAnswer2();
+        if(!answer21.equals(answer2) && answer11.equals(answer1)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"密保问题填写错误");
+        }
+        QueryWrapper<Users> wrapper = new QueryWrapper<>();
+        wrapper.eq("username",userName);
+        Users users = usersMapper.selectOne(wrapper);
+        String password = users.getPassword();
+        byte[] byteKey = SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue(), "Lc66666666666666".getBytes()).getEncoded();
+        SymmetricCrypto aes = SecureUtil.aes(byteKey);
+        String decryptData = aes.decryptStr(password);
+        return ResultUtils.success(decryptData);
+    }
 
     /**
      * 用户登录

@@ -1,17 +1,34 @@
 package com.lc.project.controller;
 
+import cn.hutool.json.JSONUtil;
+import com.alibaba.druid.support.json.JSONUtils;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lc.project.common.BaseResponse;
 import com.lc.project.common.ErrorCode;
 import com.lc.project.common.ResultUtils;
+import com.lc.project.config.ElasticSearchConfiguration;
 import com.lc.project.exception.BusinessException;
 import com.lc.project.mapper.VideoUploadMapper;
 import com.lc.project.model.dto.file.FileChunk;
+import com.lc.project.model.entity.DemoData;
+import com.lc.project.model.entity.SubstanceSearch;
 import com.lc.project.model.entity.Users;
 import com.lc.project.model.entity.VideoUpload;
 import com.lc.project.service.FileService;
 import com.lc.project.service.UsersService;
 import com.lc.project.service.VideoUploadService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.elasticsearch.action.index.IndexRequest;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.document.Document;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +38,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -28,6 +46,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -44,6 +67,9 @@ public class FileController {
 
     @Resource
     private UsersService usersService;
+
+    @Resource
+    private ElasticsearchRestTemplate restTemplate;
 
     @PostMapping("/upload")
     public BaseResponse upload(@RequestParam("file") MultipartFile file,
@@ -157,6 +183,29 @@ public class FileController {
     @PostMapping(value = "/uploadVideoToM3U8")
     public BaseResponse<String> uploadVideoToM3U8(@RequestParam("file") MultipartFile multipartFile) {
         return ResultUtils.success(videoUploadService.uploadVideoToM3U83(multipartFile));
+    }
+
+
+
+
+    @PostMapping(value = "/excel")
+    public BaseResponse<String> excel(@RequestPart @RequestParam("file") MultipartFile file) {
+        InputStream inputStream = null;
+        try {
+            inputStream = file.getInputStream();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        List<DemoData> demoDataList = EasyExcel.read(inputStream).sheet(0).head(DemoData.class).doReadSync();
+        Map<String, String> map = new HashMap<>();
+        demoDataList.forEach(item -> {
+            String projectName = item.getProjectName();
+            String projectChineseName = item.getProjectChineseName();
+            map.put(projectName, projectChineseName);
+            log.info("数据名：{}",projectName);
+            log.info("数据内容：{}",projectChineseName);
+        });
+        return ResultUtils.success(JSON.toJSONString(map));
     }
 
 }

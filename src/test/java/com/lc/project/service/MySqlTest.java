@@ -1,6 +1,8 @@
 package com.lc.project.service;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
@@ -12,10 +14,17 @@ import com.lc.project.model.entity.*;
 import com.lc.project.model.vo.MovieVo;
 import com.lc.project.service.MovieService;
 import com.lc.project.service.VipService;
+import io.minio.BucketExistsArgs;
+import io.minio.MakeBucketArgs;
+import io.minio.MinioClient;
+import io.minio.errors.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -76,6 +85,10 @@ public class MySqlTest {
 
     @Resource
     private OrderService orderService;
+
+    @Resource
+    private MinioClient minioClient;
+
     @Test
     public void test(){
         MovieQueryRequest movieQueryRequest = new MovieQueryRequest();
@@ -313,4 +326,12 @@ public class MySqlTest {
         Map<Integer, List<Order>> collect = orderList.stream().collect(Collectors.groupingBy(Order::getVipType));
         System.out.println(collect);
     }
+    @Test
+    public void bucketExists()  {
+        String a = "{\"SJLY\":\"数据来源\",\"SJLYZDZW\":\"数据来源字段中文\",\"HM\":\"号码\",\"YZJ\":\"原主键\",\"RYBH\":\"人员编号\",\"ZYKRKSJ\":\"资源库入库时间\",\"DHHMBH\":\"电话号码编号\",\"DJR\":\"登记人\",\"SYR\":\"所有人\",\"SYRZJHM\":\"所有人证件号码\",\"RKSJ\":\"入库时间\",\"SJLYZD\":\"数据来源字段\",\"DJDW\":\"登记单位\",\"SJLYZW\":\"数据来源中文\",\"DJSJ\":\"登记时间\"}";
+        JSON parse = JSONUtil.parse(a);
+        System.out.println(parse);
+    }
+
+
 }

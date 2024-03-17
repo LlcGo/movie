@@ -3,6 +3,9 @@ package com.lc.project.service.impl;
 import java.util.*;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
+import cn.hutool.crypto.symmetric.SymmetricCrypto;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -59,7 +62,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
     /**
      * 盐值，混淆密码
      */
-    private static final String SALT = "Lc";
+    public static final String SALT = "Lc66666666666666";
 
     //TODO 用户名设置随机
     @Override
@@ -87,11 +90,13 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
                 throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号重复");
             }
             // 2. 加密
-            String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
+            String encryptPassword = secure(userPassword);
             // 3. 插入数据
             Users user = new Users();
             user.setUsername(userAccount);
             user.setPassword(encryptPassword);
+            user.setUserRole("user");
+            user.setUserRole("/api/uploads/img/img.png");
             boolean saveResult = this.save(user);
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");
@@ -113,7 +118,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码错误");
         }
         // 2. 加密
-        String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
+        String encryptPassword = secure(userPassword);
         // 查询用户是否存在
         QueryWrapper<Users> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("username", userAccount);
@@ -136,6 +141,14 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
         return user;
     }
 
+    public String secure(String userPassword){
+        byte[] byteKey = SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue(), SALT.getBytes()).getEncoded();
+
+        SymmetricCrypto aes = SecureUtil.aes(byteKey);
+
+        // 加密
+        return aes.encryptBase64(userPassword);
+    }
     /**
      * 获取当前登录用户
      *
@@ -207,12 +220,12 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
         String oldPassword = updatePassWord.getOldPassword();
         Users loginUser = getLoginUser();
         String password = loginUser.getPassword();
-        String encryptPassword = DigestUtils.md5DigestAsHex((SALT + oldPassword).getBytes());
+        String encryptPassword = secure(oldPassword);
         if (!encryptPassword.equals(password)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "原密码不正确");
         }
         UpdateWrapper<Users> usersUpdateWrapper = new UpdateWrapper<>();
-        String newEncryptPassword = DigestUtils.md5DigestAsHex((SALT + newPassWord).getBytes());
+        String newEncryptPassword = secure(newPassWord);
         usersUpdateWrapper.eq("id", loginUser.getId());
         usersUpdateWrapper.set("password", newEncryptPassword);
         return this.update(usersUpdateWrapper);
@@ -327,7 +340,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码错误");
         }
         // 2. 加密
-        String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
+        String encryptPassword = secure(userPassword);
         // 查询用户是否存在
         QueryWrapper<Users> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("username", userAccount);

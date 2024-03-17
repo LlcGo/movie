@@ -3,6 +3,9 @@ package com.lc.project.service;
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
+import cn.hutool.crypto.symmetric.SymmetricCrypto;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -14,6 +17,25 @@ import java.util.Date;
 
 public class Main {
     public static void main(String[] args) throws ParseException {
+
+        // 16位自定义密码
+        String key = "1234567891011123";
+        String content = "明文";
+
+        // 生成密钥
+        byte[] byteKey = SecureUtil.generateKey(SymmetricAlgorithm.AES.getValue(), key.getBytes()).getEncoded();
+
+        SymmetricCrypto aes = SecureUtil.aes(byteKey);
+
+        // 加密
+        String encryptData = aes.encryptBase64(content);
+        System.out.println("加密" + encryptData);
+        // nuP9GXvHgzW6Q12notB8jQ==
+
+        // 解密
+        String decryptData = aes.decryptStr(encryptData);
+        System.out.println("解密" + decryptData);
+
         String msg = "video6";
         msg = msg.substring(5);
         System.out.println(msg);

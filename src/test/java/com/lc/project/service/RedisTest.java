@@ -2,6 +2,7 @@ package com.lc.project.service;
 
 import cn.hutool.json.JSON;
 import cn.hutool.json.JSONUtil;
+import com.lc.project.model.dto.user.SecretRequest;
 import com.lc.project.model.entity.Movie;
 import com.lc.project.utils.RedisUtils;
 import io.swagger.models.auth.In;
@@ -96,5 +97,14 @@ public class RedisTest {
 //        });
 
 
+    }
+
+    @Test
+    public void testSecret() {
+        Object o = redisUtils.get("lc164");
+        System.out.println(o);
+        String res = (String) o;
+        SecretRequest bean = JSONUtil.toBean(res, SecretRequest.class);
+        System.out.println(bean);
     }
 }
